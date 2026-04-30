@@ -32,6 +32,8 @@ Expected: `OK: all skills found, all references resolve.`
 
 You can also try the smoke-test prompts in [`.claude/skills/imf-ra/tests/prompts.md`](.claude/skills/imf-ra/tests/prompts.md) in a fresh Claude Code session inside this repo and confirm the expected skill activates for each.
 
+> **Windows users:** the verify script is bash, so run it from **Git Bash** (ships with [Git for Windows](https://git-scm.com/download/win)) or **WSL** — not PowerShell or `cmd`. Claude Code itself loads the skills the same way on Windows; the bash dependency is only for the optional sanity check. Line endings are pinned via `.gitattributes` (`*.sh` → LF) so cloning on Windows won't break the script's shebang.
+
 ## Layout
 
 ```

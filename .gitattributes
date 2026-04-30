@@ -1,0 +1,13 @@
+# Default to native line endings, autodetected per file.
+* text=auto
+
+# Shell scripts must stay LF or they break on Windows checkouts:
+# `git config core.autocrlf=true` (default on Windows) would otherwise rewrite
+# them to CRLF, and bash refuses to run a script whose shebang ends in \r.
+*.sh text eol=lf
+
+# Markdown is text; let git normalize on commit.
+*.md text
+
+# PowerShell (if/when we add Windows-native helpers)
+*.ps1 text eol=crlf
