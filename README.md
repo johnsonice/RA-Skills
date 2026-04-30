@@ -15,12 +15,18 @@ v1 ships scaffolding only — real SDK and chart-tool content fills in iterative
 ## Use it (development mode)
 
 ```bash
+# SSH (if you have keys configured):
 git clone git@github.com:johnsonice/RA-Skills.git
+# or HTTPS:
+git clone https://github.com/johnsonice/RA-Skills.git
+
 cd RA-Skills
 claude  # or open Claude Code with cwd = this repo
 ```
 
 The skills live under `.claude/skills/`, which Claude Code treats as **project-local** — it auto-loads them when working in this repo, and only here. Edit a `SKILL.md`, re-prompt, iterate. No install, no symlinks, nothing in your global `~/.claude/skills/`.
+
+Works the same on macOS, Linux, and Windows. Claude Code's skill discovery is OS-agnostic; line endings for shell scripts are pinned to LF via `.gitattributes` so Windows checkouts don't corrupt the verify script's shebang.
 
 ## Verify
 
@@ -32,7 +38,7 @@ Expected: `OK: all skills found, all references resolve.`
 
 You can also try the smoke-test prompts in [`.claude/skills/imf-ra/tests/prompts.md`](.claude/skills/imf-ra/tests/prompts.md) in a fresh Claude Code session inside this repo and confirm the expected skill activates for each.
 
-> **Windows users:** the verify script is bash, so run it from **Git Bash** (ships with [Git for Windows](https://git-scm.com/download/win)) or **WSL** — not PowerShell or `cmd`. Claude Code itself loads the skills the same way on Windows; the bash dependency is only for the optional sanity check. Line endings are pinned via `.gitattributes` (`*.sh` → LF) so cloning on Windows won't break the script's shebang.
+> **Windows users:** the verify script is bash. Run it from **Git Bash** (ships with [Git for Windows](https://git-scm.com/download/win)) or **WSL** — not PowerShell or `cmd`.
 
 ## Layout
 
@@ -47,6 +53,9 @@ RA-Skills/
 ├── docs/
 │   ├── specs/                       # design docs
 │   └── plans/                       # implementation plans
+├── .gitattributes                   # line-ending rules (LF for *.sh)
+├── .gitignore                       # macOS / Windows / Python noise
+├── LICENSE
 └── README.md
 ```
 
