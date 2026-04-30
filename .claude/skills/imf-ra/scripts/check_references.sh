@@ -4,7 +4,10 @@
 
 set -euo pipefail
 
-SKILLS_DIR="${SKILLS_DIR:-$HOME/.claude/skills}"
+# Default SKILLS_DIR: this script lives at <skills_dir>/imf-ra/scripts/, so go up
+# two levels to find the family root. Override via env var if checking elsewhere.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILLS_DIR="${SKILLS_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 FAMILY=("imf-ra" "imf-ra-data" "imf-ra-charts" "imf-ra-catalog")
 
 errors=0

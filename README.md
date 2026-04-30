@@ -12,39 +12,42 @@ A family of [Claude Code](https://docs.claude.com/en/docs/claude-code) skills ai
 
 v1 ships scaffolding only — real SDK and chart-tool content fills in iteratively. See [`docs/specs/`](docs/specs/) for design and [`docs/plans/`](docs/plans/) for the implementation plan.
 
-## Install
+## Use it (development mode)
 
 ```bash
 git clone git@github.com:johnsonice/RA-Skills.git
 cd RA-Skills
-./install.sh
+claude  # or open Claude Code with cwd = this repo
 ```
 
-`install.sh` creates symlinks `~/.claude/skills/<name>` → `RA-Skills/skills/<name>` so Claude Code discovers each skill. Editing files in this repo immediately reflects in your live skills. Re-runnable; won't overwrite anything that isn't already a correct symlink.
+The skills live under `.claude/skills/`, which Claude Code treats as **project-local** — it auto-loads them when working in this repo, and only here. Edit a `SKILL.md`, re-prompt, iterate. No install, no symlinks, nothing in your global `~/.claude/skills/`.
 
 ## Verify
 
-After installing, run the reference checker to confirm all skill cross-links resolve:
-
 ```bash
-bash ~/.claude/skills/imf-ra/scripts/check_references.sh
+bash .claude/skills/imf-ra/scripts/check_references.sh
 ```
 
-Expected output: `OK: all skills found, all references resolve.`
+Expected: `OK: all skills found, all references resolve.`
 
-You can also try the smoke-test prompts in [`skills/imf-ra/tests/prompts.md`](skills/imf-ra/tests/prompts.md) in a fresh Claude Code session and confirm the expected skill activates for each.
+You can also try the smoke-test prompts in [`.claude/skills/imf-ra/tests/prompts.md`](.claude/skills/imf-ra/tests/prompts.md) in a fresh Claude Code session inside this repo and confirm the expected skill activates for each.
 
 ## Layout
 
 ```
 RA-Skills/
-├── skills/
-│   ├── imf-ra/                  # umbrella
-│   ├── imf-ra-data/             # data fetch
-│   ├── imf-ra-charts/           # chart handoff
-│   └── imf-ra-catalog/          # variable / database discovery
+├── .claude/
+│   └── skills/
+│       ├── imf-ra/                  # umbrella
+│       ├── imf-ra-data/             # data fetch
+│       ├── imf-ra-charts/           # chart handoff
+│       └── imf-ra-catalog/          # variable / database discovery
 ├── docs/
-│   ├── specs/                   # design docs
-│   └── plans/                   # implementation plans
-└── install.sh                   # symlink installer
+│   ├── specs/                       # design docs
+│   └── plans/                       # implementation plans
+└── README.md
 ```
+
+## Future: plugin packaging
+
+When you want to share these with colleagues without requiring them to clone the repo, the family can be repackaged as a Claude Code plugin: rename `.claude/skills/` → `skills/`, add a `plugin.json` at the repo root, and distribute. The skill files themselves don't change — only the surrounding wrapper.
