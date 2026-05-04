@@ -223,3 +223,6 @@ __marimo__/
 # Windows
 Thumbs.db
 desktop.ini
+
+# Local temporary workspace artifacts
+temp/
