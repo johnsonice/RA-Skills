@@ -1,6 +1,6 @@
 # Catalog conventions
 
-How the two-layer catalog is organized and how the layers interact.
+How the catalog is organized and how the layers interact.
 
 ## Layer 1: per-database files
 
@@ -20,13 +20,26 @@ Curated institutional knowledge that augments or corrects the per-database files
 
 Schema lives in [`overlays/_template.md`](../overlays/_template.md).
 
+## Layer 3: CSV references
+
+The catalog also includes internal CSV references under `references/`:
+
+- `internal_full_datasets.csv`: dataset/dataflow catalog with `name`, `Agency ID`, `Resource ID`, `Latest Version`, and `Unique ID`.
+- `Full_indicators_List.csv`: indicator catalog with `database_name`, `indicator_code`, and `indicator_name`.
+
+Use `../scripts/catalog_search.py` to search these files. It defaults indicator search to the latest standard WEO Live dataset, then can broaden to all databases with `--all-databases`.
+
 ## Layer interaction
 
-When grep matches both a database file and an overlay, **the overlay takes precedence**. Database files describe what exists; overlays describe what to use and why.
+When grep matches both a database file and an overlay, **the overlay takes precedence**. Database files and CSV rows describe what exists; overlays describe what to use and why.
+
+For WEO-style macroeconomic indicators, use the latest standard WEO Live dataset as the first priority unless the user asks for a different source or vintage. Determine "latest" from `internal_full_datasets.csv` at lookup time.
 
 ## Search expectations
 
 The catalog returns top-N candidates with notes. Never a single committed pick when the description is ambiguous. The RA disambiguates.
+
+Discuss uncertainty explicitly when candidates differ by units, transformation, frequency, valuation basis, price basis, vintage, or database. Examples include current vs constant prices, national currency vs U.S. dollars, percent of GDP vs level, average vs end-period, annual vs quarterly/monthly, and latest vs historical vintage.
 
 ## Adding new entries
 

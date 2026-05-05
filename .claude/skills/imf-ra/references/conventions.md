@@ -12,9 +12,13 @@ Cross-cutting conventions referenced by every worker skill in the IMF RA family.
 
 ## Country and country-group codes
 
-> _Placeholder._ Document:
-> - Which code system to prefer (ISO 3166 alpha-3 vs. IMF country codes).
-> - How to translate between RA-friendly names ("G20", "advanced economies") and the SDK's group identifiers.
+For WEO country groups and WEO Live aggregates, use [Country Group/weo-country-groups.md](Country%20Group/weo-country-groups.md) and the workbook `Country Group/WEO Countries and Country Groups 2026.xlsx`.
+
+- Prefer `countrycode` and `groupcode` for current WEO Live/iData workflows.
+- Use `countrycode_s` and `groupcode_s` only when the user or an old database workflow explicitly asks for numeric/legacy codes.
+- Translate RA-friendly names such as "advanced economies", "EMDE", "G7", "LAC", "SSA", or "ASEAN-5" through the WEO group reference instead of guessing.
+- For exact membership, use the workbook's long-form `3. Country Group Composition` sheet or `scripts/weo_country_groups.py`.
+- Group A and Group A+ are WEO/CSD submission-process groups, not WEO Live aggregate groups.
 
 ## Frequencies
 
