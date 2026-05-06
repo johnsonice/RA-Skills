@@ -13,7 +13,7 @@ See the umbrella `imf-ra` for shared conventions.
 
 ## When data isn't in scope yet
 
-Load `imf-ra-data` in the same turn and follow it to fetch — do not duplicate SDK call patterns here. See [`imf-ra-data/references/sdk-usage.md`](../imf-ra-data/references/sdk-usage.md). If the user only described what they want in plain English, also load `imf-ra-catalog` to resolve the identifier.
+Load `imf-ra-data` in the same turn and follow it to fetch — do not duplicate SDK call patterns here. See [`imf-ra-data/references/imf_datatools_agent_api_reference.md`](../imf-ra-data/references/imf_datatools_agent_api_reference.md). If the user only described what they want in plain English, also load `imf-ra-catalog` to resolve the identifier.
 
 ## How to chart
 

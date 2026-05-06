@@ -5,13 +5,43 @@ description: Use when the user wants to fetch, pull, download, or load IMF data 
 
 # IMF RA — Data
 
+## Frequencies
+
+> _Placeholder._ Document:
+> - How the SDK encodes A/Q/M.
+> - Conventions for quarter labels (`2010Q1` vs. `2010-Q1` vs. `2010-03-31`).
+> - When to convert frequencies and which method to use.
+
+## Dates
+
+> _Placeholder._ Document:
+> - Default date range conventions (e.g., "2010-present" → start=`2010`, end=`null`).
+> - How to handle release-vintage dates vs. data-period dates.
+
+## Units
+
+> _Placeholder._ Document:
+> - Common unit conventions in IMF databases (USD billions, percent of GDP, index 2010=100).
+> - Where the unit metadata lives in the SDK return.
+
 Fetching IMF data series via the internal Python SDK.
 
 ## Default decision logic
 
 1. Prefer `idata_utilities` for new IMF workflows.
 2. Use metadata calls first whenever database/dimension/code values are unclear.
-3. If the user asks for EcOS-based retrieval, explain that EcOS is retired and provide the iData equivalent workflow.
+3. For WEO-style macroeconomic data, prefer an iData database whose resource ID starts with `WEO_LIVE` before published/static WEO alternatives.
+4. If the user asks for EcOS-based retrieval, explain that EcOS is retired and provide the iData equivalent workflow.
+
+## WEO Live priority
+
+For WEO concepts, `WEO_LIVE` is the first-priority database family. This is a source-family preference, not an instruction to silently choose the newest vintage every time.
+
+- Prefer `IMF.RES.WEO:<WEO_LIVE_..._VINTAGE>` over non-live WEO datasets when both contain the requested indicator.
+- If the user specifies a vintage, exercise, or database, honor that choice after validating that the requested indicator exists there.
+- If the user does not specify a vintage, ask whether they want the current/latest available WEO Live vintage or a specific historical vintage before writing the final retrieval code.
+- When a catalog result contains a concrete `database_name` such as `IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE`, treat it as a candidate, not an irrevocable choice, unless the user has already confirmed the vintage.
+- Use non-WEO databases when the concept is clearly outside WEO coverage, such as commodity prices in GAS or high-frequency CPI in IFS/STA.
 
 ## EcOS retired policy
 
@@ -56,6 +86,16 @@ See [references/imf_datatools_agent_api_reference.md](references/imf_datatools_a
 ## When you don't know the series identifier
 
 See `imf-ra-catalog` first to translate the user's description into `(database, series, frequency, geo)`. Only then write the SDK call.
+
+## After catalog handoff
+
+When `imf-ra-catalog` returns CSV-backed candidates:
+
+- `database_name` is the iData database identifier to validate with metadata calls.
+- `indicator_code` is the candidate indicator dimension value.
+- `indicator_name` explains unit, valuation, transformation, and price basis; use it to ask follow-up questions when candidates differ.
+- For WEO candidates, keep `WEO_LIVE` as the priority family, then confirm vintage if the user has not already done so.
+- Before fetching, validate the database dimensions and the exact indicator code with `idata_utilities.get_dimensions()` and `idata_utilities.get_dimension_values()`.
 
 ## Safe query policy
 

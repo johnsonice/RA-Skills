@@ -29,6 +29,7 @@ for skill in "${FAMILY[@]}"; do
         [[ -z "$ref" ]] && continue
         [[ "$ref" =~ ^https?:// ]] && continue
 
+        ref="$(python3 -c 'import sys, urllib.parse; print(urllib.parse.unquote(sys.argv[1]))' "$ref")"
         ref_path="$skill_dir/$ref"
         if [[ ! -e "$ref_path" ]]; then
             echo "BROKEN REF in $skill_md: $ref"
