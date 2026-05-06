@@ -1,16 +1,35 @@
 # RA-Skills
-agent skills specifically designed to help you became a laziest research assistant ever
+Agent skills designed to help you become a very efficient research assistant.
 
 ## What's here
 
-A family of [Claude Code](https://docs.claude.com/en/docs/claude-code) skills aimed at IMF Research Assistant workflows:
+A family of [Claude Code](https://docs.claude.com/en/docs/claude-code) skills for IMF Research Assistant workflows:
 
 - **`imf-ra`** — umbrella, family map, shared conventions
+- **`imf-ra-catalog`** — natural-language → database/series identifier discovery
 - **`imf-ra-data`** — pulling data via the internal Python SDK
 - **`imf-ra-charts`** — handing data to the internal charting tool
-- **`imf-ra-catalog`** — natural-language → database/series identifier discovery
 
-v1 ships scaffolding only — real SDK and chart-tool content fills in iteratively. See [`docs/specs/`](docs/specs/) for design and [`docs/plans/`](docs/plans/) for the implementation plan.
+Recommended sequence: `imf-ra` -> `imf-ra-catalog` -> `imf-ra-data` -> `imf-ra-charts`.
+
+The repo includes working skill docs, conventions, and reference CSVs. See [`docs/specs/`](docs/specs/) for design context and [`docs/plans/`](docs/plans/) for implementation history.
+
+## Skill conventions
+
+Across `imf-ra` and `imf-ra-catalog`:
+
+- For straightforward requests, inspect available reference files and answer directly.
+- Write or run code only for complex processing/search tasks.
+- If there is material uncertainty, do not guess.
+- If several plausible best matches exist, list them and ask the user for preference/confirmation.
+
+For catalog-specific references:
+
+- Dataset catalog: `imf-ra-catalog/databases/idata_full_datasets_list.csv`
+- Indicator catalog: `imf-ra-catalog/indicators/idata_full_indicators_list.csv`
+- Source-specific templates:
+  - `imf-ra-catalog/databases/templates/idata_template.md`
+  - `imf-ra-catalog/indicators/templates/idata_template.md`
 
 ## Use it (development mode)
 
@@ -47,9 +66,9 @@ RA-Skills/
 ├── .claude/
 │   └── skills/
 │       ├── imf-ra/                  # umbrella
+│       ├── imf-ra-catalog/          # variable / database discovery
 │       ├── imf-ra-data/             # data fetch
-│       ├── imf-ra-charts/           # chart handoff
-│       └── imf-ra-catalog/          # variable / database discovery
+│       └── imf-ra-charts/           # chart handoff
 ├── docs/
 │   ├── specs/                       # design docs
 │   └── plans/                       # implementation plans
@@ -57,6 +76,24 @@ RA-Skills/
 ├── .gitignore                       # macOS / Windows / Python noise
 ├── LICENSE
 └── README.md
+```
+
+Catalog internals:
+
+```text
+.claude/skills/imf-ra-catalog/
+├── databases/
+│   ├── idata_full_datasets_list.csv
+│   └── templates/
+│       └── idata_template.md
+├── indicators/
+│   ├── idata_full_indicators_list.csv
+│   └── templates/
+│       └── idata_template.md
+├── references/
+│   └── catalog-conventions.md
+└── scripts/
+    └── catalog_search.py
 ```
 
 ## Future: plugin packaging

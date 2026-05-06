@@ -1,48 +1,58 @@
 # Catalog conventions
 
-How the catalog is organized and how the layers interact.
+How `imf-ra-catalog` is organized and how to use its reference files.
 
-## Layer 1: per-database files
+## Core files
 
-One file per IMF database under `databases/`. Each file is human-readable Markdown but follows a consistent schema so grep over the family is reliable.
+The catalog is built around two iData CSV references:
 
-Schema lives in [`databases/_template.md`](../databases/_template.md). At minimum each file declares: dataflow ID, primary dimensions, frequency conventions, common indicators (with their codes), and notable gotchas.
+| File | Purpose | Columns |
+|---|---|---|
+| `databases/idata_full_datasets_list.csv` | Dataset/dataflow discovery. | `name`, `Agency ID`, `Resource ID`, `Latest Version`, `Unique ID` |
+| `indicators/idata_full_indicators_list.csv` | Indicator/code discovery. | `database_name`, `indicator_code`, `indicator_name` |
 
-In v2 these files may be auto-generated from SDMX metadata. The schema is designed to accept either hand-curated or machine-generated content without restructuring.
+Use the CSV files as the source of truth for what exists. Source-specific templates live under `databases/templates/` and `indicators/templates/`; the iData templates document the current CSV schemas and explain when a focused Markdown note is worth adding.
 
-## Layer 2: overlays
+## Default lookup behavior
 
-Curated institutional knowledge that augments or corrects the per-database files. Examples:
+For easy and straightforward questions, read the available CSV, Markdown, and optional overlay files and answer directly from what you find. Do not write or run code when inspection is enough.
 
-- "For real GDP growth, prefer WEO `NGDP_RPCH` over IFS `NGDP_R_K_IX` because WEO is the consensus forecast."
-- "Quarterly current account in BOPS uses `BCA_BP6_USD`, not the older BPM5 codes."
-- "When users say 'advanced economies', they almost always mean the WEO group `AE`, not OECD."
+Use `../scripts/catalog_search.py` only for complex lookup tasks, such as broad keyword search across many rows, repeated filtering, ranking candidates, joining dataset and indicator references, calculating latest vintages, or other logic that is impractical to do reliably by manual review.
 
-Schema lives in [`overlays/_template.md`](../overlays/_template.md).
+If there is any material uncertainty, do not guess. Ask the user for confirmation before committing to one interpretation, dataset, or indicator choice.
 
-## Layer 3: CSV references
+If search or lookup results return several plausible "best match" candidates, list those candidates clearly and ask the user for preference/confirmation.
 
-The catalog also includes internal CSV references under `references/`:
+## Datasets
 
-- `internal_full_datasets.csv`: dataset/dataflow catalog with `name`, `Agency ID`, `Resource ID`, `Latest Version`, and `Unique ID`.
-- `Full_indicators_List.csv`: indicator catalog with `database_name`, `indicator_code`, and `indicator_name`.
+Use `databases/idata_full_datasets_list.csv` when the user asks about available datasets, dataflows, agencies, resource IDs, versions, or unique dataset identifiers.
 
-Use `../scripts/catalog_search.py` to search these files. It defaults indicator search to the latest standard WEO Live dataset, then can broaden to all databases with `--all-databases`.
+Use `catalog_search.py datasets <query>` for broad or repeated dataset searches. Use `catalog_search.py latest-weo` only when the user asks for the latest/current WEO Live vintage or agrees to use it.
 
-## Layer interaction
+Do not silently collapse the `WEO_LIVE` family to a single vintage. If a fetch requires a concrete vintage and the user has not specified one, ask whether they want the current/latest available WEO Live vintage or a specific historical vintage.
 
-When grep matches both a database file and an overlay, **the overlay takes precedence**. Database files and CSV rows describe what exists; overlays describe what to use and why.
+## Indicators
 
-For WEO-style macroeconomic indicators, use the latest standard WEO Live dataset as the first priority unless the user asks for a different source or vintage. Determine "latest" from `internal_full_datasets.csv` at lookup time.
+Use `indicators/idata_full_indicators_list.csv` when the user asks for an indicator code, candidate series, or which datasets contain a concept.
 
-## Search expectations
+For WEO-style annual macroeconomic concepts, start with the `WEO_LIVE` dataflow family unless the user asks for another source family or the concept is clearly outside WEO coverage.
 
-The catalog returns top-N candidates with notes. Never a single committed pick when the description is ambiguous. The RA disambiguates.
+When multiple candidates differ by unit, transformation, valuation, frequency, price basis, vintage, or database, surface the plausible candidates with `database_name`, `indicator_code`, and `indicator_name`; then ask the RA to choose. Do not invent indicator codes.
 
-Discuss uncertainty explicitly when candidates differ by units, transformation, frequency, valuation basis, price basis, vintage, or database. Examples include current vs constant prices, national currency vs U.S. dollars, percent of GDP vs level, average vs end-period, annual vs quarterly/monthly, and latest vs historical vintage.
+Use `catalog_search.py search <query>` for complex indicator searches. Add `--all-databases` only when WEO Live lacks a plausible match, the user explicitly asks for a non-WEO source, or the concept is outside WEO coverage.
 
-## Adding new entries
+## Curated Markdown
 
-- New database: copy `databases/_template.md` to `databases/<name>.md` and fill in.
-- New overlay: copy `overlays/_template.md` to `overlays/<topic>.md` and fill in.
-- Keep entries focused. Multiple small files beat one large file.
+Add focused Markdown notes only when the CSV row is not enough:
+
+- `databases/<name>.md`: dataset-specific guidance, such as dimension conventions, frequency caveats, source-specific gotchas, or common indicator mappings.
+- `indicators/<topic>.md`: concept or indicator guidance, such as preferred source selection, naming ambiguity, unit caveats, vintage sensitivity, or why similarly named indicators should be avoided.
+- `overlays/<topic>.md`: optional institutional guidance that overrides or augments CSV rows and focused notes.
+
+When curated Markdown conflicts with raw CSV search results, follow the curated guidance and explain the reason briefly.
+
+## Output expectations
+
+Return top candidates with concise notes when the match is ambiguous. Commit to a single identifier only when the match is exact and unambiguous.
+
+If the CSV and Markdown references do not contain a useful match, say so and ask for the smallest helpful clarification.

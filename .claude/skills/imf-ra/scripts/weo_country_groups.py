@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Query the WEO Countries and Country Groups workbook without third-party deps."""
+"""Query WEO country-group CSV reference tables."""
 
 from __future__ import annotations
 
@@ -7,19 +7,21 @@ import argparse
 import csv
 import re
 import sys
-import zipfile
 from pathlib import Path
 from typing import Iterable
-from xml.etree import ElementTree as ET
 
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
-DEFAULT_WORKBOOK = SKILL_DIR / "references" / "Country Group" / "WEO Countries and Country Groups 2026.xlsx"
-NS = {
-    "a": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
-    "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+DEFAULT_CSV_DIR = SKILL_DIR / "references" / "Country Group" / "csv"
+SHEET_CSV_FILES = {
+    "Information": "information.csv",
+    "1. Countries": "countries.csv",
+    "2. Country Groups": "country_groups.csv",
+    "3. Country Group Composition": "country_group_composition.csv",
+    "4. Group A and A+": "group_a_and_a_plus.csv",
+    "5. Group Dummies (iData)": "group_dummies_idata.csv",
+    "6. Group Dummies (old codes)": "group_dummies_old_codes.csv",
 }
-RID = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
 GROUP_ALIASES = {
     "ae": "G110",
     "advanced economies": "G110",
@@ -50,18 +52,6 @@ GROUP_ALIASES = {
 }
 
 
-def _text(el: ET.Element) -> str:
-    return "".join(t.text or "" for t in el.iter(f"{{{NS['a']}}}t"))
-
-
-def _colnum(cell_ref: str) -> int:
-    letters = re.match(r"([A-Z]+)", cell_ref).group(1)
-    n = 0
-    for ch in letters:
-        n = n * 26 + ord(ch) - 64
-    return n
-
-
 def _norm(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
 
@@ -74,51 +64,16 @@ def group_alias_code(query: str) -> str | None:
     return GROUP_ALIASES.get(_norm(query))
 
 
-class Workbook:
-    def __init__(self, path: Path) -> None:
-        self.path = path
-        self.zf = zipfile.ZipFile(path)
-        self.shared = self._load_shared_strings()
-        self.sheet_paths = self._load_sheet_paths()
-
-    def _load_shared_strings(self) -> list[str]:
-        root = ET.fromstring(self.zf.read("xl/sharedStrings.xml"))
-        return [_text(si) for si in root.findall("a:si", NS)]
-
-    def _load_sheet_paths(self) -> dict[str, str]:
-        wb = ET.fromstring(self.zf.read("xl/workbook.xml"))
-        rels = ET.fromstring(self.zf.read("xl/_rels/workbook.xml.rels"))
-        relmap = {rel.attrib["Id"]: rel.attrib["Target"] for rel in rels}
-        out = {}
-        for sheet in wb.find("a:sheets", NS):
-            out[sheet.attrib["name"]] = relmap[sheet.attrib[RID]]
-        return out
+class CsvTables:
+    def __init__(self, csv_dir: Path) -> None:
+        self.csv_dir = csv_dir
 
     def rows(self, sheet_name: str) -> list[dict[str, str]]:
-        path = self.sheet_paths[sheet_name]
-        root = ET.fromstring(self.zf.read("xl/" + path))
-        raw_rows: list[list[str]] = []
-        for row in root.findall(".//a:sheetData/a:row", NS):
-            vals: dict[int, str] = {}
-            for cell in row.findall("a:c", NS):
-                idx = _colnum(cell.attrib.get("r", "A1")) - 1
-                typ = cell.attrib.get("t")
-                v = cell.find("a:v", NS)
-                inline = cell.find("a:is", NS)
-                if typ == "s" and v is not None:
-                    val = self.shared[int(v.text)]
-                elif typ == "inlineStr" and inline is not None:
-                    val = _text(inline)
-                elif v is not None:
-                    val = v.text or ""
-                else:
-                    val = ""
-                vals[idx] = val
-            if vals:
-                raw_rows.append([vals.get(i, "") for i in range(max(vals) + 1)])
-
-        header = raw_rows[0]
-        return [dict(zip(header, row + [""] * (len(header) - len(row)))) for row in raw_rows[1:]]
+        csv_path = self.csv_dir / SHEET_CSV_FILES[sheet_name]
+        if not csv_path.exists():
+            raise FileNotFoundError(f"Missing WEO country-group CSV: {csv_path}")
+        with csv_path.open(newline="", encoding="utf-8-sig") as f:
+            return list(csv.DictReader(f))
 
 
 def matches(row: dict[str, str], query: str, fields: Iterable[str]) -> bool:
@@ -142,12 +97,12 @@ def write_rows(rows: list[dict[str, str]], fields: list[str]) -> None:
     writer.writerows(rows)
 
 
-def cmd_summary(wb: Workbook, _args: argparse.Namespace) -> None:
-    countries = wb.rows("1. Countries")
-    groups = wb.rows("2. Country Groups")
-    composition = wb.rows("3. Country Group Composition")
-    group_a = wb.rows("4. Group A and A+")
-    print(f"workbook,{wb.path}")
+def cmd_summary(tables: CsvTables, _args: argparse.Namespace) -> None:
+    countries = tables.rows("1. Countries")
+    groups = tables.rows("2. Country Groups")
+    composition = tables.rows("3. Country Group Composition")
+    group_a = tables.rows("4. Group A and A+")
+    print(f"source,{tables.csv_dir}")
     print(f"countries,{len(countries)}")
     print(f"groups,{len(groups)}")
     print(f"group_memberships,{len(composition)}")
@@ -160,8 +115,8 @@ def cmd_summary(wb: Workbook, _args: argparse.Namespace) -> None:
         print(f"{key},{counts[key]}")
 
 
-def cmd_groups(wb: Workbook, args: argparse.Namespace) -> None:
-    rows = wb.rows("2. Country Groups")
+def cmd_groups(tables: CsvTables, args: argparse.Namespace) -> None:
+    rows = tables.rows("2. Country Groups")
     if args.query:
         alias_code = group_alias_code(args.query)
         rows = [
@@ -173,8 +128,8 @@ def cmd_groups(wb: Workbook, args: argparse.Namespace) -> None:
     write_rows(rows, ["grouptype", "groupcode", "groupname", "groupcode_s", "groupname_s"])
 
 
-def cmd_countries(wb: Workbook, args: argparse.Namespace) -> None:
-    rows = wb.rows("1. Countries")
+def cmd_countries(tables: CsvTables, args: argparse.Namespace) -> None:
+    rows = tables.rows("1. Countries")
     if args.query:
         rows = [
             r
@@ -184,8 +139,8 @@ def cmd_countries(wb: Workbook, args: argparse.Namespace) -> None:
     write_rows(rows, ["countrycode", "countryname", "countrycode_s", "countryname_s", "department"])
 
 
-def cmd_members(wb: Workbook, args: argparse.Namespace) -> None:
-    groups = wb.rows("2. Country Groups")
+def cmd_members(tables: CsvTables, args: argparse.Namespace) -> None:
+    groups = tables.rows("2. Country Groups")
     alias_code = group_alias_code(args.group)
     exact_groups = [
         r
@@ -194,7 +149,7 @@ def cmd_members(wb: Workbook, args: argparse.Namespace) -> None:
         or exact_matches(r, args.group, ["groupcode", "groupname", "groupcode_s", "groupname_s"])
     ]
     group_codes = {r["groupcode"] for r in exact_groups}
-    composition = wb.rows("3. Country Group Composition")
+    composition = tables.rows("3. Country Group Composition")
     if group_codes:
         rows = [r for r in composition if r["groupcode"] in group_codes]
     else:
@@ -206,11 +161,11 @@ def cmd_members(wb: Workbook, args: argparse.Namespace) -> None:
     write_rows(rows, ["groupcode", "groupname", "groupcode_s", "groupname_s", "countrycode", "countryname", "countrycode_s", "countryname_s"])
 
 
-def cmd_memberships(wb: Workbook, args: argparse.Namespace) -> None:
-    countries = wb.rows("1. Countries")
+def cmd_memberships(tables: CsvTables, args: argparse.Namespace) -> None:
+    countries = tables.rows("1. Countries")
     exact_countries = [r for r in countries if exact_matches(r, args.country, ["countrycode", "countryname", "countrycode_s", "countryname_s"])]
     country_codes = {r["countrycode"] for r in exact_countries}
-    composition = wb.rows("3. Country Group Composition")
+    composition = tables.rows("3. Country Group Composition")
     if country_codes:
         rows = [r for r in composition if r["countrycode"] in country_codes]
     else:
@@ -222,8 +177,8 @@ def cmd_memberships(wb: Workbook, args: argparse.Namespace) -> None:
     write_rows(rows, ["countrycode", "countryname", "countrycode_s", "countryname_s", "groupcode", "groupname", "groupcode_s", "groupname_s"])
 
 
-def cmd_group_a(wb: Workbook, args: argparse.Namespace) -> None:
-    rows = wb.rows("4. Group A and A+")
+def cmd_group_a(tables: CsvTables, args: argparse.Namespace) -> None:
+    rows = tables.rows("4. Group A and A+")
     if args.query:
         exact_group_rows = [r for r in rows if r.get("groupname", "").casefold() == args.query.casefold()]
         rows = exact_group_rows or [
@@ -236,7 +191,7 @@ def cmd_group_a(wb: Workbook, args: argparse.Namespace) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workbook", type=Path, default=DEFAULT_WORKBOOK)
+    parser.add_argument("--csv-dir", type=Path, default=DEFAULT_CSV_DIR)
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("summary")
@@ -266,10 +221,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
-    wb = Workbook(args.workbook)
-    args.func(wb, args)
+    tables = CsvTables(args.csv_dir)
+    args.func(tables, args)
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

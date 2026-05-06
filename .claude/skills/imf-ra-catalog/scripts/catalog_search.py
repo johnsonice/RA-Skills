@@ -12,8 +12,10 @@ from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 REFERENCES_DIR = SKILL_DIR / "references"
-INDICATORS_CSV = REFERENCES_DIR / "Full_indicators_List.csv"
-DATASETS_CSV = REFERENCES_DIR / "internal_full_datasets.csv"
+DATABASES_DIR = SKILL_DIR / "databases"
+INDICATORS_DIR = SKILL_DIR / "indicators"
+INDICATORS_CSV = INDICATORS_DIR / "idata_full_indicators_list.csv"
+DATASETS_CSV = DATABASES_DIR / "idata_full_datasets_list.csv"
 MONTHS = {
     "JAN": 1,
     "FEB": 2,
@@ -94,6 +96,10 @@ def latest_weo_dataset() -> dict[str, str]:
     if not datasets:
         raise RuntimeError("No WEO Live datasets found")
     return max(datasets, key=lambda row: parse_weo_sort_key(row.get("Resource ID", "")))
+
+
+def is_weo_live_database(database_name: str) -> bool:
+    return database_name.startswith("IMF.RES.WEO:WEO_LIVE_")
 
 
 def score_indicator(row: dict[str, str], query: str) -> int:
@@ -177,11 +183,18 @@ def cmd_search(args: argparse.Namespace) -> None:
     elif args.all_databases:
         candidates = indicators
     else:
-        candidates = [row for row in indicators if row.get("database_name") == latest_weo_db]
+        candidates = [row for row in indicators if is_weo_live_database(row.get("database_name", ""))]
 
     scored = [(score_indicator(row, args.query), row) for row in candidates]
     scored = [(score, row) for score, row in scored if score > 0]
-    scored.sort(key=lambda item: (-item[0], item[1].get("indicator_code", ""), item[1].get("indicator_name", "")))
+    scored.sort(
+        key=lambda item: (
+            -item[0],
+            database_sort_key(item[1].get("database_name", ""), latest_weo_db),
+            item[1].get("indicator_code", ""),
+            item[1].get("indicator_name", ""),
+        )
+    )
 
     if (not scored or scored[0][0] < 25) and not args.all_databases and not args.database:
         fallback = [(score_indicator(row, args.query), row) for row in indicators]

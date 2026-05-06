@@ -1,6 +1,6 @@
 # WEO Country Groups
 
-Reference workbook: [WEO Countries and Country Groups 2026.xlsx](WEO%20Countries%20and%20Country%20Groups%202026.xlsx)
+Source files: the CSV files under [csv/](csv/) are the canonical WEO country-group reference tables for this skill.
 
 Use this reference whenever a task mentions WEO country groups, WEO aggregates, WEO regions, WEO country codes, iData WEO groups, old WEO group codes, Group A, or Group A+.
 
@@ -18,7 +18,19 @@ Use this reference whenever a task mentions WEO country groups, WEO aggregates, 
 - `groupcode_s`: numeric/legacy group code stored as text.
 - Prefer `countrycode` and `groupcode` for new WEO Live/iData work unless the user or an old database explicitly asks for old numeric codes.
 
-## Workbook Sheets
+## CSV Tables
+
+The previous workbook sheets are represented by these CSV files:
+
+| Former workbook sheet | CSV file |
+|---|---|
+| `Information` | `csv/information.csv` |
+| `1. Countries` | `csv/countries.csv` |
+| `2. Country Groups` | `csv/country_groups.csv` |
+| `3. Country Group Composition` | `csv/country_group_composition.csv` |
+| `4. Group A and A+` | `csv/group_a_and_a_plus.csv` |
+| `5. Group Dummies (iData)` | `csv/group_dummies_idata.csv` |
+| `6. Group Dummies (old codes)` | `csv/group_dummies_old_codes.csv` |
 
 1. `Information`
    - Source notes and workbook scope.
@@ -120,16 +132,16 @@ The group-definition sheet contains these group categories:
 
 ## Lookup Rules
 
-- For exact country membership, use sheet `3. Country Group Composition` or run `scripts/weo_country_groups.py members <group>`.
-- For exact groups containing a country, use sheet `3. Country Group Composition` or run `scripts/weo_country_groups.py memberships <country>`.
-- For canonical group names and code aliases, use sheet `2. Country Groups` or run `scripts/weo_country_groups.py groups`.
-- For WEO country code/name/department lookup, use sheet `1. Countries` or run `scripts/weo_country_groups.py countries <country>`.
-- For current iData dummy matrices, use sheet `5. Group Dummies (iData)`.
-- For old numeric dummy matrices, use sheet `6. Group Dummies (old codes)`.
+- For exact country membership, use `csv/country_group_composition.csv`.
+- For exact groups containing a country, use `csv/country_group_composition.csv`.
+- For canonical group names and code aliases, use `csv/country_groups.csv`.
+- For WEO country code/name/department lookup, use `csv/countries.csv`.
+- For current iData dummy matrices, use `csv/group_dummies_idata.csv`.
+- For old numeric dummy matrices, use `csv/group_dummies_old_codes.csv`.
 - If a user asks for Group A or Group A+, state that these are WEO/CSD submission groups, not WEO Live aggregate groups.
 - If a group or country name is ambiguous, surface all plausible matches with `groupcode`, `groupcode_s`, and `groupname` before choosing one.
 
-The helper script recognizes common RA shorthand and maps it to the primary WEO group where appropriate:
+Use `scripts/weo_country_groups.py` as an optional convenience helper for repeated lookups, ambiguous name resolution, or processing-heavy filtering. The helper script recognizes common RA shorthand and maps it to the primary WEO group where appropriate:
 
 | Shorthand | Primary groupcode |
 |---|---:|
