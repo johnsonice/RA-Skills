@@ -1,0 +1,50 @@
+grouptype,groupcode,groupname,groupcode_s,groupname_s
+Geographical Groups,GX229,Asia,229,Asia
+Geographical Groups,GX1218,Caribbean,1218,Caribbean
+Geographical Groups,GX1212,Central America,1212,Central America
+Geographical Groups,GX970,Europe,970,Europe
+Geographical Groups,G92031,North America,92031,North America (EXR) WEO
+Geographical Groups,GX2041,South America (WEO),2041,South America (WEO)
+Key aggregates,G110,Advanced Economies,110,Advanced Economies
+Key aggregates,G200,Emerging Market and Developing Economies,200,Emerging Market and Developing Economies
+Key aggregates,G505,Emerging and Developing Asia,505,Emerging and Developing Asia
+Key aggregates,G903,Emerging and Developing Europe,903,Emerging and Developing Europe
+Key aggregates,G995,Euro Area (EA) – aggregate of member states,995,Euro area - aggregate of member country data
+Key aggregates,G119,G7,119,G7
+Key aggregates,G205,Latin America and the Caribbean (LAC),205,Latin America and the Caribbean
+Key aggregates,G400,Middle East and Central Asia,400,Middle East and Central Asia
+Key aggregates,GX123,Other Advanced Economies (Advanced Economies excluding G7 and Euro Area countries),123,Other Advanced Economies (Advanced Economies excluding G7 and Euro Area countries)
+Key aggregates,G603,Sub-Saharan Africa (SSA),603,Sub-Sahara Africa
+Key aggregates,G001,World,001,World
+Other Groups,G510,ASEAN-5,510,ASEAN-5 (new definition)
+Other Groups,G1201,Emerging Market and Middle-Income Economies,1201,Emerging Market and Middle-Income Economies
+Other Groups,G998,European Union (EU),998,European Union
+Other Groups,G711,Heavily Indebted Poor Countries (HIPC),711,Heavily Indebted Poor Countries (HIPC)
+Other Groups,G201,Low-Income Developing Countries (LIDC),201,Emerging Market and Developing Economies: Low Income Developing Countries
+Other Regional Groups,G202,Advanced Asia,202,Advanced Asia
+Other Regional Groups,G906,Advanced Europe,906,Advanced Europe
+Other Regional Groups,G940,Caucasus and Central Asia (CCA),940,Caucasus and Central Asia (CCA)
+Other Regional Groups,G1515,Emerging Asia,1515,Emerging Asia
+Other Regional Groups,GX504,Emerging and Developing Asia excl. China and India,504,Emerging and Developing Asia excl. China and India
+Other Regional Groups,G401,Middle East and Central Asia: Oil Exporters,401,Middle East and Central Asia: Oil Exporters
+Other Regional Groups,G402,Middle East and Central Asia: Oil Importers,402,Middle East and Central Asia: Oil Importers
+Other Regional Groups,G406,Middle East and North Africa (MENA),406,Middle East and North Africa
+Other Regional Groups,GX440,"Middle East, North Africa, Afghanistan, and Pakistan",440,"Middle East, North Africa, Afghanistan, and Pakistan"
+Other Regional Groups,GX117,"Other Advanced Economies (Advanced Economies excluding U.S., Euro Area countries, and Japan)",117,"Other Advanced Economies (Advanced Economies excluding U.S., Euro Area countries, and Japan)"
+Other Regional Groups,GX1518,Other Emerging and Developing Asia,1518,Other Emerging and Developing Asia
+Other Regional Groups,GX1603,Sub-Sahara Africa Excluding South Sudan,1603,Sub-Sahara Africa Excluding South Sudan
+Other Regional Groups,GX604,Sub-Sahara excl. Nigeria and South Africa,604,Sub-Sahara excl. Nigeria and South Africa
+Other Regional Groups,G1627,Sub-Saharan Africa (SSA): Low-Income,1627,Sub-Saharan Africa: low-income
+Other Regional Groups,G1626,Sub-Saharan Africa (SSA): Middle-Income,1626,Sub-Saharan Africa: middle-income
+Other Regional Groups,G1614,Sub-Saharan Africa (SSA): Oil Exporters,1614,Sub-Saharan Africa: Oil Exporters
+WEO Analytical Groups,G209,EMDEs by External Financing: Net Creditors,209,Emerging Market and Developing Economies by External Financing: Net Creditors
+WEO Analytical Groups,G606,EMDEs by External Financing: Net Debtors,606,Emerging Market and Developing Economies by External Financing: Net Debtors
+WEO Analytical Groups,G087,EMDEs by External Financing: Net Debtors with Arrears and/or Reschedulings,87,Emerging Market and Developing Economies by External Financing: Net Debtors with Arrears and/or Rescheduling During 2019-23
+WEO Analytical Groups,G216,EMDEs by Source of Export Earnings: Diversified,216,Emerging Market and Developing Economies by Source of Export Earnings: Diversified
+WEO Analytical Groups,G080,EMDEs by Source of Export Earnings: Fuel,80,Emerging Market and Developing Economies by Source of Export Earnings: Fuel
+WEO Analytical Groups,G083,EMDEs by Source of Export Earnings: Manufactures,83,Emerging Market and Developing Economies by Source of Export Earnings: Manufactures
+WEO Analytical Groups,G092,EMDEs by Source of Export Earnings: Nonfuel,92,Emerging Market and Developing Economies by Source of Export Earnings: Nonfuel
+WEO Analytical Groups,G089,EMDEs by Source of Export Earnings: Primary Products (excluding Fuel),89,Emerging Market and Developing Economies by Source of Export Earnings: Primary Products (excluding Fuel)
+WEO Analytical Groups,G084,"EMDEs by Source of Export Earnings: Services (including Income, Transfers)",84,"Emerging Market and Developing Economies by Source of Export Earnings: Services (including Income, Transfers)"
+WEO Analytical Groups,GX88,Emerging Market and Developing Economies by External Financing: Net Debtors without Arrears and/or Rescheduling During 2019-23,88,Emerging Market and Developing Economies by External Financing: Net Debtors without Arrears and/or Rescheduling During 2019-23
+WEO Analytical Groups,GX93,Emerging Market and Developing Economies by Source of Export Earnings: Nonfuel (excl. China),93,Emerging Market and Developing Economies by Source of Export Earnings: Nonfuel (excl. China)
