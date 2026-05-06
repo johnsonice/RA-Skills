@@ -5,26 +5,16 @@ description: Use when the user wants to fetch, pull, download, or load IMF data 
 
 # IMF RA — Data
 
-## Frequencies
-
-> _Placeholder._ Document:
-> - How the SDK encodes A/Q/M.
-> - Conventions for quarter labels (`2010Q1` vs. `2010-Q1` vs. `2010-03-31`).
-> - When to convert frequencies and which method to use.
-
-## Dates
-
-> _Placeholder._ Document:
-> - Default date range conventions (e.g., "2010-present" → start=`2010`, end=`null`).
-> - How to handle release-vintage dates vs. data-period dates.
-
-## Units
-
-> _Placeholder._ Document:
-> - Common unit conventions in IMF databases (USD billions, percent of GDP, index 2010=100).
-> - Where the unit metadata lives in the SDK return.
-
 Fetching IMF data series via the internal Python SDK.
+
+## Skill relationships
+
+Load these skills in order as needed:
+
+- **`imf-ra`** (umbrella) — load first for shared conventions: country codes, WEO country groups, frequency handling, uncertainty policy, and SDK environment setup.
+- **`imf-ra-catalog`** — load before this skill when the database or indicator is not yet identified. It translates plain-English descriptions into a confirmed `(database_id, indicator_code)` pair.
+- **`imf-ra-data`** (this skill) — takes over once the identifier is confirmed. Resolves remaining dimensions, builds the iData key, and executes the fetch.
+- **`imf-ra-charts`** — load after this skill when the user wants to visualize the tidy output.
 
 ## Default decision logic
 
@@ -33,15 +23,14 @@ Fetching IMF data series via the internal Python SDK.
 3. For WEO-style macroeconomic data, prefer an iData database whose resource ID starts with `WEO_LIVE` before published/static WEO alternatives.
 4. If the user asks for EcOS-based retrieval, explain that EcOS is retired and provide the iData equivalent workflow.
 
-## WEO Live priority
+## LIVE databases and private access
 
-For WEO concepts, `WEO_LIVE` is the first-priority database family. This is a source-family preference, not an instruction to silently choose the newest vintage every time.
+When the catalog locates a database family that has both a LIVE version and historical vintages (resource ID contains `_LIVE_`, e.g. `WEO_LIVE`, `GAS_LIVE`, `GEE_LIVE`):
 
-- Prefer `IMF.RES.WEO:<WEO_LIVE_..._VINTAGE>` over non-live WEO datasets when both contain the requested indicator.
-- If the user specifies a vintage, exercise, or database, honor that choice after validating that the requested indicator exists there.
-- If the user does not specify a vintage, ask whether they want the current/latest available WEO Live vintage or a specific historical vintage before writing the final retrieval code.
-- When a catalog result contains a concrete `database_name` such as `IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE`, treat it as a candidate, not an irrevocable choice, unless the user has already confirmed the vintage.
-- Use non-WEO databases when the concept is clearly outside WEO coverage, such as commodity prices in GAS or high-frequency CPI in IFS/STA.
+- **If the user specified a vintage** (even loosely, e.g. "April 2024" or "the Oct 2023 release"), match it to the nearest vintage and proceed — no need to ask again.
+- **If the user did not specify a vintage**, inform them that a LIVE version is available and also state the latest historical vintage, then ask which they want before proceeding.
+
+LIVE databases are private IMF datasets and require `idata_utilities.PRIVATE = True` before any retrieval call. The pre-built fetch utility ([scripts/fetch_idata.py](scripts/fetch_idata.py)) sets this flag automatically. For any inline Bash `idata_utilities` call, set it first. See [references/imf_datatools_agent_api_reference.md § 3.1](references/imf_datatools_agent_api_reference.md) for details.
 
 ## EcOS retired policy
 
@@ -59,25 +48,68 @@ Disallowed retrieval paths include (non-exhaustive):
 
 This skill is Python-focused. Do not generate R or Stata workflows unless the user explicitly asks.
 
-## Clarify brief requests first
+## CLI Fetch Protocol
 
-If the user's data request is too brief or ambiguous, ask concise follow-up questions before writing retrieval code.
+**Never create a new Python script to explore or fetch data.** A pre-built fetch utility already exists. Follow these five steps every time.
 
-This requirement also applies to quick exploratory or smoke-test requests: do not skip clarification just because the pull is intended as a small trial.
+### Step 1 — Catalog lookup
 
-For data pulls, confirm at least:
+If the `(database_id, indicator_code)` pair is not yet confirmed, invoke **`imf-ra-catalog`** to resolve it. Do **not** search catalog files directly from this skill — all indicator and database discovery is owned by `imf-ra-catalog`.
 
-- time range (`start`, `end`, or vintage)
-- coverage (single country, explicit country list, country groups);if it is not  a cross-country panel request, then this field is optional
-- concept/indicator/series selection
-- frequency (`A`, `Q`, `M`, `D`)
-- output shape preference (wide vs `longformat=True`; default to wide if not specified)
+If you are arriving from a catalog handoff with a confirmed identifier, skip directly to Step 2.
 
-If one or more items are missing, do not guess silently. Ask for the missing pieces first, then proceed.
+### Step 2 — Read dimensions via the API
+
+Once the database is confirmed, fetch every dimension and its valid codes via the SDK:
+
+```python
+from imf_datatools import idata_utilities
+dims = idata_utilities.get_dimensions("<database_id>")
+```
+
+See [references/dimension-resolution-guide.md](references/dimension-resolution-guide.md) for the full lookup sequence and how to use the results to resolve and present dimension choices.
+
+### Step 3 — Identify unresolved dimensions
+
+Compare what the user specified against the dimensions returned by the API. Required inputs for a complete iData key:
+
+- `start` / `end` — time range
+- one value per dimension (e.g. `COUNTRY`, `INDICATOR`, `DATA_TRANSFORMATION`, `FREQUENCY`) — exact names vary by database
+
+Dimensions with exactly **one** valid value in the API response are auto-resolved silently. Everything else that the user has not specified must be asked.
+
+### Step 4 — Ask for missing dimensions
+
+Present what you found (database, indicator) and ask the user to supply the missing values. Show the valid codes and their labels from the API response — do not list codes from memory or training knowledge. One question block per unresolved dimension.
+
+See [references/dimension-resolution-guide.md](references/dimension-resolution-guide.md) for the reply template.
+
+If the user asks "what does X mean?" or "what options are there for Y?", answer from the API response values.
+
+### Step 5 — Execute with the pre-built fetch utility
+
+Once all dimensions are resolved, build the iData key and call `fetch_idata.py` via Bash:
+
+```bash
+python .claude/skills/imf-ra-data/scripts/fetch_idata.py \
+    --db "<database_id>" \
+    --key "<dot.separated.key>" \
+    --start "<YYYY>" \
+    --end "<YYYY>"
+```
+
+Default output: wide RA Excel (`.xlsx`) with headers `CountryName | ISO3 | IFSCODE | DATASET | Series_Code | INDICATOR | <date columns>`. Date column format: `2019` (annual), `2019Q1` (quarterly), `2019M1` (monthly). `CountryName` and `IFSCODE` are looked up from the RA catalog `countries.csv` using the ISO3 code in the COUNTRY dimension.
+
+Use `--longformat` to save raw long/tidy CSV instead. See [references/dimension-resolution-guide.md](references/dimension-resolution-guide.md) for key construction rules and output format details.
 
 ## Before you fetch
 
-See the umbrella `imf-ra` for shared conventions: country codes, frequencies, dates, and SDK environment setup.
+Always load **`imf-ra`** first for shared conventions:
+
+- **Country and group codes** — translate RA-friendly names ("advanced economies", "EMDE", "G7") through the WEO group reference in `imf-ra`, not from memory.
+- **Frequencies** — follow standard frequency codes (`A`, `Q`, `M`) and date-handling rules in [imf-ra/references/conventions.md](../imf-ra/references/conventions.md).
+- **Uncertainty policy** — if there is any material uncertainty about country selection, date range, or series choice, ask the user before fetching.
+- **SDK environment setup** — PRIVATE flag and environment configuration are covered in [imf-ra/references/conventions.md](../imf-ra/references/conventions.md).
 
 ## How to fetch
 
@@ -85,17 +117,17 @@ See [references/imf_datatools_agent_api_reference.md](references/imf_datatools_a
 
 ## When you don't know the series identifier
 
-See `imf-ra-catalog` first to translate the user's description into `(database, series, frequency, geo)`. Only then write the SDK call.
+Invoke `imf-ra-catalog` first to translate the user's description into a confirmed `(database_id, indicator_code)`. Return here once the identifier is confirmed and proceed from CLI fetch Step 2.
 
 ## After catalog handoff
 
-When `imf-ra-catalog` returns CSV-backed candidates:
+When `imf-ra-catalog` returns a confirmed identifier:
 
-- `database_name` is the iData database identifier to validate with metadata calls.
-- `indicator_code` is the candidate indicator dimension value.
-- `indicator_name` explains unit, valuation, transformation, and price basis; use it to ask follow-up questions when candidates differ.
+- `database_name` is the iData database identifier; use it in Step 2 of the CLI fetch protocol to fetch dimensions via the API.
+- `indicator_code` is the confirmed indicator dimension value; slot it into its position when building the key.
+- `indicator_name` explains unit, valuation, transformation, and price basis; use it to phrase follow-up questions when candidates differ.
 - For WEO candidates, keep `WEO_LIVE` as the priority family, then confirm vintage if the user has not already done so.
-- Before fetching, validate the database dimensions and the exact indicator code with `idata_utilities.get_dimensions()` and `idata_utilities.get_dimension_values()`.
+- Resolve all remaining dimensions via the CLI fetch protocol (Steps 2–4) before calling `fetch_idata.py`.
 
 ## Safe query policy
 
