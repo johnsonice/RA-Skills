@@ -186,7 +186,7 @@ iData is the newer Fund-wide data system and is planned to replace several legac
 
 ## 3.1 Private / non-public iData access
 
-All databases whose resource ID contains `_LIVE_` (e.g. `WEO_LIVE`, `GAS_LIVE`, `GEE_LIVE`) are private IMF datasets and **always** require this flag. Set it before any iData call in the session:
+All LIVE and vintage databases are private IMF datasets and **always** require this flag. Identify them by resource ID: LIVE databases do not contain `VINTAGE` (e.g. `IMF.RES.WEO:WEO_LIVE`); vintage snapshots contain `VINTAGE` (e.g. `IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE`). Set the flag before any iData call in the session:
 
 ```python
 from imf_datatools import idata_utilities
