@@ -229,3 +229,7 @@ temp/
 
 # Local GitHub workflow/config artifacts
 .github/
+
+# Claude Code local artifacts
+.claude/settings.local.json
+.claude/worktrees/
