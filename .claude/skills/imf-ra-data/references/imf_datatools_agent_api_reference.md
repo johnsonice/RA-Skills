@@ -186,12 +186,14 @@ iData is the newer Fund-wide data system and is planned to replace several legac
 
 ## 3.1 Private / non-public iData access
 
-For non-public datasets, set:
+All LIVE and vintage databases are private IMF datasets and **always** require this flag. Identify them by resource ID: LIVE databases do not contain `VINTAGE` (e.g. `IMF.RES.WEO:WEO_LIVE`); vintage snapshots contain `VINTAGE` (e.g. `IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE`). Set the flag before any iData call in the session:
 
 ```python
 from imf_datatools import idata_utilities
 idata_utilities.PRIVATE = True
 ```
+
+The pre-built fetch utility (`.claude/skills/imf-ra-data/scripts/fetch_idata.py`) sets this flag automatically. For any other non-public dataset, set the same flag. The flag is harmless for public datasets and can remain set throughout the session.
 
 This triggers browser-based token acquisition when needed. Tokens expire and may need refresh. For R:
 
