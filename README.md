@@ -1,12 +1,19 @@
-# RA-Skills
+<h1 align="center">RA-Skills</h1>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-8A2BE2)](https://docs.claude.com/en/docs/claude-code)
-![skills.sh](https://img.shields.io/badge/skills.sh-Compatible-7CB342)
+<p align="center">
+  <a href="https://docs.claude.com/en/docs/claude-code">Claude Code</a> skills to help you be the laziest IMF Research Analyst — natural-language data discovery, retrieval, and chart handoff.
+</p>
 
-![RA-Skills — modular workflow skills for IMF research workflows](assets/hero.png)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://docs.claude.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude%20Code-Skill-8A2BE2" alt="Claude Code"></a>
+  <img src="https://img.shields.io/badge/skills.sh-Compatible-7CB342" alt="skills.sh">
+</p>
 
-[Claude Code](https://docs.claude.com/en/docs/claude-code) skills to help you be the laziest IMF Research Analyst — natural-language data discovery, retrieval, and chart handoff.
+<p align="center">
+  <img src="assets/hero.png" alt="RA-Skills — modular workflow skills for IMF research workflows">
+</p>
+
 
 ## Key features
 
