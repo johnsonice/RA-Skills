@@ -226,3 +226,6 @@ desktop.ini
 
 # Local temporary workspace artifacts
 temp/
+
+# Local GitHub workflow/config artifacts
+.github/
