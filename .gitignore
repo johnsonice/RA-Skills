@@ -233,3 +233,9 @@ temp/
 # Claude Code local artifacts
 .claude/settings.local.json
 .claude/worktrees/
+
+# ppt-master local project workspace (intermediate SVGs, exports, backups)
+projects/
+
+# Generated deck SVGs (PPTX is committed; SVG sources are regeneratable)
+docs/decks/svg/
