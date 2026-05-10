@@ -63,6 +63,17 @@ tests/        # auto-test instructions + issue tracking
 
 Observed in remote: `<author>_<MMDD>_<topic>`, e.g. `bella_0504_add_skills`, `feat/chengyu_0509_auto-testing-steps`. Use `feat/`, `fix/`, `test/`, `docs/`, `chore/` prefixes for new work.
 
+## PR best practices
+
+1. **One PR, one goal.** If a reviewer might want to merge half of it, split it. When the work genuinely can't be split, keep the goals separated by clean individual commits.
+2. **Title is concise and descriptive.** Avoid `prep stuff`. If you can't write a concise title, rule #1 was probably violated.
+3. **Lead with a TL;DR.** One line at the top before any long description.
+4. **Give context and test instructions in the description.** Why the change exists, dependencies it needs, and exact steps to reproduce/test.
+5. **Link issues with `Closes #N` / `Fixes #N`** so they auto-close on merge and cross-link.
+6. **Use graphics and GitHub markdown** — screenshots/recordings for visual changes, fenced code blocks with language, tables, collapsible sections, mermaid diagrams.
+7. **Add tests when the codebase supports them** — especially for bug fixes (red on `main`, green on the branch). For this repo, that means updating or extending `tests/auto_test_instructions.md` and `tests/issue_tracking/` when behavior changes.
+8. **Self-review before assigning a reviewer.** Run `bash .claude/skills/imf-ra/scripts/check_references.sh`, click "Viewed" on every file in the GitHub diff, remove debug output, and leave inline comments for non-obvious choices.
+
 ## Gotchas
 
 - `.gitattributes` pins LF for `*.sh`. Windows users must run the verify script from **Git Bash** or **WSL**, never PowerShell/cmd.
