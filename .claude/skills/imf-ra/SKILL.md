@@ -22,6 +22,8 @@ Before fetching, charting, or searching, see [references/conventions.md](referen
 
 For WEO country groups, WEO aggregates, WEO regions, and WEO country codes, use [references/Country Group/weo-country-groups.md](references/Country%20Group/weo-country-groups.md). The CSV files under `references/Country Group/csv/` are the source of truth for exact country membership and code mappings.
 
+
+
 For straightforward questions that can be answered by directly inspecting the reference CSV files, answer from the CSV contents without generating Python code. Use Python only when it is genuinely needed, such as for aggregation, calculation, joins across multiple files, repeated filtering, ambiguous lookup resolution, or other nontrivial data processing.
 
 Before using the WEO country-group helper script, do a source-aligned fuzzy-matching pass in reasoning. The goal is to improve the helper query by mapping the user's wording to the closest term already supported by the skill's WEO reference material, not to invent new country or group logic. See [references/Country Group/weo-country-groups.md](references/Country%20Group/weo-country-groups.md) for the full lookup policy.

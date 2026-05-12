@@ -21,3 +21,4 @@ For WEO country groups and WEO Live aggregates, use [Country Group/weo-country-g
 - Before using `scripts/weo_country_groups.py`, normalize the user's wording to a canonical WEO `countrycode`, `groupcode`, or exact English label using the WEO reference material.
 - Use the helper script only as an optional accelerator for ambiguous, repeated, or processing-heavy lookups.
 - For selected-country iData pulls, prefer ISO-style WEO `countrycode` values such as `USA`, `CHN`, and `JPN` unless the target dataset metadata requires a different country dimension value.
+- groupcode or groupcode_s which are used and refered in country_groups.csv and country_group_composition.csv should only used for country-group mapping. DON'T use it when pulling data becasue idata tools doesn't use these groupcode.

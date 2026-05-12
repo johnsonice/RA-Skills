@@ -1,63 +1,64 @@
-# Catalog conventions
+# Catalog Conventions
 
-How `imf-ra-catalog` is organized and how to use its reference files.
+This reference supplements `../SKILL.md`. Keep operational policy in `SKILL.md`; use this file for catalog organization, file naming, and maintenance conventions.
 
-## Core files
+## File Layout
 
-The catalog is built around three iData CSV references:
+The catalog is organized into dataset-level references and indicator-level references.
 
-| File | Purpose | Columns |
-|---|---|---|
-| `databases/templates/non_vintaged_datasets.csv` | Default dataset/dataflow discovery for non-vintage requests. | `database`, `name`, `Agency ID`, `Resource ID`, `Latest Version`, `Unique ID` |
-| `databases/templates/vintaged_datasets.csv` | Vintage-only dataset/dataflow discovery. Use only for explicit vintage requests. | `database`, `name`, `Agency ID`, `Resource ID`, `Latest Version`, `Unique ID` |
-| `indicators/non_vintage_Full_Variable_List.csv` | Non-vintage variable/code discovery. | `database_name`, `dimension_name`, `Code`, `Name` |
+### Dataset References
 
-Use the CSV files as the source of truth for what exists. Source-specific templates live under `databases/templates/` and `indicators/templates/`; the iData templates document the current CSV schemas and explain when a focused Markdown note is worth adding.
+| File | Contents |
+|---|---|
+| `../databases/non_vintaged_datasets.csv` | Default non-vintage dataset/dataflow catalog. |
+| `../databases/vintaged_datasets.csv` | Vintage-only dataset/dataflow catalog. |
+| `../databases/database_overview.md` | Curated high-level summaries for major database families. |
 
-## Default lookup behavior
+Dataset CSV columns:
 
-For easy and straightforward questions, read the available CSV, Markdown, and optional overlay files and answer directly from what you find. Do not write or run code when inspection is enough.
+| Column | Meaning |
+|---|---|
+| `database` | Joined `Agency ID:Resource ID` identifier. |
+| `name` | Human-readable dataset name. |
+| `Agency ID` | SDMX agency or provider ID. |
+| `Resource ID` | Dataset or dataflow resource ID. |
+| `Latest Version` | Latest source-catalog version. |
+| `Unique ID` | Exact agency/resource/version identifier. |
 
-Use `../scripts/catalog_search.py` only for complex lookup tasks, such as broad keyword search across many rows, repeated filtering, ranking candidates, joining dataset and variable references, explicit vintage lookup, or other logic that is impractical to do reliably by manual review.
+### Indicator References
 
-If there is any material uncertainty, do not guess. Ask the user for confirmation before committing to one interpretation, dataset, dimension, or code choice.
+| File | Contents |
+|---|---|
+| `../indicators/1. non_vintage_variable_list.csv` | General non-vintage variable catalog. |
+| `../indicators/2. bbg_variable_list.csv` | Bloomberg-specific variable catalog. |
+| `../indicators/3. wdi_variable_list.csv` | World Bank WDI-specific variable catalog. |
+| `../indicators/4. wto_variable_List.csv` | WTO-specific variable and commodity-code catalog. |
 
-If search or lookup results return several plausible "best match" candidates, list those candidates clearly and ask the user for preference/confirmation.
+Indicator CSV columns:
 
-## Datasets
+| Column | Meaning |
+|---|---|
+| `database_name` | Dataset identifier that contains the code. |
+| `dimension_name` | Dimension to fill in downstream fetch requests. |
+| `Code` | Variable, indicator, commodity, or dimension value code. |
+| `Name` | Human-readable description of the code. |
 
-Use `databases/templates/non_vintaged_datasets.csv` when the user asks about available datasets, dataflows, agencies, resource IDs, versions, or unique dataset identifiers.
+## Maintenance Notes
 
-Use `catalog_search.py datasets <query>` for broad or repeated dataset searches. This searches non-vintage datasets by default. Add `--vintage-only` when the user asks for a vintage, historical publication, dated snapshot, or versioned release. Use `--include-vintage` only when the user explicitly wants to compare live/non-vintage datasets with vintage datasets.
+- Treat CSV files as the source of truth for identifiers.
+- Keep `database_overview.md` concise and database-family oriented; do not duplicate long indicator lists there.
+- Add focused Markdown notes only when raw CSV rows are insufficient for reliable selection.
+- If a new specialized indicator catalog is added, document it in both this file and `../SKILL.md`.
+- If file names move, update `../scripts/catalog_search.py` and run the reference checker.
 
-Use `catalog_search.py latest-weo` for the current non-vintage `WEO_LIVE` dataflow. Use `datasets WEO --vintage-only` only when the user asks for historical/vintage WEO datasets. Do not silently collapse the non-vintage `WEO_LIVE` family to a single dated vintage.
+## Focused Markdown Notes
 
-## Indicators
+Use additional Markdown only for guidance that cannot be captured well in CSV rows.
 
-Use `indicators/non_vintage_Full_Variable_List.csv` when the user asks for an indicator code, variable code, candidate code, or which non-vintage datasets contain a concept.
+| Location | Use |
+|---|---|
+| `../databases/<name>.md` | Dataset-specific caveats, dimension conventions, frequency notes, or common mappings. |
+| `../indicators/<topic>.md` | Concept-specific guidance, naming ambiguity, unit caveats, or preferred-code notes. |
+| `../overlays/<topic>.md` | Optional institutional guidance that augments or overrides raw catalog rows. |
 
-For WEO-style annual macroeconomic concepts, start with the `WEO_LIVE` dataflow family unless the user asks for another source family or the concept is clearly outside WEO coverage.
-
-Exclude `IMF.RES:WEO` from normal catalog search unless the user explicitly asks for that database. `WEO_LIVE` has much broader coverage and should be the default WEO source.
-
-When multiple candidates differ by unit, transformation, valuation, frequency, price basis, dimension, or database, surface the plausible candidates with `database_name`, `dimension_name`, `Code`, and `Name`; then ask the RA to choose. Do not invent codes.
-
-Carry `dimension_name` through the handoff to `imf-ra-data`. Many datasets use dimensions other than `INDICATOR` for the series/code dimension, so assuming `INDICATOR` will break some fetches.
-
-Use `catalog_search.py search <query>` for complex variable/code searches. Add `--all-databases` only when WEO Live lacks a plausible match, the user explicitly asks for a non-WEO source, or the concept is outside WEO coverage.
-
-## Curated Markdown
-
-Add focused Markdown notes only when the CSV row is not enough:
-
-- `databases/<name>.md`: dataset-specific guidance, such as dimension conventions, frequency caveats, source-specific gotchas, or common variable/code mappings.
-- `indicators/<topic>.md`: concept or variable/code guidance, such as preferred source selection, naming ambiguity, unit caveats, vintage sensitivity, or why similarly named codes should be avoided.
-- `overlays/<topic>.md`: optional institutional guidance that overrides or augments CSV rows and focused notes.
-
-When curated Markdown conflicts with raw CSV search results, follow the curated guidance and explain the reason briefly.
-
-## Output expectations
-
-Return top candidates with concise notes when the match is ambiguous. Commit to a single identifier only when the match is exact and unambiguous.
-
-If the CSV and Markdown references do not contain a useful match, say so and ask for the smallest helpful clarification.
+When curated Markdown conflicts with raw CSV search results, follow the curated guidance and explain the reason briefly in the user-facing answer.
