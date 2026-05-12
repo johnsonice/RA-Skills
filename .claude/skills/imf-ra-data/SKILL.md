@@ -182,10 +182,10 @@ Refreshable output column layout:
 
 | Column | Source |
 |---|---|
+| `DATASET` | The `--db` argument |
 | `CountryName` | Looked up from `imf-ra` `countries.csv` using ISO3 |
 | `ISO3` | COUNTRY dimension value from iData |
 | `IFSCODE` | Looked up from `imf-ra` `countries.csv` (`countrycode_s`) |
-| `DATASET` | The `--db` argument |
 | `Series_Code` | All dimension values joined with `.` in key order |
 | `INDICATOR` | Indicator name/label — the `Name` column from `get_dimension_values(db, 'INDICATOR')` |
 | `2019`, `2019Q1`, `2019M1` … | Pivoted date columns (format matches frequency: A/Q/M/D) |
