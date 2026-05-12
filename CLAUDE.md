@@ -7,7 +7,7 @@ Project-local guidance for Claude Code working in this repo.
 A family of Claude Code skills for IMF Research Assistant workflows, project-local under `.claude/skills/`:
 
 - `imf-ra` — umbrella, family map, shared conventions
-- `imf-ra-catalog` — natural-language → `(database, series, frequency, geo)` lookup
+- `imf-ra-catalog` — natural-language → `(database, dimension_name, code, frequency, geo)` lookup
 - `imf-ra-data` — pull series via internal Python SDK
 - `imf-ra-charts` — chart handoff (**not yet implemented**)
 
@@ -38,8 +38,9 @@ Run logs and issues: `tests/issue_tracking/`.
 
 ```
 .claude/skills/<skill>/SKILL.md   # frontmatter + body — discovered by Claude Code
-.claude/skills/imf-ra-catalog/databases/idata_full_datasets_list.csv     # dataset truth
-.claude/skills/imf-ra-catalog/indicators/idata_full_indicators_list.csv  # indicator truth
+.claude/skills/imf-ra-catalog/databases/templates/non_vintaged_datasets.csv  # default dataset truth
+.claude/skills/imf-ra-catalog/databases/templates/vintaged_datasets.csv      # explicit-vintage dataset truth
+.claude/skills/imf-ra-catalog/indicators/non_vintage_Full_Variable_List.csv  # non-vintage variable truth
 .claude/skills/imf-ra/references/Country Group/csv/                      # WEO group truth
 docs/specs/   # design docs
 docs/plans/   # implementation history
@@ -48,9 +49,9 @@ tests/        # auto-test instructions + issue tracking
 
 ## Conventions Claude must follow
 
-- **CSVs are source of truth.** For dataset, indicator, and WEO country-group questions, read the CSVs directly — don't recall from memory.
+- **CSVs are source of truth.** For dataset, variable/code, dimension, and WEO country-group questions, read the CSVs directly — don't recall from memory.
 - **No code for simple lookups.** If a reference CSV answers it, answer from the CSV. Use Python only for aggregation, joins, ambiguous resolution, or repeated filtering.
-- **Don't guess identifiers.** Database codes, indicator codes, country groups, dimensions — never invent. If multiple plausible matches exist, list candidates and ask for confirmation.
+- **Don't guess identifiers.** Database codes, variable codes, country groups, dimensions — never invent. If multiple plausible matches exist, list candidates and ask for confirmation.
 - **LIVE vs vintage data must be honored explicitly** — see `imf-ra-data/SKILL.md`.
 - **Skill family is project-local.** Edits to `.claude/skills/` only affect work in this repo. No global install.
 

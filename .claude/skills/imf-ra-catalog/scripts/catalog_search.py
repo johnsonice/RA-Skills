@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Search IMF indicator and dataset reference CSVs for catalog lookups."""
+"""Search IMF variable and dataset reference CSVs for catalog lookups."""
 
 from __future__ import annotations
 
@@ -13,9 +13,12 @@ from pathlib import Path
 SKILL_DIR = Path(__file__).resolve().parents[1]
 REFERENCES_DIR = SKILL_DIR / "references"
 DATABASES_DIR = SKILL_DIR / "databases"
-INDICATORS_DIR = SKILL_DIR / "indicators"
-INDICATORS_CSV = INDICATORS_DIR / "idata_full_indicators_list.csv"
-DATASETS_CSV = DATABASES_DIR / "idata_full_datasets_list.csv"
+VARIABLES_DIR = SKILL_DIR / "indicators"
+VARIABLES_CSV = VARIABLES_DIR / "non_vintage_Full_Variable_List.csv"
+NON_VINTAGE_DATASETS_CSV = DATABASES_DIR / "templates" / "non_vintaged_datasets.csv"
+VINTAGE_DATASETS_CSV = DATABASES_DIR / "templates" / "vintaged_datasets.csv"
+WEO_LIVE_DB = "IMF.RES.WEO:WEO_LIVE"
+LEGACY_WEO_DB = "IMF.RES:WEO"
 MONTHS = {
     "JAN": 1,
     "FEB": 2,
@@ -42,6 +45,7 @@ QUERY_SYNONYMS = {
     "exports": ["export"],
     "imports": ["import"],
     "gdp": ["gross", "domestic", "product"],
+    "usd": ["us", "dollar", "dollars"],
 }
 
 
@@ -67,47 +71,73 @@ def parse_weo_sort_key(resource_id: str) -> tuple[int, int, int]:
     return (year, month, is_standard)
 
 
-def database_sort_key(database_name: str, latest_weo_db: str) -> tuple[int, int, int, int, str]:
-    if database_name == latest_weo_db:
-        return (0, 9999, 99, 1, database_name)
-    if database_name.startswith("IMF.RES.WEO:"):
+def is_vintage_database(database_name: str) -> bool:
+    return "_VINTAGE" in (database_name or "")
+
+
+def database_sort_key(database_name: str, latest_weo_db: str | None = None) -> tuple[int, int, int, int, str]:
+    if database_name == WEO_LIVE_DB:
+        return (0, 0, 0, 0, database_name)
+    if database_name == LEGACY_WEO_DB:
+        return (1, 0, 0, 0, database_name)
+    if latest_weo_db and database_name == latest_weo_db:
+        return (2, 9999, 99, 1, database_name)
+    if is_vintage_database(database_name):
         resource_id = database_name.split(":", 1)[1]
         year, month, is_standard = parse_weo_sort_key(resource_id)
-        return (1, -year, -month, -is_standard, database_name)
-    return (2, 0, 0, 0, database_name)
+        return (3, -year, -month, -is_standard, database_name)
+    return (4, 0, 0, 0, database_name)
 
 
-def load_datasets() -> list[dict[str, str]]:
-    with DATASETS_CSV.open(newline="", encoding="utf-8-sig") as f:
+def load_datasets(include_vintage: bool = False, vintage_only: bool = False) -> list[dict[str, str]]:
+    paths = [VINTAGE_DATASETS_CSV] if vintage_only else [NON_VINTAGE_DATASETS_CSV]
+    if include_vintage and not vintage_only:
+        paths.append(VINTAGE_DATASETS_CSV)
+    rows: list[dict[str, str]] = []
+    for path in paths:
+        with path.open(newline="", encoding="utf-8-sig") as f:
+            rows.extend(csv.DictReader(f))
+    return rows
+
+
+def load_variables() -> list[dict[str, str]]:
+    with VARIABLES_CSV.open(newline="", encoding="utf-8-sig") as f:
         return list(csv.DictReader(f))
 
 
-def load_indicators() -> list[dict[str, str]]:
-    with INDICATORS_CSV.open(newline="", encoding="utf-8-sig") as f:
-        return list(csv.DictReader(f))
+def load_catalog_variables() -> list[dict[str, str]]:
+    return load_variables()
 
 
 def latest_weo_dataset() -> dict[str, str]:
-    datasets = [
-        row
-        for row in load_datasets()
-        if row.get("Agency ID") == "IMF.RES.WEO" and row.get("Resource ID", "").startswith("WEO_LIVE_")
-    ]
-    if not datasets:
-        raise RuntimeError("No WEO Live datasets found")
-    return max(datasets, key=lambda row: parse_weo_sort_key(row.get("Resource ID", "")))
+    for row in load_datasets(include_vintage=False):
+        if row.get("database") == WEO_LIVE_DB:
+            return row
+    raise RuntimeError("No non-vintage WEO Live dataset found")
 
 
 def is_weo_live_database(database_name: str) -> bool:
-    return database_name.startswith("IMF.RES.WEO:WEO_LIVE_")
+    return database_name == WEO_LIVE_DB
 
 
-def score_indicator(row: dict[str, str], query: str) -> int:
+def explicitly_requested_legacy_weo(query: str | None) -> bool:
+    return norm(query or "") in {norm(LEGACY_WEO_DB), "imf res weo", "res weo"}
+
+
+def include_dataset_row(row: dict[str, str], query: str | None) -> bool:
+    return row.get("database") != LEGACY_WEO_DB or explicitly_requested_legacy_weo(query)
+
+
+def include_variable_row(row: dict[str, str]) -> bool:
+    return row.get("database_name") != LEGACY_WEO_DB
+
+
+def score_variable(row: dict[str, str], query: str) -> int:
     q = norm(query)
     q_tokens = tokens(query)
     exact_tokens = set(norm(query).split())
-    code = norm(row.get("indicator_code", ""))
-    name = norm(row.get("indicator_name", ""))
+    code = norm(row.get("Code", "") or row.get("indicator_code", ""))
+    name = norm(row.get("Name", "") or row.get("indicator_name", ""))
     score = 0
     if q == code:
         score += 120
@@ -130,8 +160,11 @@ def score_indicator(row: dict[str, str], query: str) -> int:
         score += 18
     if "nominal" in exact_tokens and "gdp" in exact_tokens and "gross domestic product" in name and "current prices" in name:
         score += 30
-    if {"us", "dollars"}.issubset(exact_tokens) and ("us dollar" in name or "us dollars" in name):
-        score += 20
+    wants_usd = "usd" in exact_tokens or {"us", "dollar"}.issubset(exact_tokens) or {"us", "dollars"}.issubset(exact_tokens)
+    if wants_usd and ("us dollar" in name or "us dollars" in name):
+        score += 45
+    if wants_usd and "international dollar" in name:
+        score -= 35
     if "current" in exact_tokens and "account" in exact_tokens and "current account" in name:
         score += 35
         if "balance" in exact_tokens and "balance" in name:
@@ -150,64 +183,82 @@ def score_indicator(row: dict[str, str], query: str) -> int:
 
 def cmd_latest_weo(_args: argparse.Namespace) -> None:
     row = latest_weo_dataset()
-    writer = csv.DictWriter(sys.stdout, fieldnames=["name", "Agency ID", "Resource ID", "Latest Version", "Unique ID"])
+    writer = csv.DictWriter(
+        sys.stdout,
+        fieldnames=["database", "name", "Agency ID", "Resource ID", "Latest Version", "Unique ID"],
+        extrasaction="ignore",
+    )
     writer.writeheader()
     writer.writerow(row)
 
 
 def cmd_datasets(args: argparse.Namespace) -> None:
-    rows = load_datasets()
+    rows = load_datasets(include_vintage=args.include_vintage, vintage_only=args.vintage_only)
     if args.query:
         q = norm(args.query)
-        rows = [
-            row
-            for row in rows
-            if q in norm(row.get("name", ""))
-            or q in norm(row.get("Agency ID", ""))
-            or q in norm(row.get("Resource ID", ""))
-            or q in norm(row.get("Unique ID", ""))
-        ]
-    rows.sort(key=lambda row: (row.get("Agency ID", ""), row.get("name", "")))
-    writer = csv.DictWriter(sys.stdout, fieldnames=["name", "Agency ID", "Resource ID", "Latest Version", "Unique ID"])
+        if explicitly_requested_legacy_weo(args.query):
+            rows = [row for row in rows if row.get("database") == LEGACY_WEO_DB]
+        else:
+            rows = [
+                row
+                for row in rows
+                if q in norm(row.get("name", ""))
+                or q in norm(row.get("Agency ID", ""))
+                or q in norm(row.get("Resource ID", ""))
+                or q in norm(row.get("Unique ID", ""))
+            ]
+    rows = [row for row in rows if include_dataset_row(row, args.query)]
+    rows.sort(
+        key=lambda row: (
+            database_sort_key(row.get("database", "")),
+            row.get("Agency ID", ""),
+            row.get("name", ""),
+        )
+    )
+    writer = csv.DictWriter(
+        sys.stdout,
+        fieldnames=["database", "name", "Agency ID", "Resource ID", "Latest Version", "Unique ID"],
+        extrasaction="ignore",
+    )
     writer.writeheader()
     writer.writerows(rows[: args.limit])
 
 
 def cmd_search(args: argparse.Namespace) -> None:
-    latest_weo = latest_weo_dataset()
-    latest_weo_db = f"{latest_weo['Agency ID']}:{latest_weo['Resource ID']}"
-    indicators = load_indicators()
+    variables = load_catalog_variables()
 
     if args.database:
-        candidates = [row for row in indicators if row.get("database_name") == args.database]
+        candidates = [row for row in variables if row.get("database_name") == args.database]
     elif args.all_databases:
-        candidates = indicators
+        candidates = [row for row in variables if include_variable_row(row)]
     else:
-        candidates = [row for row in indicators if is_weo_live_database(row.get("database_name", ""))]
+        candidates = [row for row in variables if is_weo_live_database(row.get("database_name", ""))]
 
-    scored = [(score_indicator(row, args.query), row) for row in candidates]
+    scored = [(score_variable(row, args.query), row) for row in candidates]
     scored = [(score, row) for score, row in scored if score > 0]
     scored.sort(
         key=lambda item: (
             -item[0],
-            database_sort_key(item[1].get("database_name", ""), latest_weo_db),
-            item[1].get("indicator_code", ""),
-            item[1].get("indicator_name", ""),
+            database_sort_key(item[1].get("database_name", "")),
+            item[1].get("dimension_name", ""),
+            item[1].get("Code", "") or item[1].get("indicator_code", ""),
+            item[1].get("Name", "") or item[1].get("indicator_name", ""),
         )
     )
 
     if (not scored or scored[0][0] < 25) and not args.all_databases and not args.database:
-        fallback = [(score_indicator(row, args.query), row) for row in indicators]
+        fallback = [(score_variable(row, args.query), row) for row in variables if include_variable_row(row)]
         scored = [(score, row) for score, row in fallback if score > 0]
         scored.sort(
             key=lambda item: (
                 -item[0],
-                database_sort_key(item[1].get("database_name", ""), latest_weo_db),
-                item[1].get("indicator_code", ""),
+                database_sort_key(item[1].get("database_name", "")),
+                item[1].get("dimension_name", ""),
+                item[1].get("Code", "") or item[1].get("indicator_code", ""),
             )
         )
 
-    fieldnames = ["score", "database_name", "indicator_code", "indicator_name"]
+    fieldnames = ["score", "database_name", "dimension_name", "code", "name"]
     writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
     writer.writeheader()
     for score, row in scored[: args.limit]:
@@ -215,8 +266,9 @@ def cmd_search(args: argparse.Namespace) -> None:
             {
                 "score": score,
                 "database_name": row.get("database_name", ""),
-                "indicator_code": row.get("indicator_code", ""),
-                "indicator_name": row.get("indicator_name", ""),
+                "dimension_name": row.get("dimension_name", ""),
+                "code": row.get("Code", "") or row.get("indicator_code", ""),
+                "name": row.get("Name", "") or row.get("indicator_name", ""),
             }
         )
 
@@ -231,6 +283,9 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("datasets")
     p.add_argument("query", nargs="?")
     p.add_argument("--limit", type=int, default=20)
+    vintage_group = p.add_mutually_exclusive_group()
+    vintage_group.add_argument("--include-vintage", action="store_true")
+    vintage_group.add_argument("--vintage-only", action="store_true")
     p.set_defaults(func=cmd_datasets)
 
     p = sub.add_parser("search")
