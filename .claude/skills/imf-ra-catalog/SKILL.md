@@ -3,7 +3,7 @@ name: imf-ra-catalog
 description: Use when the user describes data they want in plain English ("current account balance for advanced economies, quarterly") and needs the right dataset and indicator code. Returns top candidates with clear notes when requests are ambiguous.
 ---
 
-# IMF RA — Catalog
+# IMF RA - Catalog
 
 Translate plain-English requests into a stable identifier tuple: `(database, series, frequency, geo)`.
 
@@ -11,13 +11,15 @@ Translate plain-English requests into a stable identifier tuple: `(database, ser
 
 See the umbrella `imf-ra` for shared conventions (country and country-group codes especially).
 
+For WEO country groups, regions, or informal country names, normalize the geography through the umbrella WEO country-group reference before searching indicators or handing off to `imf-ra-data`.
+
 ## Catalog Structure
 
 The catalog has three complementary layers:
 
-- **`databases/idata_full_datasets_list.csv`** — iData dataset/dataflow catalog. Schema notes: [databases/templates/idata_template.md](databases/templates/idata_template.md).
-- **`indicators/idata_full_indicators_list.csv`** — iData indicator catalog. Schema notes: [indicators/templates/idata_template.md](indicators/templates/idata_template.md).
-- **`overlays/<topic>.md`** — optional curated guidance that augments or overrides CSV-only lookup.
+- **`databases/idata_full_datasets_list.csv`** - iData dataset/dataflow catalog. Schema notes: [databases/templates/idata_template.md](databases/templates/idata_template.md).
+- **`indicators/idata_full_indicators_list.csv`** - iData indicator catalog. Schema notes: [indicators/templates/idata_template.md](indicators/templates/idata_template.md).
+- **`overlays/<topic>.md`** - optional curated guidance that augments or overrides CSV-only lookup.
 
 See [references/catalog-conventions.md](references/catalog-conventions.md) for the schemas and how the layers interact.
 

@@ -16,8 +16,8 @@ If search or lookup results produce several plausible "best match" candidates, l
 
 For WEO country groups and WEO Live aggregates, use [Country Group/weo-country-groups.md](Country%20Group/weo-country-groups.md) and the CSV files under `Country Group/csv/`.
 
-- Prefer `countrycode` and `groupcode` for current WEO Live/iData workflows.
-- Use `countrycode_s` and `groupcode_s` only when the user or an old database workflow explicitly asks for numeric/legacy codes.
 - Translate RA-friendly names such as "advanced economies", "EMDE", "G7", "LAC", "SSA", or "ASEAN-5" through the WEO group reference instead of guessing.
-- For exact membership, use `Country Group/csv/country_group_composition.csv`; use `scripts/weo_country_groups.py` only as an optional helper for ambiguous, repeated, or processing-heavy lookups.
-- Group A and Group A+ are WEO/CSD submission-process groups, not WEO Live aggregate groups.
+- For exact membership, use `Country Group/csv/3. country_group_composition.csv`.
+- Before using `scripts/weo_country_groups.py`, normalize the user's wording to a canonical WEO `countrycode`, `groupcode`, or exact English label using the WEO reference material.
+- Use the helper script only as an optional accelerator for ambiguous, repeated, or processing-heavy lookups.
+- For selected-country iData pulls, prefer ISO-style WEO `countrycode` values such as `USA`, `CHN`, and `JPN` unless the target dataset metadata requires a different country dimension value.

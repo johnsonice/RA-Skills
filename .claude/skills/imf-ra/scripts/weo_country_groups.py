@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Query WEO country-group CSV reference tables."""
+"""Small helper for ambiguous WEO country-group CSV lookups."""
 
 from __future__ import annotations
 
@@ -13,14 +13,10 @@ from typing import Iterable
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_CSV_DIR = SKILL_DIR / "references" / "Country Group" / "csv"
-SHEET_CSV_FILES = {
-    "Information": "information.csv",
-    "1. Countries": "countries.csv",
-    "2. Country Groups": "country_groups.csv",
-    "3. Country Group Composition": "country_group_composition.csv",
-    "4. Group A and A+": "group_a_and_a_plus.csv",
-    "5. Group Dummies (iData)": "group_dummies_idata.csv",
-    "6. Group Dummies (old codes)": "group_dummies_old_codes.csv",
+CSV_FILES = {
+    "countries": "1. countries.csv",
+    "groups": "2. country_groups.csv",
+    "composition": "3. country_group_composition.csv",
 }
 GROUP_ALIASES = {
     "ae": "G110",
@@ -68,8 +64,8 @@ class CsvTables:
     def __init__(self, csv_dir: Path) -> None:
         self.csv_dir = csv_dir
 
-    def rows(self, sheet_name: str) -> list[dict[str, str]]:
-        csv_path = self.csv_dir / SHEET_CSV_FILES[sheet_name]
+    def rows(self, table_name: str) -> list[dict[str, str]]:
+        csv_path = self.csv_dir / CSV_FILES[table_name]
         if not csv_path.exists():
             raise FileNotFoundError(f"Missing WEO country-group CSV: {csv_path}")
         with csv_path.open(newline="", encoding="utf-8-sig") as f:
@@ -97,26 +93,8 @@ def write_rows(rows: list[dict[str, str]], fields: list[str]) -> None:
     writer.writerows(rows)
 
 
-def cmd_summary(tables: CsvTables, _args: argparse.Namespace) -> None:
-    countries = tables.rows("1. Countries")
-    groups = tables.rows("2. Country Groups")
-    composition = tables.rows("3. Country Group Composition")
-    group_a = tables.rows("4. Group A and A+")
-    print(f"source,{tables.csv_dir}")
-    print(f"countries,{len(countries)}")
-    print(f"groups,{len(groups)}")
-    print(f"group_memberships,{len(composition)}")
-    print(f"group_a_rows,{len(group_a)}")
-    print("group_types")
-    counts: dict[str, int] = {}
-    for row in groups:
-        counts[row["grouptype"]] = counts.get(row["grouptype"], 0) + 1
-    for key in sorted(counts):
-        print(f"{key},{counts[key]}")
-
-
 def cmd_groups(tables: CsvTables, args: argparse.Namespace) -> None:
-    rows = tables.rows("2. Country Groups")
+    rows = tables.rows("groups")
     if args.query:
         alias_code = group_alias_code(args.query)
         rows = [
@@ -129,7 +107,7 @@ def cmd_groups(tables: CsvTables, args: argparse.Namespace) -> None:
 
 
 def cmd_countries(tables: CsvTables, args: argparse.Namespace) -> None:
-    rows = tables.rows("1. Countries")
+    rows = tables.rows("countries")
     if args.query:
         rows = [
             r
@@ -140,7 +118,7 @@ def cmd_countries(tables: CsvTables, args: argparse.Namespace) -> None:
 
 
 def cmd_members(tables: CsvTables, args: argparse.Namespace) -> None:
-    groups = tables.rows("2. Country Groups")
+    groups = tables.rows("groups")
     alias_code = group_alias_code(args.group)
     exact_groups = [
         r
@@ -149,7 +127,7 @@ def cmd_members(tables: CsvTables, args: argparse.Namespace) -> None:
         or exact_matches(r, args.group, ["groupcode", "groupname", "groupcode_s", "groupname_s"])
     ]
     group_codes = {r["groupcode"] for r in exact_groups}
-    composition = tables.rows("3. Country Group Composition")
+    composition = tables.rows("composition")
     if group_codes:
         rows = [r for r in composition if r["groupcode"] in group_codes]
     else:
@@ -162,10 +140,10 @@ def cmd_members(tables: CsvTables, args: argparse.Namespace) -> None:
 
 
 def cmd_memberships(tables: CsvTables, args: argparse.Namespace) -> None:
-    countries = tables.rows("1. Countries")
+    countries = tables.rows("countries")
     exact_countries = [r for r in countries if exact_matches(r, args.country, ["countrycode", "countryname", "countrycode_s", "countryname_s"])]
     country_codes = {r["countrycode"] for r in exact_countries}
-    composition = tables.rows("3. Country Group Composition")
+    composition = tables.rows("composition")
     if country_codes:
         rows = [r for r in composition if r["countrycode"] in country_codes]
     else:
@@ -177,25 +155,10 @@ def cmd_memberships(tables: CsvTables, args: argparse.Namespace) -> None:
     write_rows(rows, ["countrycode", "countryname", "countrycode_s", "countryname_s", "groupcode", "groupname", "groupcode_s", "groupname_s"])
 
 
-def cmd_group_a(tables: CsvTables, args: argparse.Namespace) -> None:
-    rows = tables.rows("4. Group A and A+")
-    if args.query:
-        exact_group_rows = [r for r in rows if r.get("groupname", "").casefold() == args.query.casefold()]
-        rows = exact_group_rows or [
-            r
-            for r in rows
-            if matches(r, args.query, ["groupname", "countrycode", "countryname", "countrycode_s", "countryname_s", "department"])
-        ]
-    write_rows(rows, ["groupname", "countrycode", "countryname", "countrycode_s", "countryname_s", "department"])
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv-dir", type=Path, default=DEFAULT_CSV_DIR)
     sub = parser.add_subparsers(dest="command", required=True)
-
-    p = sub.add_parser("summary")
-    p.set_defaults(func=cmd_summary)
 
     p = sub.add_parser("groups")
     p.add_argument("query", nargs="?")
@@ -212,10 +175,6 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("memberships")
     p.add_argument("country")
     p.set_defaults(func=cmd_memberships)
-
-    p = sub.add_parser("group-a")
-    p.add_argument("query", nargs="?")
-    p.set_defaults(func=cmd_group_a)
     return parser
 
 
@@ -228,4 +187,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
