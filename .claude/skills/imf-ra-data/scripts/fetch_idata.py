@@ -17,7 +17,7 @@ Modes (use this script for all SDK interactions — never write a new Python scr
      --db DB --key KEY --start START --end END --format {refreshable,wide,long} [--excel] [--output FILE]
 
 Output formats (--format required for fetch):
-  refreshable  RA structured Excel (.xlsx): CountryName | ISO3 | IFSCODE | DATASET |
+  refreshable  RA structured Excel (.xlsx): DATASET | CountryName | ISO3 | IFSCODE |
                Series_Code | INDICATOR | 2019 | 2019Q1 | ... Always .xlsx.
   wide         Raw API wide format (dates as rows, series as columns).
                Use --excel for .xlsx; omit for .csv.
@@ -176,8 +176,6 @@ def build_wide_output(df_long, db, country_lookup):
         out["ISO3"]        = ""
         out["IFSCODE"]     = ""
 
-    out["DATASET"] = db
-
     # Series_Code: all dimension columns joined with "." in key order
     if id_cols:
         out["Series_Code"] = wide[id_cols].apply(
@@ -197,6 +195,9 @@ def build_wide_output(df_long, db, country_lookup):
             out["INDICATOR"] = wide[indicator_col].astype(str)
     else:
         out["INDICATOR"] = ""
+
+    # Reorder to RA standard column layout
+    out.insert(0, "DATASET", db)
 
     for dc in date_cols_sorted:
         out[dc] = wide[dc].values
