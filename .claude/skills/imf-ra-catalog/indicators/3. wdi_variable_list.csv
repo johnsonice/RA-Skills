@@ -1,0 +1,1517 @@
+database_name,dimension_name,Code,Name
+WB:WDI,SERIES,AG_CON_FERT_PT_ZS,Fertilizer consumption (% of fertilizer production)
+WB:WDI,SERIES,AG_CON_FERT_ZS,Fertilizer consumption (kilograms per hectare of arable land)
+WB:WDI,SERIES,AG_LND_AGRI_K2,Agricultural land (sq. km)
+WB:WDI,SERIES,AG_LND_AGRI_ZS,Agricultural land (% of land area)
+WB:WDI,SERIES,AG_LND_ARBL_HA,Arable land (hectares)
+WB:WDI,SERIES,AG_LND_ARBL_HA_PC,Arable land (hectares per person)
+WB:WDI,SERIES,AG_LND_ARBL_ZS,Arable land (% of land area)
+WB:WDI,SERIES,AG_LND_CREL_HA,Land under cereal production (hectares)
+WB:WDI,SERIES,AG_LND_CROP_ZS,Permanent cropland (% of land area)
+WB:WDI,SERIES,AG_LND_EL5M_RU_K2,Rural land area where elevation is below 5 meters (sq. km)
+WB:WDI,SERIES,AG_LND_EL5M_RU_ZS,Rural land area where elevation is below 5 meters (% of total land area)
+WB:WDI,SERIES,AG_LND_EL5M_UR_K2,Urban land area where elevation is below 5 meters (sq. km)
+WB:WDI,SERIES,AG_LND_EL5M_UR_ZS,Urban land area where elevation is below 5 meters (% of total land area)
+WB:WDI,SERIES,AG_LND_EL5M_ZS,Land area where elevation is below 5 meters (% of total land area)
+WB:WDI,SERIES,AG_LND_FRST_K2,Forest area (sq. km)
+WB:WDI,SERIES,AG_LND_FRST_ZS,Forest area (% of land area)
+WB:WDI,SERIES,AG_LND_IRIG_AG_ZS,Agricultural irrigated land (% of total agricultural land)
+WB:WDI,SERIES,AG_LND_PRCP_MM,Average precipitation in depth (mm per year)
+WB:WDI,SERIES,AG_LND_TOTL_K2,Land area (sq. km)
+WB:WDI,SERIES,AG_LND_TOTL_RU_K2,Rural land area (sq. km)
+WB:WDI,SERIES,AG_LND_TOTL_UR_K2,Urban land area (sq. km)
+WB:WDI,SERIES,AG_PRD_CREL_MT,Cereal production (metric tons)
+WB:WDI,SERIES,AG_PRD_CROP_XD,Crop production index (2014-2016 = 100)
+WB:WDI,SERIES,AG_PRD_FOOD_XD,Food production index (2014-2016 = 100)
+WB:WDI,SERIES,AG_PRD_LVSK_XD,Livestock production index (2014-2016 = 100)
+WB:WDI,SERIES,AG_SRF_TOTL_K2,Surface area (sq. km)
+WB:WDI,SERIES,AG_YLD_CREL_KG,Cereal yield (kg per hectare)
+WB:WDI,SERIES,BG_GSR_NFSV_GD_ZS,Trade in services (% of GDP)
+WB:WDI,SERIES,BM_GSR_CMCP_ZS,"Communications, computer, etc. (% of service imports, BoP)"
+WB:WDI,SERIES,BM_GSR_FCTY_CD,"Primary income payments (BoP, current US$)"
+WB:WDI,SERIES,BM_GSR_GNFS_CD,"Imports of goods and services (current US$, BoP)"
+WB:WDI,SERIES,BM_GSR_INSF_ZS,"Insurance and financial services (% of service imports, BoP)"
+WB:WDI,SERIES,BM_GSR_MRCH_CD,"Goods imports (current US$, BoP)"
+WB:WDI,SERIES,BM_GSR_NFSV_CD,"Service imports (current US$, BoP)"
+WB:WDI,SERIES,BM_GSR_ROYL_CD,"Charges for the use of intellectual property, payments (BoP, current US$)"
+WB:WDI,SERIES,BM_GSR_TOTL_CD,"Imports of goods, services and primary income (current US$, BoP)"
+WB:WDI,SERIES,BM_GSR_TRAN_ZS,"Transport services (% of service imports, BoP)"
+WB:WDI,SERIES,BM_GSR_TRVL_ZS,"Travel services (% of service imports, BoP)"
+WB:WDI,SERIES,BM_KLT_DINV_CD_WD,"Foreign direct investment, net outflows (BoP, current US$)"
+WB:WDI,SERIES,BM_KLT_DINV_WD_GD_ZS,"Foreign direct investment, net outflows (% of GDP)"
+WB:WDI,SERIES,BM_TRF_PRVT_CD,"Secondary income, other sectors, payments (BoP, current US$)"
+WB:WDI,SERIES,BM_TRF_PWKR_CD_DT,"Personal remittances, paid (current US$)"
+WB:WDI,SERIES,BN_CAB_XOKA_CD,"Current account balance (current US$, BoP)"
+WB:WDI,SERIES,BN_CAB_XOKA_GD_ZS,Current account balance (% of GDP)
+WB:WDI,SERIES,BN_FIN_TOTL_CD,"Net financial account (BoP, current US$)"
+WB:WDI,SERIES,BN_GSR_FCTY_CD,"Net primary income (current US$, BoP)"
+WB:WDI,SERIES,BN_GSR_GNFS_CD,"Net trade in goods and services (current US$, BoP)"
+WB:WDI,SERIES,BN_GSR_MRCH_CD,"Net trade in goods (current US$, BoP)"
+WB:WDI,SERIES,BN_KAC_EOMS_CD,"Net errors and omissions (current US$, BoP)"
+WB:WDI,SERIES,BN_KLT_DINV_CD,"Foreign direct investment, net (current US$, BoP)"
+WB:WDI,SERIES,BN_KLT_PTXL_CD,"Portfolio investment, net (current US$, BoP)"
+WB:WDI,SERIES,BN_RES_INCL_CD,"Reserves and related items (current US$, BoP)"
+WB:WDI,SERIES,BN_TRF_CURR_CD,"Net secondary income (current US$, BoP)"
+WB:WDI,SERIES,BN_TRF_KOGT_CD,"Net capital account (BoP, current US$)"
+WB:WDI,SERIES,BX_GRT_EXTA_CD_WD,"Grants, excluding technical cooperation (BoP, current US$)"
+WB:WDI,SERIES,BX_GRT_TECH_CD_WD,"Technical cooperation grants (BoP, current US$)"
+WB:WDI,SERIES,BX_GSR_CCIS_CD,"ICT service exports (BoP, current US$)"
+WB:WDI,SERIES,BX_GSR_CCIS_ZS,"ICT service exports (% of service exports, BoP)"
+WB:WDI,SERIES,BX_GSR_CMCP_ZS,"Communications, computer, etc. (% of service exports, BoP)"
+WB:WDI,SERIES,BX_GSR_FCTY_CD,"Primary income receipts (BoP, current US$)"
+WB:WDI,SERIES,BX_GSR_GNFS_CD,"Exports of goods and services (current US$, BoP)"
+WB:WDI,SERIES,BX_GSR_INSF_ZS,"Insurance and financial services (% of service exports, BoP)"
+WB:WDI,SERIES,BX_GSR_MRCH_CD,"Goods exports (current US$, BoP)"
+WB:WDI,SERIES,BX_GSR_NFSV_CD,"Service exports (current US$, BoP)"
+WB:WDI,SERIES,BX_GSR_ROYL_CD,"Charges for the use of intellectual property, receipts (BoP, current US$)"
+WB:WDI,SERIES,BX_GSR_TOTL_CD,"Exports of goods, services and primary income (current US$, BoP)"
+WB:WDI,SERIES,BX_GSR_TRAN_ZS,"Transport services (% of service exports, BoP)"
+WB:WDI,SERIES,BX_GSR_TRVL_ZS,"Travel services (% of service exports, BoP)"
+WB:WDI,SERIES,BX_KLT_DINV_CD_WD,"Foreign direct investment, net inflows (BoP, current US$)"
+WB:WDI,SERIES,BX_KLT_DINV_WD_GD_ZS,"Foreign direct investment, net inflows (% of GDP)"
+WB:WDI,SERIES,BX_PEF_TOTL_CD_WD,"Portfolio equity, net inflows (BoP, current US$)"
+WB:WDI,SERIES,BX_TRF_CURR_CD,"Secondary income receipts (BoP, current US$)"
+WB:WDI,SERIES,BX_TRF_PWKR_CD,"Personal transfers, receipts (current US$, BoP)"
+WB:WDI,SERIES,BX_TRF_PWKR_CD_DT,"Personal remittances, received (current US$)"
+WB:WDI,SERIES,BX_TRF_PWKR_DT_GD_ZS,"Personal remittances, received (% of GDP)"
+WB:WDI,SERIES,CC_EST,Control of Corruption: Estimate
+WB:WDI,SERIES,CC_NO_SRC,Control of Corruption: Number of Sources
+WB:WDI,SERIES,CC_PER_RNK,Control of Corruption: Percentile Rank
+WB:WDI,SERIES,CC_PER_RNK_LOWER,"Control of Corruption: Percentile Rank, Lower Bound of 90% Confidence Interval"
+WB:WDI,SERIES,CC_PER_RNK_UPPER,"Control of Corruption: Percentile Rank, Upper Bound of 90% Confidence Interval"
+WB:WDI,SERIES,CC_STD_ERR,Control of Corruption: Standard Error
+WB:WDI,SERIES,CM_MKT_INDX_ZG,S&P Global Equity Indices (annual % change)
+WB:WDI,SERIES,CM_MKT_LCAP_CD,Market capitalization of listed domestic companies (current US$)
+WB:WDI,SERIES,CM_MKT_LCAP_GD_ZS,Market capitalization of listed domestic companies (% of GDP)
+WB:WDI,SERIES,CM_MKT_LDOM_NO,"Listed domestic companies, total"
+WB:WDI,SERIES,CM_MKT_TRAD_CD,"Stocks traded, total value (current US$)"
+WB:WDI,SERIES,CM_MKT_TRAD_GD_ZS,"Stocks traded, total value (% of GDP)"
+WB:WDI,SERIES,CM_MKT_TRNR,"Stocks traded, turnover ratio of domestic shares (%)"
+WB:WDI,SERIES,DC_DAC_AUSL_CD,"Net bilateral aid flows from DAC donors, Australia (current US$)"
+WB:WDI,SERIES,DC_DAC_AUTL_CD,"Net bilateral aid flows from DAC donors, Austria (current US$)"
+WB:WDI,SERIES,DC_DAC_BELL_CD,"Net bilateral aid flows from DAC donors, Belgium (current US$)"
+WB:WDI,SERIES,DC_DAC_CANL_CD,"Net bilateral aid flows from DAC donors, Canada (current US$)"
+WB:WDI,SERIES,DC_DAC_CECL_CD,"Net bilateral aid flows from DAC donors, European Union institutions (current US$)"
+WB:WDI,SERIES,DC_DAC_CHEL_CD,"Net bilateral aid flows from DAC donors, Switzerland (current US$)"
+WB:WDI,SERIES,DC_DAC_CZEL_CD,"Net bilateral aid flows from DAC donors, Czech Republic (current US$)"
+WB:WDI,SERIES,DC_DAC_DEUL_CD,"Net bilateral aid flows from DAC donors, Germany (current US$)"
+WB:WDI,SERIES,DC_DAC_DNKL_CD,"Net bilateral aid flows from DAC donors, Denmark (current US$)"
+WB:WDI,SERIES,DC_DAC_ESPL_CD,"Net bilateral aid flows from DAC donors, Spain (current US$)"
+WB:WDI,SERIES,DC_DAC_ESTL_CD,"Net bilateral aid flows from DAC donors, Estonia (current US$)"
+WB:WDI,SERIES,DC_DAC_FINL_CD,"Net bilateral aid flows from DAC donors, Finland (current US$)"
+WB:WDI,SERIES,DC_DAC_FRAL_CD,"Net bilateral aid flows from DAC donors, France (current US$)"
+WB:WDI,SERIES,DC_DAC_GBRL_CD,"Net bilateral aid flows from DAC donors, United Kingdom (current US$)"
+WB:WDI,SERIES,DC_DAC_GRCL_CD,"Net bilateral aid flows from DAC donors, Greece (current US$)"
+WB:WDI,SERIES,DC_DAC_HUNL_CD,"Net bilateral aid flows from DAC donors, Hungary (current US$)"
+WB:WDI,SERIES,DC_DAC_IRLL_CD,"Net bilateral aid flows from DAC donors, Ireland (current US$)"
+WB:WDI,SERIES,DC_DAC_ISLL_CD,"Net bilateral aid flows from DAC donors, Iceland (current US$)"
+WB:WDI,SERIES,DC_DAC_ITAL_CD,"Net bilateral aid flows from DAC donors, Italy (current US$)"
+WB:WDI,SERIES,DC_DAC_JPNL_CD,"Net bilateral aid flows from DAC donors, Japan (current US$)"
+WB:WDI,SERIES,DC_DAC_KORL_CD,"Net bilateral aid flows from DAC donors, Korea, Rep. (current US$)"
+WB:WDI,SERIES,DC_DAC_LTUL_CD,"Net bilateral aid flows from DAC donors, Lithuania (current US$)"
+WB:WDI,SERIES,DC_DAC_LUXL_CD,"Net bilateral aid flows from DAC donors, Luxembourg (current US$)"
+WB:WDI,SERIES,DC_DAC_NLDL_CD,"Net bilateral aid flows from DAC donors, Netherlands (current US$)"
+WB:WDI,SERIES,DC_DAC_NORL_CD,"Net bilateral aid flows from DAC donors, Norway (current US$)"
+WB:WDI,SERIES,DC_DAC_NZLL_CD,"Net bilateral aid flows from DAC donors, New Zealand (current US$)"
+WB:WDI,SERIES,DC_DAC_POLL_CD,"Net bilateral aid flows from DAC donors, Poland (current US$)"
+WB:WDI,SERIES,DC_DAC_PRTL_CD,"Net bilateral aid flows from DAC donors, Portugal (current US$)"
+WB:WDI,SERIES,DC_DAC_SVKL_CD,"Net bilateral aid flows from DAC donors, Slovak Republic (current US$)"
+WB:WDI,SERIES,DC_DAC_SVNL_CD,"Net bilateral aid flows from DAC donors, Slovenia (current US$)"
+WB:WDI,SERIES,DC_DAC_SWEL_CD,"Net bilateral aid flows from DAC donors, Sweden (current US$)"
+WB:WDI,SERIES,DC_DAC_TOTL_CD,"Net bilateral aid flows from DAC donors, Total (current US$)"
+WB:WDI,SERIES,DC_DAC_USAL_CD,"Net bilateral aid flows from DAC donors, United States (current US$)"
+WB:WDI,SERIES,DC_ODA_TLDC_CD,"Net ODA provided, to the least developed countries (current US$)"
+WB:WDI,SERIES,DC_ODA_TLDC_GN_ZS,Net ODA provided to the least developed countries (% of GNI)
+WB:WDI,SERIES,DC_ODA_TOTL_CD,"Net ODA provided, total (current US$)"
+WB:WDI,SERIES,DC_ODA_TOTL_GN_ZS,"Net ODA provided, total (% of GNI)"
+WB:WDI,SERIES,DC_ODA_TOTL_KD,"Net ODA provided, total (constant 2021 US$)"
+WB:WDI,SERIES,DT_DOD_DECT_CD,"External debt stocks, total (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_DECT_GN_ZS,External debt stocks (% of GNI)
+WB:WDI,SERIES,DT_DOD_DIMF_CD,"Use of IMF credit (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_DLXF_CD,"External debt stocks, long-term (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_DPNG_CD,"External debt stocks, private nonguaranteed (PNG) (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_DPPG_CD,"External debt stocks, public and publicly guaranteed (PPG) (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_DSTC_CD,"External debt stocks, short-term (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_DSTC_IR_ZS,Short-term debt (% of total reserves)
+WB:WDI,SERIES,DT_DOD_DSTC_XP_ZS,"Short-term debt (% of exports of goods, services and primary income)"
+WB:WDI,SERIES,DT_DOD_DSTC_ZS,Short-term debt (% of total external debt)
+WB:WDI,SERIES,DT_DOD_MIBR_CD,"PPG, IBRD (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_MIDA_CD,"PPG, IDA (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_MWBG_CD,"IBRD loans and IDA credits (DOD, current US$)"
+WB:WDI,SERIES,DT_DOD_PVLX_CD,Present value of external debt (current US$)
+WB:WDI,SERIES,DT_DOD_PVLX_EX_ZS,"Present value of external debt (% of exports of goods, services and income)"
+WB:WDI,SERIES,DT_DOD_PVLX_GN_ZS,Present value of external debt (% of GNI)
+WB:WDI,SERIES,DT_NFL_BLAT_CD,"Net financial flows, bilateral (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_BOND_CD,"Portfolio investment, bonds (PPG + PNG) (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_CERF_CD,"Net official flows from UN agencies, CERF (current US$)"
+WB:WDI,SERIES,DT_NFL_DPNG_CD,"Net flows on external debt, private nonguaranteed (PNG) (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_FAOG_CD,"Net official flows from UN agencies, FAO (current US$)"
+WB:WDI,SERIES,DT_NFL_IAEA_CD,"Net official flows from UN agencies, IAEA (current US$)"
+WB:WDI,SERIES,DT_NFL_IFAD_CD,"Net official flows from UN agencies, IFAD (current US$)"
+WB:WDI,SERIES,DT_NFL_ILOG_CD,"Net official flows from UN agencies, ILO (current US$)"
+WB:WDI,SERIES,DT_NFL_IMFC_CD,"Net financial flows, IMF concessional (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_IMFN_CD,"Net financial flows, IMF nonconcessional (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_MIBR_CD,"Net financial flows, IBRD (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_MIDA_CD,"Net financial flows, IDA (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_MLAT_CD,"Net financial flows, multilateral (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_MOTH_CD,"Net financial flows, others (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_NIFC_CD,"IFC, private nonguaranteed (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_OFFT_CD,"PPG, official creditors (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_PBND_CD,"PPG, bonds (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_PCBK_CD,"PPG, commercial banks (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_PCBO_CD,"Commercial banks and other lending (PPG + PNG) (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_PNGB_CD,"PNG, bonds (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_PNGC_CD,"PNG, commercial banks and other creditors (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_PROP_CD,"PPG, other private creditors (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_PRVT_CD,"PPG, private creditors (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_RDBC_CD,"Net financial flows, RDB concessional (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_RDBN_CD,"Net financial flows, RDB nonconcessional (NFL, current US$)"
+WB:WDI,SERIES,DT_NFL_SDGF_CD,"Net official flows from UN agencies, SDGFUND (current US$)"
+WB:WDI,SERIES,DT_NFL_SPRP_CD,"Net official flows from UN agencies, SPRP (current US$)"
+WB:WDI,SERIES,DT_NFL_UNAI_CD,"Net official flows from UN agencies, UNAIDS (current US$)"
+WB:WDI,SERIES,DT_NFL_UNCD_CD,"Net official flows from UN agencies, UNCDF (current US$)"
+WB:WDI,SERIES,DT_NFL_UNCF_CD,"Net official flows from UN agencies, UNICEF (current US$)"
+WB:WDI,SERIES,DT_NFL_UNCR_CD,"Net official flows from UN agencies, UNHCR (current US$)"
+WB:WDI,SERIES,DT_NFL_UNCTAD_CD,"Net official flows from UN agencies, UNCTAD (current US$)"
+WB:WDI,SERIES,DT_NFL_UNCV_CD,"Net official flows from UN agencies, UNCOVID (current US$)"
+WB:WDI,SERIES,DT_NFL_UNDP_CD,"Net official flows from UN agencies, UNDP (current US$)"
+WB:WDI,SERIES,DT_NFL_UNEC_CD,"Net official flows from UN agencies, UNECE (current US$)"
+WB:WDI,SERIES,DT_NFL_UNEP_CD,"Net official flows from UN agencies, UNEP (current US$)"
+WB:WDI,SERIES,DT_NFL_UNFP_CD,"Net official flows from UN agencies, UNFPA (current US$)"
+WB:WDI,SERIES,DT_NFL_UNID_CD,"Net official flows from UN agencies, UNIDIR (current US$)"
+WB:WDI,SERIES,DT_NFL_UNIDO_CD,"Net official flows from UN agencies, UNIDO (current US$)"
+WB:WDI,SERIES,DT_NFL_UNPB_CD,"Net official flows from UN agencies, UNPBF (current US$)"
+WB:WDI,SERIES,DT_NFL_UNRW_CD,"Net official flows from UN agencies, UNRWA (current US$)"
+WB:WDI,SERIES,DT_NFL_UNTA_CD,"Net official flows from UN agencies, UNTA (current US$)"
+WB:WDI,SERIES,DT_NFL_UNWN_CD,"Net official flows from UN agencies, UNWOMEN (current US$)"
+WB:WDI,SERIES,DT_NFL_UNWT_CD,"Net official flows from UN agencies, UNWTO (current US$)"
+WB:WDI,SERIES,DT_NFL_WFPG_CD,"Net official flows from UN agencies, WFP (current US$)"
+WB:WDI,SERIES,DT_NFL_WHOL_CD,"Net official flows from UN agencies, WHO (current US$)"
+WB:WDI,SERIES,DT_NFL_WITC_CD,"Net official flows from UN agencies, WTO-ITC (current US$)"
+WB:WDI,SERIES,DT_ODA_ALLD_CD,Net official development assistance and official aid received (current US$)
+WB:WDI,SERIES,DT_ODA_ALLD_KD,Net official development assistance and official aid received (constant 2021 US$)
+WB:WDI,SERIES,DT_ODA_OATL_CD,Net official aid received (current US$)
+WB:WDI,SERIES,DT_ODA_OATL_KD,Net official aid received (constant 2021 US$)
+WB:WDI,SERIES,DT_ODA_ODAT_CD,Net official development assistance received (current US$)
+WB:WDI,SERIES,DT_ODA_ODAT_GI_ZS,Net ODA received (% of gross capital formation)
+WB:WDI,SERIES,DT_ODA_ODAT_GN_ZS,Net ODA received (% of GNI)
+WB:WDI,SERIES,DT_ODA_ODAT_KD,Net official development assistance received (constant 2021 US$)
+WB:WDI,SERIES,DT_ODA_ODAT_MP_ZS,"Net ODA received (% of imports of goods, services and primary income)"
+WB:WDI,SERIES,DT_ODA_ODAT_PC_ZS,Net ODA received per capita (current US$)
+WB:WDI,SERIES,DT_ODA_ODAT_XP_ZS,Net ODA received (% of central government expense)
+WB:WDI,SERIES,DT_TDS_DECT_CD,"Debt service on external debt, total (TDS, current US$)"
+WB:WDI,SERIES,DT_TDS_DECT_EX_ZS,"Total debt service (% of exports of goods, services and primary income)"
+WB:WDI,SERIES,DT_TDS_DECT_GN_ZS,Total debt service (% of GNI)
+WB:WDI,SERIES,DT_TDS_DIMF_CD,"IMF repurchases and charges (TDS, current US$)"
+WB:WDI,SERIES,DT_TDS_DPPF_XP_ZS,Debt service to exports (%)
+WB:WDI,SERIES,DT_TDS_DPPG_CD,"Debt service on external debt, public and publicly guaranteed (PPG) (TDS, current US$)"
+WB:WDI,SERIES,DT_TDS_DPPG_GN_ZS,Public and publicly guaranteed debt service (% of GNI)
+WB:WDI,SERIES,DT_TDS_DPPG_XP_ZS,"Public and publicly guaranteed debt service (% of exports of goods, services and primary income)"
+WB:WDI,SERIES,DT_TDS_MLAT_CD,"Multilateral debt service (TDS, current US$)"
+WB:WDI,SERIES,DT_TDS_MLAT_PG_ZS,Multilateral debt service (% of public and publicly guaranteed debt service)
+WB:WDI,SERIES,EG_CFT_ACCS_RU_ZS,"Access to clean fuels and technologies for cooking, rural (% of rural population)"
+WB:WDI,SERIES,EG_CFT_ACCS_UR_ZS,"Access to clean fuels and technologies for cooking, urban (% of urban population)"
+WB:WDI,SERIES,EG_CFT_ACCS_ZS,Access to clean fuels and technologies for cooking (% of population)
+WB:WDI,SERIES,EG_EGY_PRIM_PP_KD,Energy intensity level of primary energy (MJ/$2017 PPP GDP)
+WB:WDI,SERIES,EG_ELC_ACCS_RU_ZS,"Access to electricity, rural (% of rural population)"
+WB:WDI,SERIES,EG_ELC_ACCS_UR_ZS,"Access to electricity, urban (% of urban population)"
+WB:WDI,SERIES,EG_ELC_ACCS_ZS,Access to electricity (% of population)
+WB:WDI,SERIES,EG_ELC_COAL_ZS,Electricity production from coal sources (% of total)
+WB:WDI,SERIES,EG_ELC_FOSL_ZS,"Electricity production from oil, gas and coal sources (% of total)"
+WB:WDI,SERIES,EG_ELC_HYRO_ZS,Electricity production from hydroelectric sources (% of total)
+WB:WDI,SERIES,EG_ELC_LOSS_ZS,Electric power transmission and distribution losses (% of output)
+WB:WDI,SERIES,EG_ELC_NGAS_ZS,Electricity production from natural gas sources (% of total)
+WB:WDI,SERIES,EG_ELC_NUCL_ZS,Electricity production from nuclear sources (% of total)
+WB:WDI,SERIES,EG_ELC_PETR_ZS,Electricity production from oil sources (% of total)
+WB:WDI,SERIES,EG_ELC_RNEW_ZS,Renewable electricity output (% of total electricity output)
+WB:WDI,SERIES,EG_ELC_RNWX_KH,"Electricity production from renewable sources, excluding hydroelectric (kWh)"
+WB:WDI,SERIES,EG_ELC_RNWX_ZS,"Electricity production from renewable sources, excluding hydroelectric (% of total)"
+WB:WDI,SERIES,EG_FEC_RNEW_ZS,Renewable energy consumption (% of total final energy consumption)
+WB:WDI,SERIES,EG_GDP_PUSE_KO_PP,GDP per unit of energy use (PPP $ per kg of oil equivalent)
+WB:WDI,SERIES,EG_GDP_PUSE_KO_PP_KD,GDP per unit of energy use (constant 2017 PPP $ per kg of oil equivalent)
+WB:WDI,SERIES,EG_IMP_CONS_ZS,"Energy imports, net (% of energy use)"
+WB:WDI,SERIES,EG_USE_COMM_CL_ZS,Alternative and nuclear energy (% of total energy use)
+WB:WDI,SERIES,EG_USE_COMM_FO_ZS,Fossil fuel energy consumption (% of total)
+WB:WDI,SERIES,EG_USE_COMM_GD_PP_KD,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2017 PPP)"
+WB:WDI,SERIES,EG_USE_CRNW_ZS,Combustible renewables and waste (% of total energy)
+WB:WDI,SERIES,EG_USE_ELEC_KH_PC,Electric power consumption (kWh per capita)
+WB:WDI,SERIES,EG_USE_PCAP_KG_OE,Energy use (kg of oil equivalent per capita)
+WB:WDI,SERIES,EN_ATM_PM25_MC_M3,"PM2.5 air pollution, mean annual exposure (micrograms per cubic meter)"
+WB:WDI,SERIES,EN_ATM_PM25_MC_T1_ZS,"PM2.5 pollution, population exposed to levels exceeding WHO Interim Target-1 value (% of total)"
+WB:WDI,SERIES,EN_ATM_PM25_MC_T2_ZS,"PM2.5 pollution, population exposed to levels exceeding WHO Interim Target-2 value (% of total)"
+WB:WDI,SERIES,EN_ATM_PM25_MC_T3_ZS,"PM2.5 pollution, population exposed to levels exceeding WHO Interim Target-3 value (% of total)"
+WB:WDI,SERIES,EN_ATM_PM25_MC_ZS,"PM2.5 air pollution, population exposed to levels exceeding WHO guideline value (% of total)"
+WB:WDI,SERIES,EN_BIR_THRD_NO,"Bird species, threatened"
+WB:WDI,SERIES,EN_CLC_DRSK_XQ,Disaster risk reduction progress score (1-5 scale; 5=best)
+WB:WDI,SERIES,EN_CLC_MDAT_ZS,"Droughts, floods, extreme temperatures (% of population, average 1990-2009)"
+WB:WDI,SERIES,EN_FSH_THRD_NO,"Fish species, threatened"
+WB:WDI,SERIES,EN_GHG_ALL_LU_MT_CE_AR5,Total greenhouse gas emissions including LULUCF (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_ALL_MT_CE_AR5,Total greenhouse gas emissions excluding LULUCF (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_ALL_PC_CE_AR5,Total greenhouse gas emissions per capita excluding LULUCF (t CO2e/capita)
+WB:WDI,SERIES,EN_GHG_CH4_AG_MT_CE_AR5,Methane (CH4) emissions from Agriculture (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_BU_MT_CE_AR5,Methane (CH4) emissions from Building (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_FE_MT_CE_AR5,Methane (CH4) emissions from Fugitive Emissions (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_IC_MT_CE_AR5,Methane (CH4) emissions from Industrial Combustion (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_IP_MT_CE_AR5,Methane (CH4) emissions from Industrial Processes (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_MT_CE_AR5,Methane (CH4) emissions (total) excluding LULUCF (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_PI_MT_CE_AR5,Methane (CH4) emissions from Power Industry (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_TR_MT_CE_AR5,Methane (CH4) emissions from Transport (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_WA_MT_CE_AR5,Methane (CH4) emissions from Waste (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CH4_ZG_AR5,Methane (CH4) emissions (total) excluding LULUCF (% change from 1990)
+WB:WDI,SERIES,EN_GHG_CO2_AG_MT_CE_AR5,Carbon dioxide (CO2) emissions from Agriculture (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_BU_MT_CE_AR5,Carbon dioxide (CO2) emissions from Building (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_FE_MT_CE_AR5,Carbon dioxide (CO2) emissions from Fugitive Emissions (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_IC_MT_CE_AR5,Carbon dioxide (CO2) emissions from Industrial Combustion (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_IP_MT_CE_AR5,Carbon dioxide (CO2) emissions from Industrial Processes (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_LU_DF_MT_CE_AR5,Carbon dioxide (CO2) net fluxes from LULUCF - Deforestation (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_LU_FL_MT_CE_AR5,Carbon dioxide (CO2) net fluxes from LULUCF - Forest Land (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_LU_MT_CE_AR5,Carbon dioxide (CO2) net fluxes from LULUCF - Total excluding non-tropical fires (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_LU_OL_MT_CE_AR5,Carbon dioxide (CO2) net fluxes from LULUCF - Other Land (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_LU_OS_MT_CE_AR5,Carbon dioxide (CO2) net fluxes from LULUCF - Organic Soil (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_MT_CE_AR5,Carbon dioxide (CO2) emissions (total) excluding LULUCF (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_PC_CE_AR5,Carbon dioxide (CO2) emissions excluding LULUCF per capita (t CO2e/capita)
+WB:WDI,SERIES,EN_GHG_CO2_PI_MT_CE_AR5,Carbon dioxide (CO2) emissions from Power Industry (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_RT_GDP_KD,Carbon intensity of GDP (kg CO2e per constant 2021 US$ of GDP)
+WB:WDI,SERIES,EN_GHG_CO2_RT_GDP_PP_KD,Carbon intensity of GDP (kg CO2e per 2021 PPP $)
+WB:WDI,SERIES,EN_GHG_CO2_TR_MT_CE_AR5,Carbon dioxide (CO2) emissions from Transport (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_WA_MT_CE_AR5,Carbon dioxide (CO2) emissions from Waste (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_CO2_ZG_AR5,Carbon dioxide (CO2) emissions (total) excluding LULUCF (% change from 1990)
+WB:WDI,SERIES,EN_GHG_FGAS_IP_MT_CE_AR5,Fluorinated greenhouse gases (F-gases) emissions from Industrial Processes (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_AG_MT_CE_AR5,Nitrous oxide (N2O) emissions from Agriculture (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_BU_MT_CE_AR5,Nitrous oxide (N2O) emissions from Building (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_FE_MT_CE_AR5,Nitrous oxide (N2O) emissions from Fugitive Emissions (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_IC_MT_CE_AR5,Nitrous oxide (N2O) emissions from Industrial Combustion (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_IP_MT_CE_AR5,Nitrous oxide (N2O) emissions from Industrial Processes (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_MT_CE_AR5,Nitrous oxide (N2O) emissions (total) excluding LULUCF (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_PI_MT_CE_AR5,Nitrous oxide (N2O) emissions from Power Industry (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_TR_MT_CE_AR5,Nitrous oxide (N2O) emissions from Transport (Energy) (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_WA_MT_CE_AR5,Nitrous oxide (N2O) emissions from Waste (Mt CO2e)
+WB:WDI,SERIES,EN_GHG_N2O_ZG_AR5,Nitrous oxide (N2O) emissions (total) excluding LULUCF (% change from 1990)
+WB:WDI,SERIES,EN_GHG_TOT_ZG_AR5,Total greenhouse gas emissions excluding LULUCF (% change from 1990)
+WB:WDI,SERIES,EN_HPT_THRD_NO,"Plant species (higher), threatened"
+WB:WDI,SERIES,EN_MAM_THRD_NO,"Mammal species, threatened"
+WB:WDI,SERIES,EN_POP_DNST,Population density (people per sq. km of land area)
+WB:WDI,SERIES,EN_POP_EL5M_RU_ZS,Rural population living in areas where elevation is below 5 meters (% of total population)
+WB:WDI,SERIES,EN_POP_EL5M_UR_ZS,Urban population living in areas where elevation is below 5 meters (% of total population)
+WB:WDI,SERIES,EN_POP_EL5M_ZS,Population living in areas where elevation is below 5 meters (% of total population)
+WB:WDI,SERIES,EN_POP_SLUM_UR_ZS,Population living in slums (% of urban population)
+WB:WDI,SERIES,EN_URB_LCTY,Population in largest city
+WB:WDI,SERIES,EN_URB_LCTY_UR_ZS,Population in the largest city (% of urban population)
+WB:WDI,SERIES,EN_URB_MCTY,Population in urban agglomerations of more than 1 million
+WB:WDI,SERIES,EN_URB_MCTY_TL_ZS,Population in urban agglomerations of more than 1 million (% of total population)
+WB:WDI,SERIES,ER_FSH_AQUA_MT,Aquaculture production (metric tons)
+WB:WDI,SERIES,ER_FSH_CAPT_MT,Capture fisheries production (metric tons)
+WB:WDI,SERIES,ER_FSH_PROD_MT,Total fisheries production (metric tons)
+WB:WDI,SERIES,ER_GDP_FWTL_M3_KD,"Water productivity, total (constant 2015 US$ GDP per cubic meter of total freshwater withdrawal)"
+WB:WDI,SERIES,ER_H2O_FWAG_ZS,"Annual freshwater withdrawals, agriculture (% of total freshwater withdrawal)"
+WB:WDI,SERIES,ER_H2O_FWDM_ZS,"Annual freshwater withdrawals, domestic (% of total freshwater withdrawal)"
+WB:WDI,SERIES,ER_H2O_FWIN_ZS,"Annual freshwater withdrawals, industry (% of total freshwater withdrawal)"
+WB:WDI,SERIES,ER_H2O_FWST_ZS,Level of water stress: freshwater withdrawal as a proportion of available freshwater resources
+WB:WDI,SERIES,ER_H2O_FWTL_K3,"Annual freshwater withdrawals, total (billion cubic meters)"
+WB:WDI,SERIES,ER_H2O_FWTL_ZS,"Annual freshwater withdrawals, total (% of internal resources)"
+WB:WDI,SERIES,ER_H2O_INTR_K3,"Renewable internal freshwater resources, total (billion cubic meters)"
+WB:WDI,SERIES,ER_H2O_INTR_PC,Renewable internal freshwater resources per capita (cubic meters)
+WB:WDI,SERIES,ER_LND_PTLD_ZS,Terrestrial protected areas (% of total land area)
+WB:WDI,SERIES,ER_MRN_PTMR_ZS,Marine protected areas (% of territorial waters)
+WB:WDI,SERIES,ER_PTD_TOTL_ZS,Terrestrial and marine protected areas (% of total territorial area)
+WB:WDI,SERIES,FB_AST_NPER_ZS,Bank nonperforming loans to total gross loans (%)
+WB:WDI,SERIES,FB_ATM_TOTL_P5,"Automated teller machines (ATMs) (per 100,000 adults)"
+WB:WDI,SERIES,FB_BNK_CAPA_ZS,Bank capital to assets ratio (%)
+WB:WDI,SERIES,FB_CBK_BRCH_P5,"Commercial bank branches (per 100,000 adults)"
+WB:WDI,SERIES,FB_CBK_BRWR_P3,"Borrowers from commercial banks (per 1,000 adults)"
+WB:WDI,SERIES,FB_CBK_DPTR_P3,"Depositors with commercial banks (per 1,000 adults)"
+WB:WDI,SERIES,FD_AST_PRVT_GD_ZS,Domestic credit to private sector by banks (% of GDP)
+WB:WDI,SERIES,FD_RES_LIQU_AS_ZS,Bank liquid reserves to bank assets ratio (%)
+WB:WDI,SERIES,FI_RES_TOTL_CD,"Total reserves, including gold (current US$)"
+WB:WDI,SERIES,FI_RES_TOTL_DT_ZS,Total reserves (% of total external debt)
+WB:WDI,SERIES,FI_RES_TOTL_MO,Total reserves in months of imports
+WB:WDI,SERIES,FI_RES_XGLD_CD,"Total reserves, excluding gold (current US$)"
+WB:WDI,SERIES,FM_AST_CGOV_ZG_M3,Claims on central government (annual growth as % of broad money)
+WB:WDI,SERIES,FM_AST_DOMO_ZG_M3,Claims on other sectors of the domestic economy (annual growth as % of broad money)
+WB:WDI,SERIES,FM_AST_DOMS_CN,Net domestic credit (current LCU)
+WB:WDI,SERIES,FM_AST_NFRG_CN,Net foreign assets (current LCU)
+WB:WDI,SERIES,FM_AST_PRVT_GD_ZS,Monetary sector credit to private sector (% of GDP)
+WB:WDI,SERIES,FM_AST_PRVT_ZG_M3,Claims on private sector (annual growth as % of broad money)
+WB:WDI,SERIES,FM_LBL_BMNY_CN,Broad money (current LCU)
+WB:WDI,SERIES,FM_LBL_BMNY_GD_ZS,Broad money (% of GDP)
+WB:WDI,SERIES,FM_LBL_BMNY_IR_ZS,Broad money to total reserves ratio
+WB:WDI,SERIES,FM_LBL_BMNY_ZG,Broad money (annual % growth)
+WB:WDI,SERIES,FP_CPI_TOTL,Consumer price index (2010 = 100)
+WB:WDI,SERIES,FP_CPI_TOTL_ZG,"Inflation, consumer prices (annual % growth)"
+WB:WDI,SERIES,FP_WPI_TOTL,Wholesale price index (2010 = 100)
+WB:WDI,SERIES,FR_INR_DPST,Deposit interest rate (%)
+WB:WDI,SERIES,FR_INR_LEND,Lending interest rate (%)
+WB:WDI,SERIES,FR_INR_LNDP,"Interest rate spread (lending rate minus deposit rate, %)"
+WB:WDI,SERIES,FR_INR_RINR,Real interest rate (%)
+WB:WDI,SERIES,FR_INR_RISK,"Risk premium on lending (lending rate minus treasury bill rate, %)"
+WB:WDI,SERIES,FS_AST_CGOV_GD_ZS,"Claims on central government, etc. (% of GDP)"
+WB:WDI,SERIES,FS_AST_DOMO_GD_ZS,Claims on other sectors of the domestic economy (% of GDP)
+WB:WDI,SERIES,FS_AST_DOMS_GD_ZS,Domestic credit provided by financial sector (% of GDP)
+WB:WDI,SERIES,FS_AST_PRVT_GD_ZS,Domestic credit to private sector (% of GDP)
+WB:WDI,SERIES,FX_OWN_TOTL_40_ZS,"Account ownership at a financial institution or with a mobile-money-service provider, poorest 40% (% of population ages 15+)"
+WB:WDI,SERIES,FX_OWN_TOTL_60_ZS,"Account ownership at a financial institution or with a mobile-money-service provider, richest 60% (% of population ages 15+)"
+WB:WDI,SERIES,FX_OWN_TOTL_FE_ZS,"Account ownership at a financial institution or with a mobile-money-service provider, female (% of population ages 15+)"
+WB:WDI,SERIES,FX_OWN_TOTL_MA_ZS,"Account ownership at a financial institution or with a mobile-money-service provider, male (% of population ages 15+)"
+WB:WDI,SERIES,FX_OWN_TOTL_OL_ZS,"Account ownership at a financial institution or with a mobile-money-service provider, older adults (% of population ages 25+)"
+WB:WDI,SERIES,FX_OWN_TOTL_PL_ZS,"Account ownership at a financial institution or with a mobile-money-service provider, primary education or less (% of population ages 15+)"
+WB:WDI,SERIES,FX_OWN_TOTL_SO_ZS,"Account ownership at a financial institution or with a mobile-money-service provider, secondary education or more (% of population ages 15+)"
+WB:WDI,SERIES,FX_OWN_TOTL_YG_ZS,"Account ownership at a financial institution or with a mobile-money-service provider, young adults (% of population ages 15-24)"
+WB:WDI,SERIES,FX_OWN_TOTL_ZS,Account ownership at a financial institution or with a mobile-money-service provider (% of population ages 15+)
+WB:WDI,SERIES,GB_XPD_RSDV_GD_ZS,Research and development expenditure (% of GDP)
+WB:WDI,SERIES,GC_AST_TOTL_CN,Net acquisition of financial assets (current LCU)
+WB:WDI,SERIES,GC_AST_TOTL_GD_ZS,Net acquisition of financial assets (% of GDP)
+WB:WDI,SERIES,GC_DOD_TOTL_CN,"Central government debt, total (current LCU)"
+WB:WDI,SERIES,GC_DOD_TOTL_GD_ZS,"Central government debt, total (% of GDP)"
+WB:WDI,SERIES,GC_LBL_TOTL_CN,"Net incurrence of liabilities, total (current LCU)"
+WB:WDI,SERIES,GC_LBL_TOTL_GD_ZS,"Net incurrence of liabilities, total (% of GDP)"
+WB:WDI,SERIES,GC_NFN_TOTL_CN,Net investment in nonfinancial assets (current LCU)
+WB:WDI,SERIES,GC_NFN_TOTL_GD_ZS,Net investment in nonfinancial assets (% of GDP)
+WB:WDI,SERIES,GC_NLD_TOTL_CN,Net lending (+) / net borrowing (-) (current LCU)
+WB:WDI,SERIES,GC_NLD_TOTL_GD_ZS,Net lending (+) / net borrowing (-) (% of GDP)
+WB:WDI,SERIES,GC_REV_GOTR_CN,Grants and other revenue (current LCU)
+WB:WDI,SERIES,GC_REV_GOTR_ZS,Grants and other revenue (% of revenue)
+WB:WDI,SERIES,GC_REV_SOCL_CN,Social contributions (current LCU)
+WB:WDI,SERIES,GC_REV_SOCL_ZS,Social contributions (% of revenue)
+WB:WDI,SERIES,GC_REV_XGRT_CN,"Revenue, excluding grants (current LCU)"
+WB:WDI,SERIES,GC_REV_XGRT_GD_ZS,"Revenue, excluding grants (% of GDP)"
+WB:WDI,SERIES,GC_TAX_EXPT_CN,Taxes on exports (current LCU)
+WB:WDI,SERIES,GC_TAX_EXPT_ZS,Taxes on exports (% of tax revenue)
+WB:WDI,SERIES,GC_TAX_GSRV_CN,Taxes on goods and services (current LCU)
+WB:WDI,SERIES,GC_TAX_GSRV_RV_ZS,Taxes on goods and services (% of revenue)
+WB:WDI,SERIES,GC_TAX_GSRV_VA_ZS,Taxes on goods and services (% of industry and services value added)
+WB:WDI,SERIES,GC_TAX_IMPT_CN,Customs and other import duties (current LCU)
+WB:WDI,SERIES,GC_TAX_IMPT_ZS,Customs and other import duties (% of tax revenue)
+WB:WDI,SERIES,GC_TAX_INTT_CN,Taxes on international trade (current LCU)
+WB:WDI,SERIES,GC_TAX_INTT_RV_ZS,Taxes on international trade (% of revenue)
+WB:WDI,SERIES,GC_TAX_OTHR_CN,Other taxes (current LCU)
+WB:WDI,SERIES,GC_TAX_OTHR_RV_ZS,Other taxes (% of revenue)
+WB:WDI,SERIES,GC_TAX_TOTL_CN,Tax revenue (current LCU)
+WB:WDI,SERIES,GC_TAX_TOTL_GD_ZS,Tax revenue (% of GDP)
+WB:WDI,SERIES,GC_TAX_YPKG_CN,"Taxes on income, profits and capital gains (current LCU)"
+WB:WDI,SERIES,GC_TAX_YPKG_RV_ZS,"Taxes on income, profits and capital gains (% of revenue)"
+WB:WDI,SERIES,GC_TAX_YPKG_ZS,"Taxes on income, profits and capital gains (% of total taxes)"
+WB:WDI,SERIES,GC_XPN_COMP_CN,Compensation of employees (current LCU)
+WB:WDI,SERIES,GC_XPN_COMP_ZS,Compensation of employees (% of expense)
+WB:WDI,SERIES,GC_XPN_GSRV_CN,Goods and services expense (current LCU)
+WB:WDI,SERIES,GC_XPN_GSRV_ZS,Goods and services expense (% of expense)
+WB:WDI,SERIES,GC_XPN_INTP_CN,Interest payments (current LCU)
+WB:WDI,SERIES,GC_XPN_INTP_RV_ZS,Interest payments (% of revenue)
+WB:WDI,SERIES,GC_XPN_INTP_ZS,Interest payments (% of expense)
+WB:WDI,SERIES,GC_XPN_OTHR_CN,Other expense (current LCU)
+WB:WDI,SERIES,GC_XPN_OTHR_ZS,Other expense (% of expense)
+WB:WDI,SERIES,GC_XPN_TOTL_CN,Expense (current LCU)
+WB:WDI,SERIES,GC_XPN_TOTL_GD_ZS,Expense (% of GDP)
+WB:WDI,SERIES,GC_XPN_TRFT_CN,Subsidies and other transfers (current LCU)
+WB:WDI,SERIES,GC_XPN_TRFT_ZS,Subsidies and other transfers (% of expense)
+WB:WDI,SERIES,GE_EST,Government Effectiveness: Estimate
+WB:WDI,SERIES,GE_NO_SRC,Government Effectiveness: Number of Sources
+WB:WDI,SERIES,GE_PER_RNK,Government Effectiveness: Percentile Rank
+WB:WDI,SERIES,GE_PER_RNK_LOWER,"Government Effectiveness: Percentile Rank, Lower Bound of 90% Confidence Interval"
+WB:WDI,SERIES,GE_PER_RNK_UPPER,"Government Effectiveness: Percentile Rank, Upper Bound of 90% Confidence Interval"
+WB:WDI,SERIES,GE_STD_ERR,Government Effectiveness: Standard Error
+WB:WDI,SERIES,GF_XPD_BUDG_ZS,Primary government expenditures as a proportion of original approved budget (%)
+WB:WDI,SERIES,HD_HCI_OVRL,Human capital index (HCI) (scale 0-1)
+WB:WDI,SERIES,HD_HCI_OVRL_FE,"Human capital index (HCI), female (scale 0-1)"
+WB:WDI,SERIES,HD_HCI_OVRL_LB,"Human capital index (HCI), lower bound (scale 0-1)"
+WB:WDI,SERIES,HD_HCI_OVRL_LB_FE,"Human capital index (HCI), female, lower bound (scale 0-1)"
+WB:WDI,SERIES,HD_HCI_OVRL_LB_MA,"Human capital index (HCI), male, lower bound (scale 0-1)"
+WB:WDI,SERIES,HD_HCI_OVRL_MA,"Human capital index (HCI), male (scale 0-1)"
+WB:WDI,SERIES,HD_HCI_OVRL_UB,"Human capital index (HCI), upper bound (scale 0-1)"
+WB:WDI,SERIES,HD_HCI_OVRL_UB_FE,"Human capital index (HCI), female, upper bound (scale 0-1)"
+WB:WDI,SERIES,HD_HCI_OVRL_UB_MA,"Human capital index (HCI), male, upper bound (scale 0-1)"
+WB:WDI,SERIES,IC_BRE_BE_OS,B-READY: Business Entry: Overall Score
+WB:WDI,SERIES,IC_BRE_BE_P1,B-READY: Business Entry Pillar 1: Quality of Regulations for Business Entry
+WB:WDI,SERIES,IC_BRE_BE_P2,B-READY: Business Entry Pillar 2: Digital Public Services and Transparency of Information for Business Entry
+WB:WDI,SERIES,IC_BRE_BE_P3,B-READY: Business Entry Pillar 3: Operational Efficiency of Business Entry
+WB:WDI,SERIES,IC_BRE_BI_OS,B-READY: Business Insolvency: Overall Score
+WB:WDI,SERIES,IC_BRE_BI_P1,B-READY: Business Insolvency Pillar 1: Quality of Regulations for Judicial Insolvency Proceedings
+WB:WDI,SERIES,IC_BRE_BI_P2,B-READY: Business Insolvency Pillar 2: Quality of Institutional and Operational Infrastructure for Judicial Insolvency Proceedings
+WB:WDI,SERIES,IC_BRE_BI_P3,B-READY: Business Insolvency Pillar 3: Operational Efficiency of Resolving Judicial Insolvency Proceedings
+WB:WDI,SERIES,IC_BRE_BL_OS,B-READY: Business Location: Overall Score
+WB:WDI,SERIES,IC_BRE_BL_P1,B-READY: Business Location Pillar 1: Quality of Regulations for Business Location
+WB:WDI,SERIES,IC_BRE_BL_P2,B-READY: Business Location Pillar 2: Quality of Public Services and Transparency of Information for Business Location
+WB:WDI,SERIES,IC_BRE_BL_P3,B-READY: Business Location Pillar 3: Operational Efficiency of Establishing a Business Location
+WB:WDI,SERIES,IC_BRE_DR_OS,B-READY: Dispute Resolution: Overall Score
+WB:WDI,SERIES,IC_BRE_DR_P1,B-READY: Dispute Resolution Pillar 1: Quality of Regulations for Dispute Resolution
+WB:WDI,SERIES,IC_BRE_DR_P2,B-READY: Dispute Resolution Pillar 2: Public Services for Dispute Resolution
+WB:WDI,SERIES,IC_BRE_DR_P3,B-READY: Dispute Resolution Pillar 3: Ease of Resolving a Commercial Dispute
+WB:WDI,SERIES,IC_BRE_FS_OS,B-READY: Financial Services: Overall Score
+WB:WDI,SERIES,IC_BRE_FS_P1,B-READY: Financial Services Pillar 1: Quality of Regulations for Financial Services
+WB:WDI,SERIES,IC_BRE_FS_P2,B-READY: Financial Services Pillar 2: Accessibility of Information in Credit Infrastructure
+WB:WDI,SERIES,IC_BRE_FS_P3,B-READY: Financial Services Pillar 3: Operational Efficiency of Receiving Financial Services
+WB:WDI,SERIES,IC_BRE_IT_OS,B-READY: International Trade: Overall Score
+WB:WDI,SERIES,IC_BRE_IT_P1,B-READY: International Trade Pillar 1: Quality of Regulations for International Trade
+WB:WDI,SERIES,IC_BRE_IT_P2,B-READY: International Trade Pillar 2: Quality of Public Services for the Facilitation of International Trade
+WB:WDI,SERIES,IC_BRE_IT_P3,"B-READY: International Trade Pillar 3: Efficiency of Importing Goods, Exporting Goods, and Engaging in Digital Trade"
+WB:WDI,SERIES,IC_BRE_LB_OS,B-READY: Labor: Overall Score
+WB:WDI,SERIES,IC_BRE_LB_P1,B-READY: Labor Pillar 1: Quality of Labor Regulations
+WB:WDI,SERIES,IC_BRE_LB_P2,B-READY: Labor Pillar 2: Adequacy of Public Services for Labor
+WB:WDI,SERIES,IC_BRE_LB_P3,B-READY: Labor Pillar 3: Operational Efficiency of Labor Regulations and Public Services in Practice
+WB:WDI,SERIES,IC_BRE_MC_OS,B-READY: Market Competition: Overall Score
+WB:WDI,SERIES,IC_BRE_MC_P1,B-READY: Market Competition Pillar 1: Quality of Regulations that Promote Market Competition
+WB:WDI,SERIES,IC_BRE_MC_P2,B-READY: Market Competition Pillar 2: Public Services that Promote Market Competition
+WB:WDI,SERIES,IC_BRE_MC_P3,B-READY: Market Competition Pillar 3: Implementation of Key Services Promoting Market Competition
+WB:WDI,SERIES,IC_BRE_P1_RF,B-READY: Pillar 1: Regulatory Framework
+WB:WDI,SERIES,IC_BRE_P2_PS,B-READY: Pillar 2: Public Services
+WB:WDI,SERIES,IC_BRE_P3_OE,B-READY: Pillar 3: Operational Efficiency
+WB:WDI,SERIES,IC_BRE_TX_OS,B-READY: Taxation: Overall Score
+WB:WDI,SERIES,IC_BRE_TX_P1,B-READY: Taxation Pillar 1: Quality of Regulations on Taxation
+WB:WDI,SERIES,IC_BRE_TX_P2,B-READY: Taxation Pillar 2: Public Services Provided by the Tax Administration
+WB:WDI,SERIES,IC_BRE_TX_P3,B-READY: Taxation Pillar 3: Operational Efficiency of Tax Systems in Practice
+WB:WDI,SERIES,IC_BRE_US_OS,B-READY: Utility Services: Overall Score
+WB:WDI,SERIES,IC_BRE_US_P1,B-READY: Utility Services Pillar 1: Quality of Regulations on Utility Services
+WB:WDI,SERIES,IC_BRE_US_P2,B-READY: Utility Services Pillar 2: Quality of Governance and Transparency of Utility Services
+WB:WDI,SERIES,IC_BRE_US_P3,B-READY: Utility Services Pillar 3: Operational Efficiency of Utility Service Provision
+WB:WDI,SERIES,IC_BUS_NDNS_ZS,"New business density (new registrations per 1,000 people ages 15-64)"
+WB:WDI,SERIES,IC_BUS_NREG,New businesses registered (number)
+WB:WDI,SERIES,IC_CUS_DURS_EX,Average time to clear exports through customs (days)
+WB:WDI,SERIES,IC_CUS_DURS_IM,Average time to clear imports through customs (days)
+WB:WDI,SERIES,IC_ELC_DURS,Time to obtain an electrical connection (days)
+WB:WDI,SERIES,IC_ELC_OUTG_ZS,Firms experiencing electrical outages (% of firms)
+WB:WDI,SERIES,IC_FRM_BKWC_ZS,Firms using banks to finance working capital (% of firms)
+WB:WDI,SERIES,IC_FRM_BNKL_ZS,Firms with a bank loan/line of credit (% of firms)
+WB:WDI,SERIES,IC_FRM_BNKS_ZS,Firms using banks to finance investment (% of firms)
+WB:WDI,SERIES,IC_FRM_BRIB_ZS,Bribery incidence (% of firms experiencing at least one bribe payment request)
+WB:WDI,SERIES,IC_FRM_CDP_ZS,Firms that use a third party to resolve commercial disputes (% of firms)
+WB:WDI,SERIES,IC_FRM_CMPU_ZS,Firms competing against unregistered firms (% of firms)
+WB:WDI,SERIES,IC_FRM_CO2_ZS,Firms monitoring own CO2 emissions (% of firms)
+WB:WDI,SERIES,IC_FRM_CORR_ZS,Informal payments to public officials (% of firms)
+WB:WDI,SERIES,IC_FRM_CRDC_FL_ZS,Firms that are fully credit constrained (% of firms)
+WB:WDI,SERIES,IC_FRM_CRDC_PT_ZS,Firms that are partially credit constrained (% of firms)
+WB:WDI,SERIES,IC_FRM_DURS,Time required to obtain an operating license (days)
+WB:WDI,SERIES,IC_FRM_ENGM_ZS,"Firms adopting energy management measures to reduce emissions, waste, or pollution (% of firms)"
+WB:WDI,SERIES,IC_FRM_EXS_ZS,Firms exporting directly at least 10% of sales (% of firms)
+WB:WDI,SERIES,IC_FRM_FEMM_ZS,Firms with female top manager (% of firms)
+WB:WDI,SERIES,IC_FRM_FEMO_ZS,Firms with female participation in ownership (% of firms)
+WB:WDI,SERIES,IC_FRM_FO_ZS,Firms with at least 10% foreign ownership
+WB:WDI,SERIES,IC_FRM_FREG_ZS,Firms formally registered when operations started (% of firms)
+WB:WDI,SERIES,IC_FRM_INFM_ZS,Firms that do not report all sales for tax purposes (% of firms)
+WB:WDI,SERIES,IC_FRM_LOTM_ZS,Firms where largest owner is also the top manager (% of firms)
+WB:WDI,SERIES,IC_FRM_METG_ZS,Firms visited or required meetings with tax officials (% of firms)
+WB:WDI,SERIES,IC_FRM_NPRD_ZS,"Firms that introduced a new product/service and process, and spent on R&D"
+WB:WDI,SERIES,IC_FRM_OUTG_ZS,Value lost due to electrical outages (% of sales for affected firms)
+WB:WDI,SERIES,IC_FRM_TAXE_ZS,Firms filling taxes electronically (% of firms)
+WB:WDI,SERIES,IC_FRM_TRNG_ZS,Firms offering formal training (% of firms)
+WB:WDI,SERIES,IC_GOV_DURS_ZS,Time spent dealing with the requirements of government regulations (% of senior management time)
+WB:WDI,SERIES,IC_MNG_IND,Management practices index
+WB:WDI,SERIES,IC_TAX_GIFT_ZS,Firms expected to give gifts in meetings with tax officials (% of firms)
+WB:WDI,SERIES,IC_TAX_METG,Number of visits or required meetings with tax officials (average for affected firms)
+WB:WDI,SERIES,IE_PPI_ENGY_CD,Investment in energy with private participation (current US$)
+WB:WDI,SERIES,IE_PPI_ICTI_CD,Investment in ICT with private participation (current US$)
+WB:WDI,SERIES,IE_PPI_TRAN_CD,Investment in transport with private participation (current US$)
+WB:WDI,SERIES,IE_PPI_WATR_CD,Investment in water and sanitation with private participation (current US$)
+WB:WDI,SERIES,IE_PPN_ENGY_CD,Public private partnerships investment in energy (current US$)
+WB:WDI,SERIES,IE_PPN_ICTI_CD,Public private partnerships investment in ICT (current US$)
+WB:WDI,SERIES,IE_PPN_TRAN_CD,Public private partnerships investment in transport (current US$)
+WB:WDI,SERIES,IE_PPN_WATR_CD,Public private partnerships investment in water and sanitation (current US$)
+WB:WDI,SERIES,IP_IDS_NRCT,"Industrial design applications, nonresident, by count"
+WB:WDI,SERIES,IP_IDS_RSCT,"Industrial design applications, resident, by count"
+WB:WDI,SERIES,IP_JRN_ARTC_SC,Scientific and technical journal articles
+WB:WDI,SERIES,IP_PAT_NRES,"Patent applications, nonresidents"
+WB:WDI,SERIES,IP_PAT_RESD,"Patent applications, residents"
+WB:WDI,SERIES,IP_TMK_NRCT,"Trademark applications, nonresident, by count"
+WB:WDI,SERIES,IP_TMK_RSCT,"Trademark applications, resident, by count"
+WB:WDI,SERIES,IQ_CPA_BREG_XQ,CPIA business regulatory environment rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_DEBT_XQ,CPIA debt policy rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_ECON_XQ,CPIA economic management cluster average (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_ENVR_XQ,CPIA policy and institutions for environmental sustainability rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_FINQ_XQ,CPIA quality of budgetary and financial management rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_FINS_XQ,CPIA financial sector rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_FISP_XQ,CPIA fiscal policy rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_GNDR_XQ,CPIA gender equality rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_HRES_XQ,CPIA building human resources rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_IRAI_XQ,IDA resource allocation index (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_MACR_XQ,CPIA macroeconomic management rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_PADM_XQ,CPIA quality of public administration rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_PRES_XQ,CPIA equity of public resource use rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_PROP_XQ,CPIA property rights and rule-based governance rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_PROT_XQ,CPIA social protection rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_PUBS_XQ,CPIA public sector management and institutions cluster average (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_REVN_XQ,CPIA efficiency of revenue mobilization rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_SOCI_XQ,CPIA policies for social inclusion/equity cluster average (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_STRC_XQ,CPIA structural policies cluster average (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_TRAD_XQ,CPIA trade rating (1=low to 6=high)
+WB:WDI,SERIES,IQ_CPA_TRAN_XQ,"CPIA transparency, accountability, and corruption in the public sector rating (1=low to 6=high)"
+WB:WDI,SERIES,IQ_SPI_OVRL,Statistical performance indicators (SPI): Overall score (scale 0-100)
+WB:WDI,SERIES,IQ_SPI_PIL1,Statistical performance indicators (SPI): Pillar 1 data use score (scale 0-100)
+WB:WDI,SERIES,IQ_SPI_PIL2,Statistical performance indicators (SPI): Pillar 2 data services score (scale 0-100)
+WB:WDI,SERIES,IQ_SPI_PIL3,Statistical performance indicators (SPI): Pillar 3 data products score (scale 0-100)
+WB:WDI,SERIES,IQ_SPI_PIL4,Statistical performance indicators (SPI): Pillar 4 data sources score (scale 0-100)
+WB:WDI,SERIES,IQ_SPI_PIL5,Statistical performance indicators (SPI): Pillar 5 data infrastructure score (scale 0-100)
+WB:WDI,SERIES,IS_AIR_DPRT,"Air transport, registered carrier departures worldwide"
+WB:WDI,SERIES,IS_AIR_GOOD_MT_K1,"Air transport, freight (million ton-km)"
+WB:WDI,SERIES,IS_AIR_PSGR,"Air transport, passengers carried"
+WB:WDI,SERIES,IS_RRS_GOOD_MT_K6,"Railways, goods transported (million ton-km)"
+WB:WDI,SERIES,IS_RRS_PASG_KM,"Railways, passengers carried (million passenger-km)"
+WB:WDI,SERIES,IS_RRS_TOTL_KM,Rail lines (total route-km)
+WB:WDI,SERIES,IS_SHP_GCNW_XQ,Liner shipping connectivity index (maximum value in 2004 = 100)
+WB:WDI,SERIES,IS_SHP_GOOD_TU,Container port traffic (TEU: 20 foot equivalent units)
+WB:WDI,SERIES,IT_CEL_SETS,Mobile cellular subscriptions
+WB:WDI,SERIES,IT_CEL_SETS_P2,Mobile cellular subscriptions (per 100 people)
+WB:WDI,SERIES,IT_MLT_MAIN,Fixed telephone subscriptions
+WB:WDI,SERIES,IT_MLT_MAIN_P2,Fixed telephone subscriptions (per 100 people)
+WB:WDI,SERIES,IT_NET_BBND,Fixed broadband subscriptions
+WB:WDI,SERIES,IT_NET_BBND_P2,Fixed broadband subscriptions (per 100 people)
+WB:WDI,SERIES,IT_NET_SECR,Secure Internet servers
+WB:WDI,SERIES,IT_NET_SECR_P6,Secure Internet servers (per 1 million people)
+WB:WDI,SERIES,IT_NET_USER_FE_ZS,"Individuals using the Internet, female (% of female population)"
+WB:WDI,SERIES,IT_NET_USER_MA_ZS,"Individuals using the Internet, male (% of male population)"
+WB:WDI,SERIES,IT_NET_USER_ZS,Individuals using the Internet (% of population)
+WB:WDI,SERIES,LP_EXP_DURS_MD,"Lead time to export, median case (days)"
+WB:WDI,SERIES,LP_IMP_DURS_MD,"Lead time to import, median case (days)"
+WB:WDI,SERIES,LP_LPI_CUST_XQ,Logistics performance index: Efficiency of customs clearance process (1=low to 5=high)
+WB:WDI,SERIES,LP_LPI_INFR_XQ,Logistics performance index: Quality of trade and transport-related infrastructure (1=low to 5=high)
+WB:WDI,SERIES,LP_LPI_ITRN_XQ,Logistics performance index: Ease of arranging competitively priced shipments (1=low to 5=high)
+WB:WDI,SERIES,LP_LPI_LOGS_XQ,Logistics performance index: Competence and quality of logistics services (1=low to 5=high)
+WB:WDI,SERIES,LP_LPI_OVRL_XQ,Logistics performance index: Overall (1=low to 5=high)
+WB:WDI,SERIES,LP_LPI_TIME_XQ,Logistics performance index: Frequency with which shipments reach consignee within scheduled or expected time (1=low to 5=high)
+WB:WDI,SERIES,LP_LPI_TRAC_XQ,Logistics performance index: Ability to track and trace consignments (1=low to 5=high)
+WB:WDI,SERIES,MS_MIL_MPRT_KD,Arms imports (SIPRI trend indicator values)
+WB:WDI,SERIES,MS_MIL_TOTL_P1,"Armed forces personnel, total"
+WB:WDI,SERIES,MS_MIL_TOTL_TF_ZS,Armed forces personnel (% of total labor force)
+WB:WDI,SERIES,MS_MIL_XPND_CD,Military expenditure (current USD)
+WB:WDI,SERIES,MS_MIL_XPND_CN,Military expenditure (current LCU)
+WB:WDI,SERIES,MS_MIL_XPND_GD_ZS,Military expenditure (% of GDP)
+WB:WDI,SERIES,MS_MIL_XPND_ZS,Military expenditure (% of general government expenditure)
+WB:WDI,SERIES,MS_MIL_XPRT_KD,Arms exports (SIPRI trend indicator values)
+WB:WDI,SERIES,NE_CON_GOVT_CD,General government final consumption expenditure (current US$)
+WB:WDI,SERIES,NE_CON_GOVT_CN,General government final consumption expenditure (current LCU)
+WB:WDI,SERIES,NE_CON_GOVT_KD,General government final consumption expenditure (constant 2015 US$)
+WB:WDI,SERIES,NE_CON_GOVT_KD_ZG,General government final consumption expenditure (annual % growth)
+WB:WDI,SERIES,NE_CON_GOVT_KN,General government final consumption expenditure (constant LCU)
+WB:WDI,SERIES,NE_CON_GOVT_ZS,General government final consumption expenditure (% of GDP)
+WB:WDI,SERIES,NE_CON_PRVT_CD,Households and NPISHs final consumption expenditure (current US$)
+WB:WDI,SERIES,NE_CON_PRVT_CN,Households and NPISHs final consumption expenditure (current LCU)
+WB:WDI,SERIES,NE_CON_PRVT_CN_AD,"Households and NPISHs final consumption expenditure, linked series (current LCU)"
+WB:WDI,SERIES,NE_CON_PRVT_KD,Households and NPISHs final consumption expenditure (constant 2015 US$)
+WB:WDI,SERIES,NE_CON_PRVT_KD_ZG,Households and NPISHs final consumption expenditure (annual % growth)
+WB:WDI,SERIES,NE_CON_PRVT_KN,Households and NPISHs final consumption expenditure (constant LCU)
+WB:WDI,SERIES,NE_CON_PRVT_PC_KD,Households and NPISHs final consumption expenditure per capita (constant 2015 US$)
+WB:WDI,SERIES,NE_CON_PRVT_PC_KD_ZG,Households final consumption expenditure per capita (annual % growth)
+WB:WDI,SERIES,NE_CON_PRVT_PP_CD,"Households and NPISHs Final consumption expenditure, PPP (current international $)"
+WB:WDI,SERIES,NE_CON_PRVT_PP_KD,"Households and NPISHs Final consumption expenditure, PPP (constant 2017 international $)"
+WB:WDI,SERIES,NE_CON_PRVT_ZS,Households and NPISHs final consumption expenditure (% of GDP)
+WB:WDI,SERIES,NE_CON_TOTL_CD,Final consumption expenditure (current US$)
+WB:WDI,SERIES,NE_CON_TOTL_CN,Final consumption expenditure (current LCU)
+WB:WDI,SERIES,NE_CON_TOTL_KD,Final consumption expenditure (constant 2015 US$)
+WB:WDI,SERIES,NE_CON_TOTL_KD_ZG,Final consumption expenditure (annual % growth)
+WB:WDI,SERIES,NE_CON_TOTL_KN,Final consumption expenditure (constant LCU)
+WB:WDI,SERIES,NE_CON_TOTL_ZS,Final consumption expenditure (% of GDP)
+WB:WDI,SERIES,NE_DAB_DEFL_ZS,Gross national expenditure deflator (base year varies by country)
+WB:WDI,SERIES,NE_DAB_TOTL_CD,Gross national expenditure (current US$)
+WB:WDI,SERIES,NE_DAB_TOTL_CN,Gross national expenditure (current LCU)
+WB:WDI,SERIES,NE_DAB_TOTL_KD,Gross national expenditure (constant 2015 US$)
+WB:WDI,SERIES,NE_DAB_TOTL_KN,Gross national expenditure (constant LCU)
+WB:WDI,SERIES,NE_DAB_TOTL_ZS,Gross national expenditure (% of GDP)
+WB:WDI,SERIES,NE_EXP_GNFS_CD,Exports of goods and services (current US$)
+WB:WDI,SERIES,NE_EXP_GNFS_CN,Exports of goods and services (current LCU)
+WB:WDI,SERIES,NE_EXP_GNFS_KD,Exports of goods and services (constant 2015 US$)
+WB:WDI,SERIES,NE_EXP_GNFS_KD_ZG,Exports of goods and services (annual % growth)
+WB:WDI,SERIES,NE_EXP_GNFS_KN,Exports of goods and services (constant LCU)
+WB:WDI,SERIES,NE_EXP_GNFS_ZS,Exports of goods and services (% of GDP)
+WB:WDI,SERIES,NE_GDI_FPRV_CN,"Gross fixed capital formation, private sector (current LCU)"
+WB:WDI,SERIES,NE_GDI_FPRV_ZS,"Gross fixed capital formation, private sector (% of GDP)"
+WB:WDI,SERIES,NE_GDI_FTOT_CD,Gross fixed capital formation (current US$)
+WB:WDI,SERIES,NE_GDI_FTOT_CN,Gross fixed capital formation (current LCU)
+WB:WDI,SERIES,NE_GDI_FTOT_KD,Gross fixed capital formation (constant 2015 US$)
+WB:WDI,SERIES,NE_GDI_FTOT_KD_ZG,Gross fixed capital formation (annual % growth)
+WB:WDI,SERIES,NE_GDI_FTOT_KN,Gross fixed capital formation (constant LCU)
+WB:WDI,SERIES,NE_GDI_FTOT_ZS,Gross fixed capital formation (% of GDP)
+WB:WDI,SERIES,NE_GDI_STKB_CD,Changes in inventories (current US$)
+WB:WDI,SERIES,NE_GDI_STKB_CN,Changes in inventories (current LCU)
+WB:WDI,SERIES,NE_GDI_STKB_KN,Changes in inventories (constant LCU)
+WB:WDI,SERIES,NE_GDI_TOTL_CD,Gross capital formation (current US$)
+WB:WDI,SERIES,NE_GDI_TOTL_CN,Gross capital formation (current LCU)
+WB:WDI,SERIES,NE_GDI_TOTL_KD,Gross capital formation (constant 2015 US$)
+WB:WDI,SERIES,NE_GDI_TOTL_KD_ZG,Gross capital formation (annual % growth)
+WB:WDI,SERIES,NE_GDI_TOTL_KN,Gross capital formation (constant LCU)
+WB:WDI,SERIES,NE_GDI_TOTL_ZS,Gross capital formation (% of GDP)
+WB:WDI,SERIES,NE_IMP_GNFS_CD,Imports of goods and services (current US$)
+WB:WDI,SERIES,NE_IMP_GNFS_CN,Imports of goods and services (current LCU)
+WB:WDI,SERIES,NE_IMP_GNFS_KD,Imports of goods and services (constant 2015 US$)
+WB:WDI,SERIES,NE_IMP_GNFS_KD_ZG,Imports of goods and services (annual % growth)
+WB:WDI,SERIES,NE_IMP_GNFS_KN,Imports of goods and services (constant LCU)
+WB:WDI,SERIES,NE_IMP_GNFS_ZS,Imports of goods and services (% of GDP)
+WB:WDI,SERIES,NE_RSB_GNFS_CD,External balance on goods and services (current US$)
+WB:WDI,SERIES,NE_RSB_GNFS_CN,External balance on goods and services (current LCU)
+WB:WDI,SERIES,NE_RSB_GNFS_KN,External balance on goods and services (constant LCU)
+WB:WDI,SERIES,NE_RSB_GNFS_ZS,External balance on goods and services (% of GDP)
+WB:WDI,SERIES,NE_TRD_GNFS_ZS,Trade (% of GDP)
+WB:WDI,SERIES,NV_AGR_EMPL_KD,"Agriculture, forestry, and fishing, value added per worker (constant 2015 US$)"
+WB:WDI,SERIES,NV_AGR_TOTL_CD,"Agriculture, forestry, and fishing, value added (current US$)"
+WB:WDI,SERIES,NV_AGR_TOTL_CN,"Agriculture, forestry, and fishing, value added (current LCU)"
+WB:WDI,SERIES,NV_AGR_TOTL_KD,"Agriculture, forestry, and fishing, value added (constant 2015 US$)"
+WB:WDI,SERIES,NV_AGR_TOTL_KD_ZG,"Agriculture, forestry, and fishing, value added (annual % growth)"
+WB:WDI,SERIES,NV_AGR_TOTL_KN,"Agriculture, forestry, and fishing, value added (constant LCU)"
+WB:WDI,SERIES,NV_AGR_TOTL_ZS,"Agriculture, forestry, and fishing, value added (% of GDP)"
+WB:WDI,SERIES,NV_FSM_TOTL_CN,Financial Intermediary Services Indirectly Measured (FISIM) (current LCU)
+WB:WDI,SERIES,NV_FSM_TOTL_KN,Financial Intermediary Services Indirectly Measured (FISIM) (constant LCU)
+WB:WDI,SERIES,NV_IND_EMPL_KD,"Industry, including construction, value added per worker (constant 2015 US$)"
+WB:WDI,SERIES,NV_IND_MANF_CD,"Manufacturing, value added (current US$)"
+WB:WDI,SERIES,NV_IND_MANF_CN,"Manufacturing, value added (current LCU)"
+WB:WDI,SERIES,NV_IND_MANF_KD,"Manufacturing, value added (constant 2015 US$)"
+WB:WDI,SERIES,NV_IND_MANF_KD_ZG,"Manufacturing, value added (annual % growth)"
+WB:WDI,SERIES,NV_IND_MANF_KN,"Manufacturing, value added (constant LCU)"
+WB:WDI,SERIES,NV_IND_MANF_ZS,"Manufacturing, value added (% of GDP)"
+WB:WDI,SERIES,NV_IND_TOTL_CD,"Industry, including construction, value added (current US$)"
+WB:WDI,SERIES,NV_IND_TOTL_CN,"Industry, including construction, value added (current LCU)"
+WB:WDI,SERIES,NV_IND_TOTL_KD,"Industry, including construction, value added (constant 2015 US$)"
+WB:WDI,SERIES,NV_IND_TOTL_KD_ZG,"Industry, including construction, value added (annual % growth)"
+WB:WDI,SERIES,NV_IND_TOTL_KN,"Industry, including construction, value added (constant LCU)"
+WB:WDI,SERIES,NV_IND_TOTL_ZS,"Industry, including construction, value added (% of GDP)"
+WB:WDI,SERIES,NV_MNF_CHEM_ZS_UN,Chemicals (% of value added in manufacturing)
+WB:WDI,SERIES,NV_MNF_FBTO_ZS_UN,"Food, beverages and tobacco (% of value added in manufacturing)"
+WB:WDI,SERIES,NV_MNF_MTRN_ZS_UN,Machinery and transport equipment (% of value added in manufacturing)
+WB:WDI,SERIES,NV_MNF_OTHR_ZS_UN,Other manufacturing (% of value added in manufacturing)
+WB:WDI,SERIES,NV_MNF_TECH_ZS_UN,Medium and high-tech manufacturing value added (% manufacturing value added)
+WB:WDI,SERIES,NV_MNF_TXTL_ZS_UN,Textiles and clothing (% of value added in manufacturing)
+WB:WDI,SERIES,NV_SRV_EMPL_KD,"Services, value added per worker (constant 2015 US$)"
+WB:WDI,SERIES,NV_SRV_TOTL_CD,"Services, value added (current US$)"
+WB:WDI,SERIES,NV_SRV_TOTL_CN,"Services, value added (current LCU)"
+WB:WDI,SERIES,NV_SRV_TOTL_KD,"Services, value added (constant 2015 US$)"
+WB:WDI,SERIES,NV_SRV_TOTL_KD_ZG,"Services, value added (annual % growth)"
+WB:WDI,SERIES,NV_SRV_TOTL_KN,"Services, value added (constant LCU)"
+WB:WDI,SERIES,NV_SRV_TOTL_ZS,"Services, value added (% of GDP)"
+WB:WDI,SERIES,NY_ADJ_AEDU_CD,"Adjusted savings, education expenditure (current US$)"
+WB:WDI,SERIES,NY_ADJ_AEDU_GN_ZS,"Adjusted savings, education expenditure (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_DCO2_CD,"Adjusted savings, carbon dioxide damage (current US$)"
+WB:WDI,SERIES,NY_ADJ_DCO2_GN_ZS,"Adjusted savings, carbon dioxide damage (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_DFOR_CD,"Adjusted savings, net forest depletion (current US$)"
+WB:WDI,SERIES,NY_ADJ_DFOR_GN_ZS,"Adjusted savings, net forest depletion (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_DKAP_CD,"Adjusted savings, consumption of fixed capital (current US$)"
+WB:WDI,SERIES,NY_ADJ_DKAP_GN_ZS,"Adjusted savings, consumption of fixed capital (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_DMIN_CD,"Adjusted savings, mineral depletion (current US$)"
+WB:WDI,SERIES,NY_ADJ_DMIN_GN_ZS,"Adjusted savings, mineral depletion (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_DNGY_CD,"Adjusted savings, energy depletion (current US$)"
+WB:WDI,SERIES,NY_ADJ_DNGY_GN_ZS,"Adjusted savings, energy depletion (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_DPEM_CD,"Adjusted savings, particulate emission damage (current US$)"
+WB:WDI,SERIES,NY_ADJ_DPEM_GN_ZS,"Adjusted savings, particulate emission damage (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_DRES_GN_ZS,"Adjusted savings, natural resources depletion (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_ICTR_GN_ZS,"Adjusted savings, gross savings (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_NNAT_CD,"Adjusted savings, net national savings (current US$)"
+WB:WDI,SERIES,NY_ADJ_NNAT_GN_ZS,"Adjusted savings, net national savings (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_NNTY_CD,Adjusted net national income (current US$)
+WB:WDI,SERIES,NY_ADJ_NNTY_KD,Adjusted net national income (constant 2015 US$)
+WB:WDI,SERIES,NY_ADJ_NNTY_KD_ZG,Adjusted net national income (annual % growth)
+WB:WDI,SERIES,NY_ADJ_NNTY_PC_CD,Adjusted net national income per capita (current US$)
+WB:WDI,SERIES,NY_ADJ_NNTY_PC_KD,Adjusted net national income per capita (constant 2015 US$)
+WB:WDI,SERIES,NY_ADJ_NNTY_PC_KD_ZG,Adjusted net national income per capita (annual % growth)
+WB:WDI,SERIES,NY_ADJ_SVNG_CD,"Adjusted net savings, including particulate emission damage (current US$)"
+WB:WDI,SERIES,NY_ADJ_SVNG_GN_ZS,"Adjusted net savings, including particulate emission damage (% of GNI)"
+WB:WDI,SERIES,NY_ADJ_SVNX_CD,"Adjusted net savings, excluding particulate emission damage (current US$)"
+WB:WDI,SERIES,NY_ADJ_SVNX_GN_ZS,"Adjusted net savings, excluding particulate emission damage (% of GNI)"
+WB:WDI,SERIES,NY_EXP_CAPM_KN,Exports as a capacity to import (constant LCU)
+WB:WDI,SERIES,NY_GDP_COAL_RT_ZS,Coal rents (% of GDP)
+WB:WDI,SERIES,NY_GDP_DEFL_KD_ZG,"Inflation, GDP deflator (annual % growth)"
+WB:WDI,SERIES,NY_GDP_DEFL_KD_ZG_AD,"Inflation, GDP deflator, linked series (annual % growth)"
+WB:WDI,SERIES,NY_GDP_DEFL_ZS,GDP deflator (base year varies by country)
+WB:WDI,SERIES,NY_GDP_DEFL_ZS_AD,"GDP deflator, linked series (base year varies by country)"
+WB:WDI,SERIES,NY_GDP_DISC_CN,Discrepancy in expenditure estimate of GDP (current LCU)
+WB:WDI,SERIES,NY_GDP_DISC_KN,Discrepancy in expenditure estimate of GDP (constant LCU)
+WB:WDI,SERIES,NY_GDP_FCST_CD,Gross Value Added (GVA) at basic prices (current US$)
+WB:WDI,SERIES,NY_GDP_FCST_CN,Gross Value Added (GVA) at basic prices (current LCU)
+WB:WDI,SERIES,NY_GDP_FCST_KD,Gross Value Added (GVA) at basic prices (constant 2015 US$)
+WB:WDI,SERIES,NY_GDP_FCST_KN,Gross Value Added (GVA) at basic prices (constant LCU)
+WB:WDI,SERIES,NY_GDP_FRST_RT_ZS,Forest rents (% of GDP)
+WB:WDI,SERIES,NY_GDP_MINR_RT_ZS,Mineral rents (% of GDP)
+WB:WDI,SERIES,NY_GDP_MKTP_CD,GDP (current US$)
+WB:WDI,SERIES,NY_GDP_MKTP_CN,GDP (current LCU)
+WB:WDI,SERIES,NY_GDP_MKTP_CN_AD,"GDP, linked series (current LCU)"
+WB:WDI,SERIES,NY_GDP_MKTP_KD,GDP (constant 2015 US$)
+WB:WDI,SERIES,NY_GDP_MKTP_KD_ZG,GDP (annual % growth)
+WB:WDI,SERIES,NY_GDP_MKTP_KN,GDP (constant LCU)
+WB:WDI,SERIES,NY_GDP_MKTP_PP_CD,"GDP, PPP (current international $)"
+WB:WDI,SERIES,NY_GDP_MKTP_PP_KD,"GDP, PPP (constant 2017 international $)"
+WB:WDI,SERIES,NY_GDP_NGAS_RT_ZS,Natural gas rents (% of GDP)
+WB:WDI,SERIES,NY_GDP_PCAP_CD,GDP per capita (current US$)
+WB:WDI,SERIES,NY_GDP_PCAP_CN,GDP per capita (current LCU)
+WB:WDI,SERIES,NY_GDP_PCAP_KD,GDP per capita (constant 2015 US$)
+WB:WDI,SERIES,NY_GDP_PCAP_KD_ZG,GDP per capita (annual % growth)
+WB:WDI,SERIES,NY_GDP_PCAP_KN,GDP per capita (constant LCU)
+WB:WDI,SERIES,NY_GDP_PCAP_PP_CD,"GDP per capita, PPP (current international $)"
+WB:WDI,SERIES,NY_GDP_PCAP_PP_KD,"GDP per capita, PPP (constant 2017 international $)"
+WB:WDI,SERIES,NY_GDP_PETR_RT_ZS,Oil rents (% of GDP)
+WB:WDI,SERIES,NY_GDP_TOTL_RT_ZS,Total natural resources rents (% of GDP)
+WB:WDI,SERIES,NY_GDS_TOTL_CD,Gross domestic savings (current US$)
+WB:WDI,SERIES,NY_GDS_TOTL_CN,Gross domestic savings (current LCU)
+WB:WDI,SERIES,NY_GDS_TOTL_ZS,Gross domestic savings (% of GDP)
+WB:WDI,SERIES,NY_GDY_TOTL_KN,Gross domestic income (constant LCU)
+WB:WDI,SERIES,NY_GNP_ATLS_CD,"GNI, Atlas method (current US$)"
+WB:WDI,SERIES,NY_GNP_MKTP_CD,GNI (current US$)
+WB:WDI,SERIES,NY_GNP_MKTP_CN,GNI (current LCU)
+WB:WDI,SERIES,NY_GNP_MKTP_CN_AD,"GNI, linked series (current LCU)"
+WB:WDI,SERIES,NY_GNP_MKTP_KD,GNI (constant 2015 US$)
+WB:WDI,SERIES,NY_GNP_MKTP_KD_ZG,GNI (annual % growth)
+WB:WDI,SERIES,NY_GNP_MKTP_KN,GNI (constant LCU)
+WB:WDI,SERIES,NY_GNP_MKTP_PP_CD,"GNI, PPP (current international $)"
+WB:WDI,SERIES,NY_GNP_MKTP_PP_KD,"GNI, PPP (constant 2017 international $)"
+WB:WDI,SERIES,NY_GNP_PCAP_CD,"GNI per capita, Atlas method (current US$)"
+WB:WDI,SERIES,NY_GNP_PCAP_CN,GNI per capita (current LCU)
+WB:WDI,SERIES,NY_GNP_PCAP_KD,GNI per capita (constant 2015 US$)
+WB:WDI,SERIES,NY_GNP_PCAP_KD_ZG,GNI per capita (annual % growth)
+WB:WDI,SERIES,NY_GNP_PCAP_KN,GNI per capita (constant LCU)
+WB:WDI,SERIES,NY_GNP_PCAP_PP_CD,"GNI per capita, PPP (current international $)"
+WB:WDI,SERIES,NY_GNP_PCAP_PP_KD,"GNI per capita, PPP (constant 2017 international $)"
+WB:WDI,SERIES,NY_GNS_ICTR_CD,Gross savings (current US$)
+WB:WDI,SERIES,NY_GNS_ICTR_CN,Gross savings (current LCU)
+WB:WDI,SERIES,NY_GNS_ICTR_GN_ZS,Gross savings (% of GNI)
+WB:WDI,SERIES,NY_GNS_ICTR_ZS,Gross savings (% of GDP)
+WB:WDI,SERIES,NY_GSR_NFCY_CD,Net primary income (net income from abroad) (current US$)
+WB:WDI,SERIES,NY_GSR_NFCY_CN,Net primary income (net income from abroad) (current LCU)
+WB:WDI,SERIES,NY_GSR_NFCY_KN,Net primary income (net income from abroad) (constant LCU)
+WB:WDI,SERIES,NY_TAX_NIND_CD,Taxes less subsidies on products (current US$)
+WB:WDI,SERIES,NY_TAX_NIND_CN,Taxes less subsidies on products (current LCU)
+WB:WDI,SERIES,NY_TAX_NIND_KN,Taxes less subsidies on products (constant LCU)
+WB:WDI,SERIES,NY_TRF_NCTR_CD,Net secondary income (net current transfers from abroad) (current US$)
+WB:WDI,SERIES,NY_TRF_NCTR_CN,Net secondary income (net current transfers from abroad) (current LCU)
+WB:WDI,SERIES,NY_TRF_NCTR_KN,Net secondary income (net current transfers from abroad) (constant LCU)
+WB:WDI,SERIES,NY_TTF_GNFS_KN,Terms of trade adjustment (constant LCU)
+WB:WDI,SERIES,PA_NUS_ATLS,DEC alternative conversion factor (LCU per US$)
+WB:WDI,SERIES,PA_NUS_FCRF,"Official exchange rate (LCU per US$, period average)"
+WB:WDI,SERIES,PA_NUS_PPP,"PPP conversion factor, GDP (LCU per international $)"
+WB:WDI,SERIES,PA_NUS_PPPC_RF,Price level ratio of PPP conversion factor (GDP) to market exchange rate
+WB:WDI,SERIES,PA_NUS_PRVT_PP,"PPP conversion factor, private consumption (LCU per international $)"
+WB:WDI,SERIES,per_allsp_adq_pop_tot,Adequacy of social protection and labor programs (% of total welfare of beneficiary households)
+WB:WDI,SERIES,per_allsp_ben_q1_tot,Benefit incidence of social protection and labor programs to poorest quintile (% of total SPL benefits)
+WB:WDI,SERIES,per_allsp_cov_pop_tot,Coverage of social protection and labor programs (% of population)
+WB:WDI,SERIES,per_lm_alllm_adq_pop_tot,Adequacy of unemployment benefits and ALMP (% of total welfare of beneficiary households)
+WB:WDI,SERIES,per_lm_alllm_ben_q1_tot,Benefit incidence of unemployment benefits and ALMP to poorest quintile (% of total U/ALMP benefits)
+WB:WDI,SERIES,per_lm_alllm_cov_pop_tot,Coverage of unemployment benefits and ALMP (% of population)
+WB:WDI,SERIES,per_lm_alllm_cov_q1_tot,Coverage of unemployment benefits and ALMP in poorest quintile (% of population)
+WB:WDI,SERIES,per_lm_alllm_cov_q2_tot,Coverage of unemployment benefits and ALMP in 2nd quintile (% of population)
+WB:WDI,SERIES,per_lm_alllm_cov_q3_tot,Coverage of unemployment benefits and ALMP in 3rd quintile (% of population)
+WB:WDI,SERIES,per_lm_alllm_cov_q4_tot,Coverage of unemployment benefits and ALMP in 4th quintile (% of population)
+WB:WDI,SERIES,per_lm_alllm_cov_q5_tot,Coverage of unemployment benefits and ALMP in richest quintile (% of population)
+WB:WDI,SERIES,per_sa_allsa_adq_pop_tot,Adequacy of social safety net programs (% of total welfare of beneficiary households)
+WB:WDI,SERIES,per_sa_allsa_ben_q1_tot,Benefit incidence of social safety net programs to poorest quintile (% of total safety net benefits)
+WB:WDI,SERIES,per_sa_allsa_cov_pop_tot,Coverage of social safety net programs (% of population)
+WB:WDI,SERIES,per_sa_allsa_cov_q1_tot,Coverage of social safety net programs in poorest quintile (% of population)
+WB:WDI,SERIES,per_sa_allsa_cov_q2_tot,Coverage of social safety net programs in 2nd quintile (% of population)
+WB:WDI,SERIES,per_sa_allsa_cov_q3_tot,Coverage of social safety net programs in 3rd quintile (% of population)
+WB:WDI,SERIES,per_sa_allsa_cov_q4_tot,Coverage of social safety net programs in 4th quintile (% of population)
+WB:WDI,SERIES,per_sa_allsa_cov_q5_tot,Coverage of social safety net programs in richest quintile (% of population)
+WB:WDI,SERIES,per_si_allsi_adq_pop_tot,Adequacy of social insurance programs (% of total welfare of beneficiary households)
+WB:WDI,SERIES,per_si_allsi_ben_q1_tot,Benefit incidence of social insurance programs to poorest quintile (% of total social insurance benefits)
+WB:WDI,SERIES,per_si_allsi_cov_pop_tot,Coverage of social insurance programs (% of population)
+WB:WDI,SERIES,per_si_allsi_cov_q1_tot,Coverage of social insurance programs in poorest quintile (% of population)
+WB:WDI,SERIES,per_si_allsi_cov_q2_tot,Coverage of social insurance programs in 2nd quintile (% of population)
+WB:WDI,SERIES,per_si_allsi_cov_q3_tot,Coverage of social insurance programs in 3rd quintile (% of population)
+WB:WDI,SERIES,per_si_allsi_cov_q4_tot,Coverage of social insurance programs in 4th quintile (% of population)
+WB:WDI,SERIES,per_si_allsi_cov_q5_tot,Coverage of social insurance programs in richest quintile (% of population)
+WB:WDI,SERIES,PV_EST,Political Stability and Absence of Violence/Terrorism: Estimate
+WB:WDI,SERIES,PV_NO_SRC,Political Stability and Absence of Violence/Terrorism: Number of Sources
+WB:WDI,SERIES,PV_PER_RNK,Political Stability and Absence of Violence/Terrorism: Percentile Rank
+WB:WDI,SERIES,PV_PER_RNK_LOWER,"Political Stability and Absence of Violence/Terrorism: Percentile Rank, Lower Bound of 90% Confidence Interval"
+WB:WDI,SERIES,PV_PER_RNK_UPPER,"Political Stability and Absence of Violence/Terrorism: Percentile Rank, Upper Bound of 90% Confidence Interval"
+WB:WDI,SERIES,PV_STD_ERR,Political Stability and Absence of Violence/Terrorism: Standard Error
+WB:WDI,SERIES,PX_REX_REER,Real effective exchange rate index (2010 = 100)
+WB:WDI,SERIES,RL_EST,Rule of Law: Estimate
+WB:WDI,SERIES,RL_NO_SRC,Rule of Law: Number of Sources
+WB:WDI,SERIES,RL_PER_RNK,Rule of Law: Percentile Rank
+WB:WDI,SERIES,RL_PER_RNK_LOWER,"Rule of Law: Percentile Rank, Lower Bound of 90% Confidence Interval"
+WB:WDI,SERIES,RL_PER_RNK_UPPER,"Rule of Law: Percentile Rank, Upper Bound of 90% Confidence Interval"
+WB:WDI,SERIES,RL_STD_ERR,Rule of Law: Standard Error
+WB:WDI,SERIES,RQ_EST,Regulatory Quality: Estimate
+WB:WDI,SERIES,RQ_NO_SRC,Regulatory Quality: Number of Sources
+WB:WDI,SERIES,RQ_PER_RNK,Regulatory Quality: Percentile Rank
+WB:WDI,SERIES,RQ_PER_RNK_LOWER,"Regulatory Quality: Percentile Rank, Lower Bound of 90% Confidence Interval"
+WB:WDI,SERIES,RQ_PER_RNK_UPPER,"Regulatory Quality: Percentile Rank, Upper Bound of 90% Confidence Interval"
+WB:WDI,SERIES,RQ_STD_ERR,Regulatory Quality: Standard Error
+WB:WDI,SERIES,SE_ADT_1524_LT_FE_ZS,"Literacy rate, youth female (% of females ages 15-24)"
+WB:WDI,SERIES,SE_ADT_1524_LT_FM_ZS,"Literacy rate, youth (ages 15-24), gender parity index (GPI)"
+WB:WDI,SERIES,SE_ADT_1524_LT_MA_ZS,"Literacy rate, youth male (% of males ages 15-24)"
+WB:WDI,SERIES,SE_ADT_1524_LT_ZS,"Literacy rate, youth total (% of people ages 15-24)"
+WB:WDI,SERIES,SE_ADT_LITR_FE_ZS,"Literacy rate, adult female (% of females ages 15 and above)"
+WB:WDI,SERIES,SE_ADT_LITR_MA_ZS,"Literacy rate, adult male (% of males ages 15 and above)"
+WB:WDI,SERIES,SE_ADT_LITR_ZS,"Literacy rate, adult total (% of people ages 15 and above)"
+WB:WDI,SERIES,SE_COM_DURS,"Compulsory education, duration (years)"
+WB:WDI,SERIES,SE_ENR_PRIM_FM_ZS,"School enrollment, primary (gross), gender parity index (GPI)"
+WB:WDI,SERIES,SE_ENR_PRSC_FM_ZS,"School enrollment, primary and secondary (gross), gender parity index (GPI)"
+WB:WDI,SERIES,SE_ENR_SECO_FM_ZS,"School enrollment, secondary (gross), gender parity index (GPI)"
+WB:WDI,SERIES,SE_ENR_TERT_FM_ZS,"School enrollment, tertiary (gross), gender parity index (GPI)"
+WB:WDI,SERIES,SE_LPV_PRIM,Learning poverty: Share of Children at the End-of-Primary age below minimum reading proficiency adjusted by Out-of-School Children (%)
+WB:WDI,SERIES,SE_LPV_PRIM_FE,Learning poverty: Share of Female Children at the End-of-Primary age below minimum reading proficiency adjusted by Out-of-School Children (%)
+WB:WDI,SERIES,SE_LPV_PRIM_LD,Pupils below minimum reading proficiency at end of primary (%). Low GAML threshold
+WB:WDI,SERIES,SE_LPV_PRIM_LD_FE,Female pupils below minimum reading proficiency at end of primary (%). Low GAML threshold
+WB:WDI,SERIES,SE_LPV_PRIM_LD_MA,Male pupils below minimum reading proficiency at end of primary (%). Low GAML threshold
+WB:WDI,SERIES,SE_LPV_PRIM_MA,Learning poverty: Share of Male Children at the End-of-Primary age below minimum reading proficiency adjusted by Out-of-School Children (%)
+WB:WDI,SERIES,SE_LPV_PRIM_SD,Primary school age children out-of-school (%)
+WB:WDI,SERIES,SE_LPV_PRIM_SD_FE,Female primary school age children out-of-school (%)
+WB:WDI,SERIES,SE_LPV_PRIM_SD_MA,Male primary school age children out-of-school (%)
+WB:WDI,SERIES,SE_PRE_DURS,"Preprimary education, duration (years)"
+WB:WDI,SERIES,SE_PRE_ENRL_TC_ZS,"Pupil-teacher ratio, preprimary"
+WB:WDI,SERIES,SE_PRE_ENRR,"School enrollment, preprimary (% gross)"
+WB:WDI,SERIES,SE_PRE_ENRR_FE,"School enrollment, preprimary, female (% gross)"
+WB:WDI,SERIES,SE_PRE_ENRR_MA,"School enrollment, preprimary, male (% gross)"
+WB:WDI,SERIES,SE_PRE_TCAQ_FE_ZS,"Trained teachers in preprimary education, female (% of female teachers)"
+WB:WDI,SERIES,SE_PRE_TCAQ_MA_ZS,"Trained teachers in preprimary education, male (% of male teachers)"
+WB:WDI,SERIES,SE_PRE_TCAQ_ZS,Trained teachers in preprimary education (% of total teachers)
+WB:WDI,SERIES,SE_PRM_AGES,Primary school starting age (years)
+WB:WDI,SERIES,SE_PRM_CMPT_FE_ZS,"Primary completion rate, female (% of relevant age group)"
+WB:WDI,SERIES,SE_PRM_CMPT_MA_ZS,"Primary completion rate, male (% of relevant age group)"
+WB:WDI,SERIES,SE_PRM_CMPT_ZS,"Primary completion rate, total (% of relevant age group)"
+WB:WDI,SERIES,SE_PRM_CUAT_FE_ZS,"Educational attainment, at least completed primary, population 25+ years, female (%) (cumulative)"
+WB:WDI,SERIES,SE_PRM_CUAT_MA_ZS,"Educational attainment, at least completed primary, population 25+ years, male (%) (cumulative)"
+WB:WDI,SERIES,SE_PRM_CUAT_ZS,"Educational attainment, at least completed primary, population 25+ years, total (%) (cumulative)"
+WB:WDI,SERIES,SE_PRM_DURS,"Primary education, duration (years)"
+WB:WDI,SERIES,SE_PRM_ENRL,"Primary education, pupils"
+WB:WDI,SERIES,SE_PRM_ENRL_FE_ZS,"Primary education, pupils (% female)"
+WB:WDI,SERIES,SE_PRM_ENRL_TC_ZS,"Pupil-teacher ratio, primary"
+WB:WDI,SERIES,SE_PRM_ENRR,"School enrollment, primary (% gross)"
+WB:WDI,SERIES,SE_PRM_ENRR_FE,"School enrollment, primary, female (% gross)"
+WB:WDI,SERIES,SE_PRM_ENRR_MA,"School enrollment, primary, male (% gross)"
+WB:WDI,SERIES,SE_PRM_GINT_FE_ZS,"Gross intake ratio in first grade of primary education, female (% of relevant age group)"
+WB:WDI,SERIES,SE_PRM_GINT_MA_ZS,"Gross intake ratio in first grade of primary education, male (% of relevant age group)"
+WB:WDI,SERIES,SE_PRM_GINT_ZS,"Gross intake ratio in first grade of primary education, total (% of relevant age group)"
+WB:WDI,SERIES,SE_PRM_NENR,"School enrollment, primary (% net)"
+WB:WDI,SERIES,SE_PRM_NENR_FE,"School enrollment, primary, female (% net)"
+WB:WDI,SERIES,SE_PRM_NENR_MA,"School enrollment, primary, male (% net)"
+WB:WDI,SERIES,SE_PRM_NINT_FE_ZS,"Net intake rate in grade 1, female (% of official school-age population)"
+WB:WDI,SERIES,SE_PRM_NINT_MA_ZS,"Net intake rate in grade 1, male (% of official school-age population)"
+WB:WDI,SERIES,SE_PRM_NINT_ZS,Net intake rate in grade 1 (% of official school-age population)
+WB:WDI,SERIES,SE_PRM_OENR_FE_ZS,"Over-age students, primary, female (% of female enrollment)"
+WB:WDI,SERIES,SE_PRM_OENR_MA_ZS,"Over-age students, primary, male (% of male enrollment)"
+WB:WDI,SERIES,SE_PRM_OENR_ZS,"Over-age students, primary (% of enrollment)"
+WB:WDI,SERIES,SE_PRM_PRIV_ZS,"School enrollment, primary, private (% of total primary)"
+WB:WDI,SERIES,SE_PRM_PRS5_FE_ZS,"Persistence to grade 5, female (% of cohort)"
+WB:WDI,SERIES,SE_PRM_PRS5_MA_ZS,"Persistence to grade 5, male (% of cohort)"
+WB:WDI,SERIES,SE_PRM_PRS5_ZS,"Persistence to grade 5, total (% of cohort)"
+WB:WDI,SERIES,SE_PRM_PRSL_FE_ZS,"Persistence to last grade of primary, female (% of cohort)"
+WB:WDI,SERIES,SE_PRM_PRSL_MA_ZS,"Persistence to last grade of primary, male (% of cohort)"
+WB:WDI,SERIES,SE_PRM_PRSL_ZS,"Persistence to last grade of primary, total (% of cohort)"
+WB:WDI,SERIES,SE_PRM_REPT_FE_ZS,"Repeaters, primary, female (% of female enrollment)"
+WB:WDI,SERIES,SE_PRM_REPT_MA_ZS,"Repeaters, primary, male (% of male enrollment)"
+WB:WDI,SERIES,SE_PRM_REPT_ZS,"Repeaters, primary, total (% of total enrollment)"
+WB:WDI,SERIES,SE_PRM_TCAQ_FE_ZS,"Trained teachers in primary education, female (% of female teachers)"
+WB:WDI,SERIES,SE_PRM_TCAQ_MA_ZS,"Trained teachers in primary education, male (% of male teachers)"
+WB:WDI,SERIES,SE_PRM_TCAQ_ZS,Trained teachers in primary education (% of total teachers)
+WB:WDI,SERIES,SE_PRM_TCHR,"Primary education, teachers"
+WB:WDI,SERIES,SE_PRM_TCHR_FE_ZS,"Primary education, teachers (% female)"
+WB:WDI,SERIES,SE_PRM_TENR,"Adjusted net enrollment rate, primary (% of primary school age children)"
+WB:WDI,SERIES,SE_PRM_TENR_FE,"Adjusted net enrollment rate, primary, female (% of primary school age children)"
+WB:WDI,SERIES,SE_PRM_TENR_MA,"Adjusted net enrollment rate, primary, male (% of primary school age children)"
+WB:WDI,SERIES,SE_PRM_UNER,"Children out of school, primary"
+WB:WDI,SERIES,SE_PRM_UNER_FE,"Children out of school, primary, female"
+WB:WDI,SERIES,SE_PRM_UNER_FE_ZS,"Children out of school, female (% of female primary school age)"
+WB:WDI,SERIES,SE_PRM_UNER_MA,"Children out of school, primary, male"
+WB:WDI,SERIES,SE_PRM_UNER_MA_ZS,"Children out of school, male (% of male primary school age)"
+WB:WDI,SERIES,SE_PRM_UNER_ZS,Children out of school (% of primary school age)
+WB:WDI,SERIES,SE_SEC_AGES,Lower secondary school starting age (years)
+WB:WDI,SERIES,SE_SEC_CMPT_LO_FE_ZS,"Lower secondary completion rate, female (% of relevant age group)"
+WB:WDI,SERIES,SE_SEC_CMPT_LO_MA_ZS,"Lower secondary completion rate, male (% of relevant age group)"
+WB:WDI,SERIES,SE_SEC_CMPT_LO_ZS,"Lower secondary completion rate, total (% of relevant age group)"
+WB:WDI,SERIES,SE_SEC_CUAT_LO_FE_ZS,"Educational attainment, at least completed lower secondary, population 25+, female (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_CUAT_LO_MA_ZS,"Educational attainment, at least completed lower secondary, population 25+, male (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_CUAT_LO_ZS,"Educational attainment, at least completed lower secondary, population 25+, total (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_CUAT_PO_FE_ZS,"Educational attainment, at least completed post-secondary, population 25+, female (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_CUAT_PO_MA_ZS,"Educational attainment, at least completed post-secondary, population 25+, male (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_CUAT_PO_ZS,"Educational attainment, at least completed post-secondary, population 25+, total (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_CUAT_UP_FE_ZS,"Educational attainment, at least completed upper secondary, population 25+, female (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_CUAT_UP_MA_ZS,"Educational attainment, at least completed upper secondary, population 25+, male (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_CUAT_UP_ZS,"Educational attainment, at least completed upper secondary, population 25+, total (%) (cumulative)"
+WB:WDI,SERIES,SE_SEC_DURS,"Secondary education, duration (years)"
+WB:WDI,SERIES,SE_SEC_ENRL,"Secondary education, pupils"
+WB:WDI,SERIES,SE_SEC_ENRL_FE_ZS,"Secondary education, pupils (% female)"
+WB:WDI,SERIES,SE_SEC_ENRL_GC,"Secondary education, general pupils"
+WB:WDI,SERIES,SE_SEC_ENRL_GC_FE_ZS,"Secondary education, general pupils (% female)"
+WB:WDI,SERIES,SE_SEC_ENRL_LO_TC_ZS,"Pupil-teacher ratio, lower secondary"
+WB:WDI,SERIES,SE_SEC_ENRL_TC_ZS,"Pupil-teacher ratio, secondary"
+WB:WDI,SERIES,SE_SEC_ENRL_UP_TC_ZS,"Pupil-teacher ratio, upper secondary"
+WB:WDI,SERIES,SE_SEC_ENRL_VO,"Secondary education, vocational pupils"
+WB:WDI,SERIES,SE_SEC_ENRL_VO_FE_ZS,"Secondary education, vocational pupils (% female)"
+WB:WDI,SERIES,SE_SEC_ENRR,"School enrollment, secondary (% gross)"
+WB:WDI,SERIES,SE_SEC_ENRR_FE,"School enrollment, secondary, female (% gross)"
+WB:WDI,SERIES,SE_SEC_ENRR_MA,"School enrollment, secondary, male (% gross)"
+WB:WDI,SERIES,SE_SEC_NENR,"School enrollment, secondary (% net)"
+WB:WDI,SERIES,SE_SEC_NENR_FE,"School enrollment, secondary, female (% net)"
+WB:WDI,SERIES,SE_SEC_NENR_MA,"School enrollment, secondary, male (% net)"
+WB:WDI,SERIES,SE_SEC_PRIV_ZS,"School enrollment, secondary, private (% of total secondary)"
+WB:WDI,SERIES,SE_SEC_PROG_FE_ZS,"Progression to secondary school, female (%)"
+WB:WDI,SERIES,SE_SEC_PROG_MA_ZS,"Progression to secondary school, male (%)"
+WB:WDI,SERIES,SE_SEC_PROG_ZS,Progression to secondary school (%)
+WB:WDI,SERIES,SE_SEC_TCAQ_FE_ZS,"Trained teachers in secondary education, female (% of female teachers)"
+WB:WDI,SERIES,SE_SEC_TCAQ_LO_FE_ZS,"Trained teachers in lower secondary education, female (% of female teachers)"
+WB:WDI,SERIES,SE_SEC_TCAQ_LO_MA_ZS,"Trained teachers in lower secondary education, male (% of male teachers)"
+WB:WDI,SERIES,SE_SEC_TCAQ_LO_ZS,Trained teachers in lower secondary education (% of total teachers)
+WB:WDI,SERIES,SE_SEC_TCAQ_MA_ZS,"Trained teachers in secondary education, male (% of male teachers)"
+WB:WDI,SERIES,SE_SEC_TCAQ_UP_FE_ZS,"Trained teachers in upper secondary education, female (% of female teachers)"
+WB:WDI,SERIES,SE_SEC_TCAQ_UP_MA_ZS,"Trained teachers in upper secondary education, male (% of male teachers)"
+WB:WDI,SERIES,SE_SEC_TCAQ_UP_ZS,Trained teachers in upper secondary education (% of total teachers)
+WB:WDI,SERIES,SE_SEC_TCAQ_ZS,Trained teachers in secondary education (% of total teachers)
+WB:WDI,SERIES,SE_SEC_TCHR,"Secondary education, teachers"
+WB:WDI,SERIES,SE_SEC_TCHR_FE,"Secondary education, teachers, female"
+WB:WDI,SERIES,SE_SEC_TCHR_FE_ZS,"Secondary education, teachers (% female)"
+WB:WDI,SERIES,SE_SEC_UNER_LO_FE_ZS,"Adolescents out of school, female (% of female lower secondary school age)"
+WB:WDI,SERIES,SE_SEC_UNER_LO_MA_ZS,"Adolescents out of school, male (% of male lower secondary school age)"
+WB:WDI,SERIES,SE_SEC_UNER_LO_ZS,Adolescents out of school (% of lower secondary school age)
+WB:WDI,SERIES,SE_TER_CUAT_BA_FE_ZS,"Educational attainment, at least Bachelor's or equivalent, population 25+, female (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_BA_MA_ZS,"Educational attainment, at least Bachelor's or equivalent, population 25+, male (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_BA_ZS,"Educational attainment, at least Bachelor's or equivalent, population 25+, total (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_DO_FE_ZS,"Educational attainment, Doctoral or equivalent, population 25+, female (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_DO_MA_ZS,"Educational attainment, Doctoral or equivalent, population 25+, male (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_DO_ZS,"Educational attainment, Doctoral or equivalent, population 25+, total (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_MS_FE_ZS,"Educational attainment, at least Master's or equivalent, population 25+, female (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_MS_MA_ZS,"Educational attainment, at least Master's or equivalent, population 25+, male (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_MS_ZS,"Educational attainment, at least Master's or equivalent, population 25+, total (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_ST_FE_ZS,"Educational attainment, at least completed short-cycle tertiary, population 25+, female (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_ST_MA_ZS,"Educational attainment, at least completed short-cycle tertiary, population 25+, male (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_CUAT_ST_ZS,"Educational attainment, at least completed short-cycle tertiary, population 25+, total (%) (cumulative)"
+WB:WDI,SERIES,SE_TER_ENRL_TC_ZS,"Pupil-teacher ratio, tertiary"
+WB:WDI,SERIES,SE_TER_ENRR,"School enrollment, tertiary (% gross)"
+WB:WDI,SERIES,SE_TER_ENRR_FE,"School enrollment, tertiary, female (% gross)"
+WB:WDI,SERIES,SE_TER_ENRR_MA,"School enrollment, tertiary, male (% gross)"
+WB:WDI,SERIES,SE_TER_TCHR_FE_ZS,"Tertiary education, academic staff (% female)"
+WB:WDI,SERIES,SE_XPD_CPRM_ZS,"Current education expenditure, primary (% of total expenditure in primary public institutions)"
+WB:WDI,SERIES,SE_XPD_CSEC_ZS,"Current education expenditure, secondary (% of total expenditure in secondary public institutions)"
+WB:WDI,SERIES,SE_XPD_CTER_ZS,"Current education expenditure, tertiary (% of total expenditure in tertiary public institutions)"
+WB:WDI,SERIES,SE_XPD_CTOT_ZS,"Current education expenditure, total (% of total expenditure in public institutions)"
+WB:WDI,SERIES,SE_XPD_PRIM_PC_ZS,"Government expenditure per student, primary (% of GDP per capita)"
+WB:WDI,SERIES,SE_XPD_PRIM_ZS,Expenditure on primary education (% of government expenditure on education)
+WB:WDI,SERIES,SE_XPD_SECO_PC_ZS,"Government expenditure per student, secondary (% of GDP per capita)"
+WB:WDI,SERIES,SE_XPD_SECO_ZS,Expenditure on secondary education (% of government expenditure on education)
+WB:WDI,SERIES,SE_XPD_TERT_PC_ZS,"Government expenditure per student, tertiary (% of GDP per capita)"
+WB:WDI,SERIES,SE_XPD_TERT_ZS,Expenditure on tertiary education (% of government expenditure on education)
+WB:WDI,SERIES,SE_XPD_TOTL_GB_ZS,"Government expenditure on education, total (% of government expenditure)"
+WB:WDI,SERIES,SE_XPD_TOTL_GD_ZS,"Government expenditure on education, total (% of GDP)"
+WB:WDI,SERIES,SG_DMK_ALLD_FN_ZS,"Women participating in the three decisions (own health care, major household purchases, and visiting family) (% of women age 15-49)"
+WB:WDI,SERIES,SG_DMK_SRCR_FN_ZS,"Women making their own informed decisions regarding sexual relations, contraceptive use and reproductive health care (% of women age 15-49)"
+WB:WDI,SERIES,SG_GEN_PARL_ZS,Proportion of seats held by women in national parliaments (%)
+WB:WDI,SERIES,SG_LAW_INDX,Women Business and the Law Index Score (scale 1-100)
+WB:WDI,SERIES,SG_TIM_UWRK_FE,"Proportion of time spent on unpaid domestic and care work, female (% of 24 hour day)"
+WB:WDI,SERIES,SG_TIM_UWRK_MA,"Proportion of time spent on unpaid domestic and care work, male (% of 24 hour day)"
+WB:WDI,SERIES,SG_VAW_1549_ZS,Proportion of women subjected to physical and/or sexual violence in the last 12 months (% of ever-partnered women ages 15-49)
+WB:WDI,SERIES,SG_VAW_ARGU_ZS,Women who believe a husband is justified in beating his wife when she argues with him (%)
+WB:WDI,SERIES,SG_VAW_BURN_ZS,Women who believe a husband is justified in beating his wife when she burns the food (%)
+WB:WDI,SERIES,SG_VAW_GOES_ZS,Women who believe a husband is justified in beating his wife when she goes out without telling him (%)
+WB:WDI,SERIES,SG_VAW_NEGL_ZS,Women who believe a husband is justified in beating his wife when she neglects the children (%)
+WB:WDI,SERIES,SG_VAW_REAS_ZS,Women who believe a husband is justified in beating his wife (any of five reasons) (%)
+WB:WDI,SERIES,SG_VAW_REFU_ZS,Women who believe a husband is justified in beating his wife when she refuses sex with him (%)
+WB:WDI,SERIES,SH_ALC_PCAP_FE_LI,"Total alcohol consumption per capita, female (liters of pure alcohol, projected estimates, female 15+ years of age)"
+WB:WDI,SERIES,SH_ALC_PCAP_LI,"Total alcohol consumption per capita (liters of pure alcohol, projected estimates, 15+ years of age)"
+WB:WDI,SERIES,SH_ALC_PCAP_MA_LI,"Total alcohol consumption per capita, male (liters of pure alcohol, projected estimates, male 15+ years of age)"
+WB:WDI,SERIES,SH_ANM_ALLW_ZS,Prevalence of anemia among women of reproductive age (% of women ages 15-49)
+WB:WDI,SERIES,SH_ANM_CHLD_ZS,Prevalence of anemia among children (% of children ages 6-59 months)
+WB:WDI,SERIES,SH_ANM_NPRG_ZS,Prevalence of anemia among non-pregnant women (% of women ages 15-49)
+WB:WDI,SERIES,SH_CON_1524_FE_ZS,"Condom use, population ages 15-24, female (% of females ages 15-24)"
+WB:WDI,SERIES,SH_CON_1524_MA_ZS,"Condom use, population ages 15-24, male (% of males ages 15-24)"
+WB:WDI,SERIES,SH_DTH_0509,Number of deaths ages 5-9 years
+WB:WDI,SERIES,SH_DTH_1014,Number of deaths ages 10-14 years
+WB:WDI,SERIES,SH_DTH_1519,Number of deaths ages 15-19 years
+WB:WDI,SERIES,SH_DTH_2024,Number of deaths ages 20-24 years
+WB:WDI,SERIES,SH_DTH_COMM_ZS,"Cause of death, by communicable diseases and maternal, prenatal and nutrition conditions (% of total)"
+WB:WDI,SERIES,SH_DTH_IMRT,Number of infant deaths
+WB:WDI,SERIES,SH_DTH_INJR_ZS,"Cause of death, by injury (% of total)"
+WB:WDI,SERIES,SH_DTH_MORT,Number of under-five deaths
+WB:WDI,SERIES,SH_DTH_NCOM_ZS,"Cause of death, by non-communicable diseases (% of total)"
+WB:WDI,SERIES,SH_DTH_NMRT,Number of neonatal deaths
+WB:WDI,SERIES,SH_DYN_0509,"Probability of dying among children ages 5-9 years (per 1,000)"
+WB:WDI,SERIES,SH_DYN_1014,"Probability of dying among adolescents ages 10-14 years (per 1,000)"
+WB:WDI,SERIES,SH_DYN_1519,"Probability of dying among adolescents ages 15-19 years (per 1,000)"
+WB:WDI,SERIES,SH_DYN_2024,"Probability of dying among youth ages 20-24 years (per 1,000)"
+WB:WDI,SERIES,SH_DYN_AIDS_FE_ZS,Women's share of population ages 15+ living with HIV (%)
+WB:WDI,SERIES,SH_DYN_AIDS_ZS,"Prevalence of HIV, total (% of population ages 15-49)"
+WB:WDI,SERIES,SH_DYN_MORT,"Mortality rate, under-5 (per 1,000 live births)"
+WB:WDI,SERIES,SH_DYN_MORT_FE,"Mortality rate, under-5, female (per 1,000 live births)"
+WB:WDI,SERIES,SH_DYN_MORT_MA,"Mortality rate, under-5, male (per 1,000 live births)"
+WB:WDI,SERIES,SH_DYN_NCOM_FE_ZS,"Mortality from CVD, cancer, diabetes or CRD between exact ages 30 and 70, female (%)"
+WB:WDI,SERIES,SH_DYN_NCOM_MA_ZS,"Mortality from CVD, cancer, diabetes or CRD between exact ages 30 and 70, male (%)"
+WB:WDI,SERIES,SH_DYN_NCOM_ZS,"Mortality from CVD, cancer, diabetes or CRD between exact ages 30 and 70 (%)"
+WB:WDI,SERIES,SH_DYN_NMRT,"Mortality rate, neonatal (per 1,000 live births)"
+WB:WDI,SERIES,SH_FPL_SATM_ZS,Demand for family planning satisfied by modern methods (% of married women with demand for family planning)
+WB:WDI,SERIES,SH_H2O_BASW_RU_ZS,"People using at least basic drinking water services, rural (% of rural population)"
+WB:WDI,SERIES,SH_H2O_BASW_UR_ZS,"People using at least basic drinking water services, urban (% of urban population)"
+WB:WDI,SERIES,SH_H2O_BASW_ZS,People using at least basic drinking water services (% of population)
+WB:WDI,SERIES,SH_H2O_SMDW_RU_ZS,"People using safely managed drinking water services, rural (% of rural population)"
+WB:WDI,SERIES,SH_H2O_SMDW_UR_ZS,"People using safely managed drinking water services, urban (% of urban population)"
+WB:WDI,SERIES,SH_H2O_SMDW_ZS,People using safely managed drinking water services (% of population)
+WB:WDI,SERIES,SH_HIV_0014,Children (0-14) living with HIV
+WB:WDI,SERIES,SH_HIV_1524_FE_ZS,"Prevalence of HIV, female (% ages 15-24)"
+WB:WDI,SERIES,SH_HIV_1524_MA_ZS,"Prevalence of HIV, male (% ages 15-24)"
+WB:WDI,SERIES,SH_HIV_ARTC_ZS,Antiretroviral therapy coverage (% of people living with HIV)
+WB:WDI,SERIES,SH_HIV_INCD,Adults (ages 15-49) newly infected with HIV
+WB:WDI,SERIES,SH_HIV_INCD_14,Children (ages 0-14) newly infected with HIV
+WB:WDI,SERIES,SH_HIV_INCD_TL,Adults (ages 15+) and children (ages 0-14) newly infected with HIV
+WB:WDI,SERIES,SH_HIV_INCD_TL_P3,"Incidence of HIV, all (per 1,000 uninfected population)"
+WB:WDI,SERIES,SH_HIV_INCD_YG,Young people (ages 15-24) newly infected with HIV
+WB:WDI,SERIES,SH_HIV_INCD_YG_P3,"Incidence of HIV, ages 15-24 (per 1,000 uninfected population ages 15-24)"
+WB:WDI,SERIES,SH_HIV_INCD_ZS,"Incidence of HIV, ages 15-49 (per 1,000 uninfected population ages 15-49)"
+WB:WDI,SERIES,SH_HIV_PMTC_ZS,Antiretroviral therapy coverage for PMTCT (% of pregnant women living with HIV)
+WB:WDI,SERIES,SH_IMM_HEPB,"Immunization, HepB3 (% of one-year-old children)"
+WB:WDI,SERIES,SH_IMM_IDPT,"Immunization, DPT (% of children ages 12-23 months)"
+WB:WDI,SERIES,SH_IMM_MEAS,"Immunization, measles (% of children ages 12-23 months)"
+WB:WDI,SERIES,SH_MED_BEDS_ZS,"Hospital beds (per 1,000 people)"
+WB:WDI,SERIES,SH_MED_CMHW_P3,"Community health workers (per 1,000 people)"
+WB:WDI,SERIES,SH_MED_NUMW_P3,"Nurses and midwives (per 1,000 people)"
+WB:WDI,SERIES,SH_MED_PHYS_ZS,"Physicians (per 1,000 people)"
+WB:WDI,SERIES,SH_MED_SAOP_P5,"Specialist surgical workforce (per 100,000 population)"
+WB:WDI,SERIES,SH_MLR_INCD_P3,"Incidence of malaria (per 1,000 population at risk)"
+WB:WDI,SERIES,SH_MLR_NETS_ZS,Use of insecticide-treated bed nets (% of under-5 population)
+WB:WDI,SERIES,SH_MLR_TRET_ZS,Children with fever receiving antimalarial drugs (% of children under age 5 with fever)
+WB:WDI,SERIES,SH_MMR_DTHS,Number of maternal deaths
+WB:WDI,SERIES,SH_MMR_RISK,Lifetime risk of maternal death (1 in: rate varies by country)
+WB:WDI,SERIES,SH_MMR_RISK_ZS,Lifetime risk of maternal death (%)
+WB:WDI,SERIES,SH_PRG_ANEM,Prevalence of anemia among pregnant women (%)
+WB:WDI,SERIES,SH_PRV_SMOK,Prevalence of current tobacco use (% of adults)
+WB:WDI,SERIES,SH_PRV_SMOK_FE,"Prevalence of current tobacco use, females (% of female adults)"
+WB:WDI,SERIES,SH_PRV_SMOK_MA,"Prevalence of current tobacco use, males (% of male adults)"
+WB:WDI,SERIES,SH_SGR_CRSK_ZS,Risk of catastrophic expenditure for surgical care (% of people at risk)
+WB:WDI,SERIES,SH_SGR_IRSK_ZS,Risk of impoverishing expenditure for surgical care (% of people at risk)
+WB:WDI,SERIES,SH_SGR_PROC_P5,"Number of surgical procedures (per 100,000 population)"
+WB:WDI,SERIES,SH_STA_AIRP_FE_P5,"Mortality rate attributed to household and ambient air pollution, age-standardized, female (per 100,000 female population)"
+WB:WDI,SERIES,SH_STA_AIRP_MA_P5,"Mortality rate attributed to household and ambient air pollution, age-standardized, male (per 100,000 male population)"
+WB:WDI,SERIES,SH_STA_AIRP_P5,"Mortality rate attributed to household and ambient air pollution, age-standardized (per 100,000 population)"
+WB:WDI,SERIES,SH_STA_ANVC_ZS,Pregnant women receiving prenatal care (%)
+WB:WDI,SERIES,SH_STA_ARIC_ZS,ARI treatment (% of children under 5 taken to a health provider)
+WB:WDI,SERIES,SH_STA_BASS_RU_ZS,"People using at least basic sanitation services, rural (% of rural population)"
+WB:WDI,SERIES,SH_STA_BASS_UR_ZS,"People using at least basic sanitation services, urban (% of urban population)"
+WB:WDI,SERIES,SH_STA_BASS_ZS,People using at least basic sanitation services (% of population)
+WB:WDI,SERIES,SH_STA_BFED_ZS,Exclusive breastfeeding (% of children under 6 months)
+WB:WDI,SERIES,SH_STA_BRTC_ZS,Births attended by skilled health staff (% of total)
+WB:WDI,SERIES,SH_STA_BRTW_ZS,Low-birthweight babies (% of births)
+WB:WDI,SERIES,SH_STA_DIAB_ZS,Diabetes prevalence (% of population ages 20 to 79)
+WB:WDI,SERIES,SH_STA_FGMS_ZS,Female genital mutilation prevalence (%)
+WB:WDI,SERIES,SH_STA_HYGN_RU_ZS,"People with basic handwashing facilities including soap and water, rural (% of rural population)"
+WB:WDI,SERIES,SH_STA_HYGN_UR_ZS,"People with basic handwashing facilities including soap and water, urban (% of urban population)"
+WB:WDI,SERIES,SH_STA_HYGN_ZS,People with basic handwashing facilities including soap and water (% of population)
+WB:WDI,SERIES,SH_STA_MALN_FE_ZS,"Prevalence of underweight, weight for age, female (% of children under 5)"
+WB:WDI,SERIES,SH_STA_MALN_MA_ZS,"Prevalence of underweight, weight for age, male (% of children under 5)"
+WB:WDI,SERIES,SH_STA_MALN_ZS,"Prevalence of underweight, weight for age (% of children under 5)"
+WB:WDI,SERIES,SH_STA_MMRT,"Maternal mortality ratio (modeled estimate, per 100,000 live births)"
+WB:WDI,SERIES,SH_STA_MMRT_NE,"Maternal mortality ratio (national estimate, per 100,000 live births)"
+WB:WDI,SERIES,SH_STA_ODFC_RU_ZS,"People practicing open defecation, rural (% of rural population)"
+WB:WDI,SERIES,SH_STA_ODFC_UR_ZS,"People practicing open defecation, urban (% of urban population)"
+WB:WDI,SERIES,SH_STA_ODFC_ZS,People practicing open defecation (% of population)
+WB:WDI,SERIES,SH_STA_ORCF_ZS,Diarrhea treatment (% of children under 5 receiving oral rehydration and continued feeding)
+WB:WDI,SERIES,SH_STA_ORTH,Diarrhea treatment (% of children under 5 who received ORS packet)
+WB:WDI,SERIES,SH_STA_OWGH_FE_ZS,"Prevalence of overweight, weight for height, female (% of children under 5)"
+WB:WDI,SERIES,SH_STA_OWGH_MA_ZS,"Prevalence of overweight, weight for height, male (% of children under 5)"
+WB:WDI,SERIES,SH_STA_OWGH_ME_FE_ZS,"Prevalence of overweight, female (modeled estimate, % of children under 5)"
+WB:WDI,SERIES,SH_STA_OWGH_ME_MA_ZS,"Prevalence of overweight, male (modeled estimate, % of children under 5)"
+WB:WDI,SERIES,SH_STA_OWGH_ME_ZS,"Prevalence of overweight (modeled estimate, % of children under 5)"
+WB:WDI,SERIES,SH_STA_OWGH_ZS,"Prevalence of overweight, weight for height (% of children under 5)"
+WB:WDI,SERIES,SH_STA_POIS_P5,"Mortality rate attributed to unintentional poisoning (per 100,000 population)"
+WB:WDI,SERIES,SH_STA_POIS_P5_FE,"Mortality rate attributed to unintentional poisoning, female (per 100,000 female population)"
+WB:WDI,SERIES,SH_STA_POIS_P5_MA,"Mortality rate attributed to unintentional poisoning, male (per 100,000 male population)"
+WB:WDI,SERIES,SH_STA_SMSS_RU_ZS,"People using safely managed sanitation services, rural (% of rural population)"
+WB:WDI,SERIES,SH_STA_SMSS_UR_ZS,"People using safely managed sanitation services, urban (% of urban population)"
+WB:WDI,SERIES,SH_STA_SMSS_ZS,People using safely managed sanitation services (% of population)
+WB:WDI,SERIES,SH_STA_STNT_FE_ZS,"Prevalence of stunting, height for age, female (% of children under 5)"
+WB:WDI,SERIES,SH_STA_STNT_MA_ZS,"Prevalence of stunting, height for age, male (% of children under 5)"
+WB:WDI,SERIES,SH_STA_STNT_ME_FE_ZS,"Prevalence of stunting, height for age, female (modeled estimate, % of children under 5)"
+WB:WDI,SERIES,SH_STA_STNT_ME_MA_ZS,"Prevalence of stunting, height for age, male (modeled estimate, % of children under 5)"
+WB:WDI,SERIES,SH_STA_STNT_ME_ZS,"Prevalence of stunting, height for age (modeled estimate, % of children under 5)"
+WB:WDI,SERIES,SH_STA_STNT_ZS,"Prevalence of stunting, height for age (% of children under 5)"
+WB:WDI,SERIES,SH_STA_SUIC_FE_P5,"Suicide mortality rate, female (per 100,000 female population)"
+WB:WDI,SERIES,SH_STA_SUIC_MA_P5,"Suicide mortality rate, male (per 100,000 male population)"
+WB:WDI,SERIES,SH_STA_SUIC_P5,"Suicide mortality rate (per 100,000 population)"
+WB:WDI,SERIES,SH_STA_TRAF_P5,"Mortality caused by road traffic injury (per 100,000 population)"
+WB:WDI,SERIES,SH_STA_WASH_P5,"Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (per 100,000 population)"
+WB:WDI,SERIES,SH_STA_WAST_FE_ZS,"Prevalence of wasting, weight for height, female (% of children under 5)"
+WB:WDI,SERIES,SH_STA_WAST_MA_ZS,"Prevalence of wasting, weight for height, male (% of children under 5)"
+WB:WDI,SERIES,SH_STA_WAST_ZS,"Prevalence of wasting, weight for height (% of children under 5)"
+WB:WDI,SERIES,SH_SVR_WAST_FE_ZS,"Prevalence of severe wasting, weight for height, female (% of children under 5)"
+WB:WDI,SERIES,SH_SVR_WAST_MA_ZS,"Prevalence of severe wasting, weight for height, male (% of children under 5)"
+WB:WDI,SERIES,SH_SVR_WAST_ZS,"Prevalence of severe wasting, weight for height (% of children under 5)"
+WB:WDI,SERIES,SH_TBS_CURE_ZS,Tuberculosis treatment success rate (% of new cases)
+WB:WDI,SERIES,SH_TBS_DTEC_ZS,"Tuberculosis case detection rate (%, all forms)"
+WB:WDI,SERIES,SH_TBS_INCD,"Incidence of tuberculosis (per 100,000 people)"
+WB:WDI,SERIES,SH_UHC_FBP1_ZS,Proportion of population pushed further below the $2.15 ($ 2017 PPP) poverty line by out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_FBP2_ZS,Proportion of population pushed further below the $3.65 ($ 2017 PPP) poverty line by out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_FBPR_ZS,Proportion of population pushed further below the 60% median consumption poverty line by out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_NOP1_ZS,Proportion of population pushed below the $2.15 ($ 2017 PPP) poverty line by out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_NOP2_ZS,Proportion of population pushed below the $3.65 ($ 2017 PPP) poverty line by out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_NOPR_ZS,Proportion of population pushed below the 60% median consumption poverty line by out-of-pocket health expenditure (%)
+WB:WDI,SERIES,SH_UHC_OOPC_10_ZS,Proportion of population spending more than 10% of household consumption or income on out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_OOPC_25_ZS,Proportion of population spending more than 25% of household consumption or income on out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_SRVS_CV_XD,UHC service coverage index
+WB:WDI,SERIES,SH_UHC_TOT1_ZS,Proportion of population pushed or further pushed below the $2.15 ($ 2017 PPP) poverty line by out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_TOT2_ZS,Proportion of population pushed or further pushed below the $3.65 ($ 2017 PPP) poverty line by out-of-pocket health care expenditure (%)
+WB:WDI,SERIES,SH_UHC_TOTR_ZS,Proportion of population pushed or further pushed below the 60% median consumption poverty line by out-of-pocket health expenditure (%)
+WB:WDI,SERIES,SH_VAC_TTNS_ZS,Newborns protected against tetanus (%)
+WB:WDI,SERIES,SH_XPD_CHEX_GD_ZS,Current health expenditure (% of GDP)
+WB:WDI,SERIES,SH_XPD_CHEX_PC_CD,Current health expenditure per capita (current US$)
+WB:WDI,SERIES,SH_XPD_CHEX_PP_CD,"Current health expenditure per capita, PPP (current international $)"
+WB:WDI,SERIES,SH_XPD_EHEX_CH_ZS,External health expenditure (% of current health expenditure)
+WB:WDI,SERIES,SH_XPD_EHEX_PC_CD,External health expenditure per capita (current US$)
+WB:WDI,SERIES,SH_XPD_EHEX_PP_CD,"External health expenditure per capita, PPP (current international $)"
+WB:WDI,SERIES,SH_XPD_GHED_CH_ZS,Domestic general government health expenditure (% of current health expenditure)
+WB:WDI,SERIES,SH_XPD_GHED_GD_ZS,Domestic general government health expenditure (% of GDP)
+WB:WDI,SERIES,SH_XPD_GHED_GE_ZS,Domestic general government health expenditure (% of general government expenditure)
+WB:WDI,SERIES,SH_XPD_GHED_PC_CD,Domestic general government health expenditure per capita (current US$)
+WB:WDI,SERIES,SH_XPD_GHED_PP_CD,"Domestic general government health expenditure per capita, PPP (current international $)"
+WB:WDI,SERIES,SH_XPD_OOPC_CH_ZS,Out-of-pocket expenditure (% of current health expenditure)
+WB:WDI,SERIES,SH_XPD_OOPC_PC_CD,Out-of-pocket expenditure per capita (current US$)
+WB:WDI,SERIES,SH_XPD_OOPC_PP_CD,"Out-of-pocket expenditure per capita, PPP (current international $)"
+WB:WDI,SERIES,SH_XPD_PVTD_CH_ZS,Domestic private health expenditure (% of current health expenditure)
+WB:WDI,SERIES,SH_XPD_PVTD_PC_CD,Domestic private health expenditure per capita (current US$)
+WB:WDI,SERIES,SH_XPD_PVTD_PP_CD,"Domestic private health expenditure per capita, PPP (current international $)"
+WB:WDI,SERIES,SI_DST_02ND_20,Income share held by second 20%
+WB:WDI,SERIES,SI_DST_03RD_20,Income share held by third 20%
+WB:WDI,SERIES,SI_DST_04TH_20,Income share held by fourth 20%
+WB:WDI,SERIES,SI_DST_05TH_20,Income share held by highest 20%
+WB:WDI,SERIES,SI_DST_10TH_10,Income share held by highest 10%
+WB:WDI,SERIES,SI_DST_50MD,Proportion of people living below 50 percent of median income (%)
+WB:WDI,SERIES,SI_DST_FRST_10,Income share held by lowest 10%
+WB:WDI,SERIES,SI_DST_FRST_20,Income share held by lowest 20%
+WB:WDI,SERIES,SI_POV_DDAY,Poverty headcount ratio at $3.00 a day (2021 PPP) (% of population)
+WB:WDI,SERIES,SI_POV_GAPS,Poverty gap at $3.00 a day (2021 PPP) (%)
+WB:WDI,SERIES,SI_POV_GINI,Gini index
+WB:WDI,SERIES,SI_POV_LMIC,Poverty headcount ratio at $4.00 a day (2021 PPP) (% of population)
+WB:WDI,SERIES,SI_POV_LMIC_GP,Poverty gap at $4.20 a day (2021 PPP) (%)
+WB:WDI,SERIES,SI_POV_MPUN,Multidimensional poverty headcount ratio (UNDP) (% of population)
+WB:WDI,SERIES,SI_POV_MPWB,Multidimensional poverty headcount ratio (World Bank) (% of population)
+WB:WDI,SERIES,SI_POV_NAHC,Poverty headcount ratio at national poverty lines (% of population)
+WB:WDI,SERIES,SI_POV_SOPO,Poverty headcount ratio at societal poverty line (% of population)
+WB:WDI,SERIES,SI_POV_UMIC,Poverty headcount ratio at $8.30 a day (2021 PPP) (% of population)
+WB:WDI,SERIES,SI_POV_UMIC_GP,Poverty gap at $8.30 a day (2021 PPP) (%)
+WB:WDI,SERIES,SI_RMT_COST_IB_ZS,Average transaction cost of sending remittances to a specific country (%)
+WB:WDI,SERIES,SI_RMT_COST_OB_ZS,Average transaction cost of sending remittances from a specific country (%)
+WB:WDI,SERIES,SI_SPR_PC40,"Survey mean consumption or income per capita, bottom 40% of population (2021 PPP $ per day)"
+WB:WDI,SERIES,SI_SPR_PC40_ZG,"Annualized average growth rate in per capita real survey mean consumption or income, bottom 40% of population (%)"
+WB:WDI,SERIES,SI_SPR_PCAP,"Survey mean consumption or income per capita, total population (2021 PPP $ per day)"
+WB:WDI,SERIES,SI_SPR_PCAP_ZG,"Annualized average growth rate in per capita real survey mean consumption or income, total population (%)"
+WB:WDI,SERIES,SI_SPR_PGAP,Prosperity gap (average shortfall from a prosperity standard of $28/day)
+WB:WDI,SERIES,SL_AGR_0714_FE_ZS,"Child employment in agriculture, female (% of female economically active children ages 7-14)"
+WB:WDI,SERIES,SL_AGR_0714_MA_ZS,"Child employment in agriculture, male (% of male economically active children ages 7-14)"
+WB:WDI,SERIES,SL_AGR_0714_ZS,Child employment in agriculture (% of economically active children ages 7-14)
+WB:WDI,SERIES,SL_AGR_EMPL_FE_ZS,"Employment in agriculture, female (% of female employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_AGR_EMPL_MA_ZS,"Employment in agriculture, male (% of male employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_AGR_EMPL_ZS,Employment in agriculture (% of total employment) (modeled ILO estimate)
+WB:WDI,SERIES,SL_EMP_1524_SP_FE_NE_ZS,"Employment to population ratio, ages 15-24, female (%) (national estimate)"
+WB:WDI,SERIES,SL_EMP_1524_SP_FE_ZS,"Employment to population ratio, ages 15-24, female (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_1524_SP_MA_NE_ZS,"Employment to population ratio, ages 15-24, male (%) (national estimate)"
+WB:WDI,SERIES,SL_EMP_1524_SP_MA_ZS,"Employment to population ratio, ages 15-24, male (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_1524_SP_NE_ZS,"Employment to population ratio, ages 15-24, total (%) (national estimate)"
+WB:WDI,SERIES,SL_EMP_1524_SP_ZS,"Employment to population ratio, ages 15-24, total (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_MPYR_FE_ZS,"Employers, female (% of female employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_MPYR_MA_ZS,"Employers, male (% of male employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_MPYR_ZS,"Employers, total (% of total employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_SELF_FE_ZS,"Self-employed, female (% of female employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_SELF_MA_ZS,"Self-employed, male (% of male employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_SELF_ZS,"Self-employed, total (% of total employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_SMGT_FE_ZS,Female share of employment in senior and middle management (%)
+WB:WDI,SERIES,SL_EMP_TOTL_SP_FE_NE_ZS,"Employment to population ratio, 15+, female (%) (national estimate)"
+WB:WDI,SERIES,SL_EMP_TOTL_SP_FE_ZS,"Employment to population ratio, 15+, female (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_TOTL_SP_MA_NE_ZS,"Employment to population ratio, 15+, male (%) (national estimate)"
+WB:WDI,SERIES,SL_EMP_TOTL_SP_MA_ZS,"Employment to population ratio, 15+, male (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_TOTL_SP_NE_ZS,"Employment to population ratio, 15+, total (%) (national estimate)"
+WB:WDI,SERIES,SL_EMP_TOTL_SP_ZS,"Employment to population ratio, 15+, total (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_VULN_FE_ZS,"Vulnerable employment, female (% of female employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_VULN_MA_ZS,"Vulnerable employment, male (% of male employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_VULN_ZS,"Vulnerable employment, total (% of total employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_WORK_FE_ZS,"Wage and salaried workers, female (% of female employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_WORK_MA_ZS,"Wage and salaried workers, male (% of male employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_EMP_WORK_ZS,"Wage and salaried workers, total (% of total employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_FAM_0714_FE_ZS,"Children in employment, unpaid family workers, female (% of female children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_FAM_0714_MA_ZS,"Children in employment, unpaid family workers, male (% of male children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_FAM_0714_ZS,"Children in employment, unpaid family workers (% of children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_FAM_WORK_FE_ZS,"Contributing family workers, female (% of female employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_FAM_WORK_MA_ZS,"Contributing family workers, male (% of male employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_FAM_WORK_ZS,"Contributing family workers, total (% of total employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_GDP_PCAP_EM_KD,GDP per person employed (constant 2017 PPP $)
+WB:WDI,SERIES,SL_IND_EMPL_FE_ZS,"Employment in industry, female (% of female employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_IND_EMPL_MA_ZS,"Employment in industry, male (% of male employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_IND_EMPL_ZS,Employment in industry (% of total employment) (modeled ILO estimate)
+WB:WDI,SERIES,SL_MNF_0714_FE_ZS,"Child employment in manufacturing, female (% of female economically active children ages 7-14)"
+WB:WDI,SERIES,SL_MNF_0714_MA_ZS,"Child employment in manufacturing, male (% of male economically active children ages 7-14)"
+WB:WDI,SERIES,SL_MNF_0714_ZS,Child employment in manufacturing (% of economically active children ages 7-14)
+WB:WDI,SERIES,SL_SLF_0714_FE_ZS,"Children in employment, self-employed, female (% of female children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_SLF_0714_MA_ZS,"Children in employment, self-employed, male (% of male children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_SLF_0714_ZS,"Children in employment, self-employed (% of children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_SRV_0714_FE_ZS,"Child employment in services, female (% of female economically active children ages 7-14)"
+WB:WDI,SERIES,SL_SRV_0714_MA_ZS,"Child employment in services, male (% of male economically active children ages 7-14)"
+WB:WDI,SERIES,SL_SRV_0714_ZS,Child employment in services (% of economically active children ages 7-14)
+WB:WDI,SERIES,SL_SRV_EMPL_FE_ZS,"Employment in services, female (% of female employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_SRV_EMPL_MA_ZS,"Employment in services, male (% of male employment) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_SRV_EMPL_ZS,Employment in services (% of total employment) (modeled ILO estimate)
+WB:WDI,SERIES,SL_TLF_0714_FE_ZS,"Children in employment, female (% of female children ages 7-14)"
+WB:WDI,SERIES,SL_TLF_0714_MA_ZS,"Children in employment, male (% of male children ages 7-14)"
+WB:WDI,SERIES,SL_TLF_0714_SW_FE_TM,"Average working hours of children, study and work, female, ages 7-14 (hours per week)"
+WB:WDI,SERIES,SL_TLF_0714_SW_FE_ZS,"Children in employment, study and work, female (% of female children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_TLF_0714_SW_MA_TM,"Average working hours of children, study and work, male, ages 7-14 (hours per week)"
+WB:WDI,SERIES,SL_TLF_0714_SW_MA_ZS,"Children in employment, study and work, male (% of male children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_TLF_0714_SW_TM,"Average working hours of children, study and work, ages 7-14 (hours per week)"
+WB:WDI,SERIES,SL_TLF_0714_SW_ZS,"Children in employment, study and work (% of children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_TLF_0714_WK_FE_TM,"Average working hours of children, working only, female, ages 7-14 (hours per week)"
+WB:WDI,SERIES,SL_TLF_0714_WK_FE_ZS,"Children in employment, work only, female (% of female children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_TLF_0714_WK_MA_TM,"Average working hours of children, working only, male, ages 7-14 (hours per week)"
+WB:WDI,SERIES,SL_TLF_0714_WK_MA_ZS,"Children in employment, work only, male (% of male children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_TLF_0714_WK_TM,"Average working hours of children, working only, ages 7-14 (hours per week)"
+WB:WDI,SERIES,SL_TLF_0714_WK_ZS,"Children in employment, work only (% of children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_TLF_0714_ZS,"Children in employment, total (% of children ages 7-14)"
+WB:WDI,SERIES,SL_TLF_ACTI_1524_FE_NE_ZS,"Labor force participation rate for ages 15-24, female (%) (national estimate)"
+WB:WDI,SERIES,SL_TLF_ACTI_1524_FE_ZS,"Labor force participation rate for ages 15-24, female (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_ACTI_1524_MA_NE_ZS,"Labor force participation rate for ages 15-24, male (%) (national estimate)"
+WB:WDI,SERIES,SL_TLF_ACTI_1524_MA_ZS,"Labor force participation rate for ages 15-24, male (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_ACTI_1524_NE_ZS,"Labor force participation rate for ages 15-24, total (%) (national estimate)"
+WB:WDI,SERIES,SL_TLF_ACTI_1524_ZS,"Labor force participation rate for ages 15-24, total (%) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_ACTI_FE_ZS,"Labor force participation rate, female (% of female population ages 15-64) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_ACTI_MA_ZS,"Labor force participation rate, male (% of male population ages 15-64) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_ACTI_ZS,"Labor force participation rate, total (% of total population ages 15-64) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_ADVN_FE_ZS,"Labor force with advanced education, female (% of female working-age population with advanced education)"
+WB:WDI,SERIES,SL_TLF_ADVN_MA_ZS,"Labor force with advanced education, male (% of male working-age population with advanced education)"
+WB:WDI,SERIES,SL_TLF_ADVN_ZS,Labor force with advanced education (% of total working-age population with advanced education)
+WB:WDI,SERIES,SL_TLF_BASC_FE_ZS,"Labor force with basic education, female (% of female working-age population with basic education)"
+WB:WDI,SERIES,SL_TLF_BASC_MA_ZS,"Labor force with basic education, male (% of male working-age population with basic education)"
+WB:WDI,SERIES,SL_TLF_BASC_ZS,Labor force with basic education (% of total working-age population with basic education)
+WB:WDI,SERIES,SL_TLF_CACT_FE_NE_ZS,"Labor force participation rate, female (% of female population ages 15+) (national estimate)"
+WB:WDI,SERIES,SL_TLF_CACT_FE_ZS,"Labor force participation rate, female (% of female population ages 15+) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_CACT_FM_NE_ZS,Ratio of female to male labor force participation rate (%) (national estimate)
+WB:WDI,SERIES,SL_TLF_CACT_FM_ZS,Ratio of female to male labor force participation rate (%) (modeled ILO estimate)
+WB:WDI,SERIES,SL_TLF_CACT_MA_NE_ZS,"Labor force participation rate, male (% of male population ages 15+) (national estimate)"
+WB:WDI,SERIES,SL_TLF_CACT_MA_ZS,"Labor force participation rate, male (% of male population ages 15+) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_CACT_NE_ZS,"Labor force participation rate, total (% of total population ages 15+) (national estimate)"
+WB:WDI,SERIES,SL_TLF_CACT_ZS,"Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_TLF_INTM_FE_ZS,"Labor force with intermediate education, female (% of female working-age population with intermediate education)"
+WB:WDI,SERIES,SL_TLF_INTM_MA_ZS,"Labor force with intermediate education, male (% of male working-age population with intermediate education)"
+WB:WDI,SERIES,SL_TLF_INTM_ZS,Labor force with intermediate education (% of total working-age population with intermediate education)
+WB:WDI,SERIES,SL_TLF_PART_FE_ZS,"Part time employment, female (% of total female employment)"
+WB:WDI,SERIES,SL_TLF_PART_MA_ZS,"Part time employment, male (% of total male employment)"
+WB:WDI,SERIES,SL_TLF_PART_ZS,"Part time employment, total (% of total employment)"
+WB:WDI,SERIES,SL_TLF_TOTL_FE_ZS,"Labor force, female (% of total labor force)"
+WB:WDI,SERIES,SL_TLF_TOTL_IN,"Labor force, total"
+WB:WDI,SERIES,SL_UEM_1524_FE_NE_ZS,"Unemployment, youth female (% of female labor force ages 15-24) (national estimate)"
+WB:WDI,SERIES,SL_UEM_1524_FE_ZS,"Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_UEM_1524_MA_NE_ZS,"Unemployment, youth male (% of male labor force ages 15-24) (national estimate)"
+WB:WDI,SERIES,SL_UEM_1524_MA_ZS,"Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_UEM_1524_NE_ZS,"Unemployment, youth total (% of total labor force ages 15-24) (national estimate)"
+WB:WDI,SERIES,SL_UEM_1524_ZS,"Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_UEM_ADVN_FE_ZS,"Unemployment with advanced education, female (% of female labor force with advanced education)"
+WB:WDI,SERIES,SL_UEM_ADVN_MA_ZS,"Unemployment with advanced education, male (% of male labor force with advanced education)"
+WB:WDI,SERIES,SL_UEM_ADVN_ZS,Unemployment with advanced education (% of total labor force with advanced education)
+WB:WDI,SERIES,SL_UEM_BASC_FE_ZS,"Unemployment with basic education, female (% of female labor force with basic education)"
+WB:WDI,SERIES,SL_UEM_BASC_MA_ZS,"Unemployment with basic education, male (% of male labor force with basic education)"
+WB:WDI,SERIES,SL_UEM_BASC_ZS,Unemployment with basic education (% of total labor force with basic education)
+WB:WDI,SERIES,SL_UEM_INTM_FE_ZS,"Unemployment with intermediate education, female (% of female labor force with intermediate education)"
+WB:WDI,SERIES,SL_UEM_INTM_MA_ZS,"Unemployment with intermediate education, male (% of male labor force with intermediate education)"
+WB:WDI,SERIES,SL_UEM_INTM_ZS,Unemployment with intermediate education (% of total labor force with intermediate education)
+WB:WDI,SERIES,SL_UEM_NEET_FE_ME_ZS,"Share of youth not in education, employment or training, female (% of female youth population) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_UEM_NEET_FE_ZS,"Share of youth not in education, employment or training, female (% of female youth population)"
+WB:WDI,SERIES,SL_UEM_NEET_MA_ME_ZS,"Share of youth not in education, employment or training, male (% of male youth population) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_UEM_NEET_MA_ZS,"Share of youth not in education, employment or training, male (% of male youth population)"
+WB:WDI,SERIES,SL_UEM_NEET_ME_ZS,"Share of youth not in education, employment or training, total (% of youth population) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_UEM_NEET_ZS,"Share of youth not in education, employment or training, total (% of youth population)"
+WB:WDI,SERIES,SL_UEM_TOTL_FE_NE_ZS,"Unemployment, female (% of female labor force) (national estimate)"
+WB:WDI,SERIES,SL_UEM_TOTL_FE_ZS,"Unemployment, female (% of female labor force) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_UEM_TOTL_MA_NE_ZS,"Unemployment, male (% of male labor force) (national estimate)"
+WB:WDI,SERIES,SL_UEM_TOTL_MA_ZS,"Unemployment, male (% of male labor force) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_UEM_TOTL_NE_ZS,"Unemployment, total (% of total labor force) (national estimate)"
+WB:WDI,SERIES,SL_UEM_TOTL_ZS,"Unemployment, total (% of total labor force) (modeled ILO estimate)"
+WB:WDI,SERIES,SL_WAG_0714_FE_ZS,"Children in employment, wage workers, female (% of female children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_WAG_0714_MA_ZS,"Children in employment, wage workers, male (% of male children in employment, ages 7-14)"
+WB:WDI,SERIES,SL_WAG_0714_ZS,"Children in employment, wage workers (% of children in employment, ages 7-14)"
+WB:WDI,SERIES,SM_POP_ASYS_EA,Asylum-seekers by country or territory of asylum
+WB:WDI,SERIES,SM_POP_ASYS_EO,Asylum-seekers by country or territory of origin
+WB:WDI,SERIES,SM_POP_FDIP,Forcibly displaced people
+WB:WDI,SERIES,SM_POP_IDPC,Internally displaced persons (IDPs) by country or territory of asylum / origin
+WB:WDI,SERIES,SM_POP_NETM,Net migration
+WB:WDI,SERIES,SM_POP_OPIP_EA,Other people in need of international protection by country or territory of asylum
+WB:WDI,SERIES,SM_POP_OPIP_EO,Other people in need of international protection by country or territory of origin
+WB:WDI,SERIES,SM_POP_RHCR_EA,Refugees under the mandate of the UNHCR by country or territory of asylum
+WB:WDI,SERIES,SM_POP_RHCR_EO,Refugees under the mandate of the UNHCR by country or territory of origin
+WB:WDI,SERIES,SM_POP_RRWA_EA,Refugees under the mandate of the UNRWA by country or territory of asylum
+WB:WDI,SERIES,SM_POP_RRWA_EO,Refugees under the mandate of the UNRWA by country or territory of origin
+WB:WDI,SERIES,SM_POP_TOTL,"International migrant stock, total"
+WB:WDI,SERIES,SM_POP_TOTL_ZS,International migrant stock (% of population)
+WB:WDI,SERIES,SN_ITK_DEFC_ZS,Prevalence of undernourishment (% of population)
+WB:WDI,SERIES,SN_ITK_MSFI_ZS,Prevalence of moderate or severe food insecurity in the population (%)
+WB:WDI,SERIES,SN_ITK_SALT_ZS,Consumption of iodized salt (% of households)
+WB:WDI,SERIES,SN_ITK_SVFI_ZS,Prevalence of severe food insecurity in the population (%)
+WB:WDI,SERIES,SN_ITK_VITA_ZS,Vitamin A supplementation coverage rate (% of children ages 6-59 months)
+WB:WDI,SERIES,SP_ADO_TFRT,"Adolescent fertility rate (births per 1,000 women ages 15-19)"
+WB:WDI,SERIES,SP_DYN_AMRT_FE,"Mortality rate, adult, female (per 1,000 female adults)"
+WB:WDI,SERIES,SP_DYN_AMRT_MA,"Mortality rate, adult, male (per 1,000 male adults)"
+WB:WDI,SERIES,SP_DYN_CBRT_IN,"Birth rate, crude (per 1,000 people)"
+WB:WDI,SERIES,SP_DYN_CDRT_IN,"Death rate, crude (per 1,000 people)"
+WB:WDI,SERIES,SP_DYN_CONM_ZS,"Contraceptive prevalence, any modern method (% of married women ages 15-49)"
+WB:WDI,SERIES,SP_DYN_CONU_ZS,"Contraceptive prevalence, any method (% of married women ages 15-49)"
+WB:WDI,SERIES,SP_DYN_IMRT_FE_IN,"Mortality rate, infant, female (per 1,000 live births)"
+WB:WDI,SERIES,SP_DYN_IMRT_IN,"Mortality rate, infant (per 1,000 live births)"
+WB:WDI,SERIES,SP_DYN_IMRT_MA_IN,"Mortality rate, infant, male (per 1,000 live births)"
+WB:WDI,SERIES,SP_DYN_LE00_FE_IN,"Life expectancy at birth, female (years)"
+WB:WDI,SERIES,SP_DYN_LE00_IN,"Life expectancy at birth, total (years)"
+WB:WDI,SERIES,SP_DYN_LE00_MA_IN,"Life expectancy at birth, male (years)"
+WB:WDI,SERIES,SP_DYN_TFRT_IN,"Fertility rate, total (births per woman)"
+WB:WDI,SERIES,SP_DYN_TO65_FE_ZS,"Survival to age 65, female (% of cohort)"
+WB:WDI,SERIES,SP_DYN_TO65_MA_ZS,"Survival to age 65, male (% of cohort)"
+WB:WDI,SERIES,SP_DYN_WFRT,Wanted fertility rate (births per woman)
+WB:WDI,SERIES,SP_HOU_FEMA_ZS,Female headed households (% of households)
+WB:WDI,SERIES,SP_M15_2024_FE_ZS,Women who were first married by age 15 (% of women ages 20-24)
+WB:WDI,SERIES,SP_M18_2024_FE_ZS,Women who were first married by age 18 (% of women ages 20-24)
+WB:WDI,SERIES,SP_MTR_1519_ZS,Teenage mothers (% of women ages 15-19 who have had children or are currently pregnant)
+WB:WDI,SERIES,SP_POP_0004_FE_5Y,"Population ages 00-04, female (% of female population)"
+WB:WDI,SERIES,SP_POP_0004_MA_5Y,"Population ages 00-04, male (% of male population)"
+WB:WDI,SERIES,SP_POP_0014_FE_IN,"Population ages 0-14, female"
+WB:WDI,SERIES,SP_POP_0014_FE_ZS,"Population ages 0-14, female (% of female population)"
+WB:WDI,SERIES,SP_POP_0014_MA_IN,"Population ages 0-14, male"
+WB:WDI,SERIES,SP_POP_0014_MA_ZS,"Population ages 0-14, male (% of male population)"
+WB:WDI,SERIES,SP_POP_0014_TO,"Population ages 0-14, total"
+WB:WDI,SERIES,SP_POP_0014_TO_ZS,Population ages 0-14 (% of total population)
+WB:WDI,SERIES,SP_POP_0509_FE_5Y,"Population ages 05-09, female (% of female population)"
+WB:WDI,SERIES,SP_POP_0509_MA_5Y,"Population ages 05-09, male (% of male population)"
+WB:WDI,SERIES,SP_POP_1014_FE_5Y,"Population ages 10-14, female (% of female population)"
+WB:WDI,SERIES,SP_POP_1014_MA_5Y,"Population ages 10-14, male (% of male population)"
+WB:WDI,SERIES,SP_POP_1519_FE_5Y,"Population ages 15-19, female (% of female population)"
+WB:WDI,SERIES,SP_POP_1519_MA_5Y,"Population ages 15-19, male (% of male population)"
+WB:WDI,SERIES,SP_POP_1564_FE_IN,"Population ages 15-64, female"
+WB:WDI,SERIES,SP_POP_1564_FE_ZS,"Population ages 15-64, female (% of female population)"
+WB:WDI,SERIES,SP_POP_1564_MA_IN,"Population ages 15-64, male"
+WB:WDI,SERIES,SP_POP_1564_MA_ZS,"Population ages 15-64, male (% of male population)"
+WB:WDI,SERIES,SP_POP_1564_TO,"Population ages 15-64, total"
+WB:WDI,SERIES,SP_POP_1564_TO_ZS,Population ages 15-64 (% of total population)
+WB:WDI,SERIES,SP_POP_2024_FE_5Y,"Population ages 20-24, female (% of female population)"
+WB:WDI,SERIES,SP_POP_2024_MA_5Y,"Population ages 20-24, male (% of male population)"
+WB:WDI,SERIES,SP_POP_2529_FE_5Y,"Population ages 25-29, female (% of female population)"
+WB:WDI,SERIES,SP_POP_2529_MA_5Y,"Population ages 25-29, male (% of male population)"
+WB:WDI,SERIES,SP_POP_3034_FE_5Y,"Population ages 30-34, female (% of female population)"
+WB:WDI,SERIES,SP_POP_3034_MA_5Y,"Population ages 30-34, male (% of male population)"
+WB:WDI,SERIES,SP_POP_3539_FE_5Y,"Population ages 35-39, female (% of female population)"
+WB:WDI,SERIES,SP_POP_3539_MA_5Y,"Population ages 35-39, male (% of male population)"
+WB:WDI,SERIES,SP_POP_4044_FE_5Y,"Population ages 40-44, female (% of female population)"
+WB:WDI,SERIES,SP_POP_4044_MA_5Y,"Population ages 40-44, male (% of male population)"
+WB:WDI,SERIES,SP_POP_4549_FE_5Y,"Population ages 45-49, female (% of female population)"
+WB:WDI,SERIES,SP_POP_4549_MA_5Y,"Population ages 45-49, male (% of male population)"
+WB:WDI,SERIES,SP_POP_5054_FE_5Y,"Population ages 50-54, female (% of female population)"
+WB:WDI,SERIES,SP_POP_5054_MA_5Y,"Population ages 50-54, male (% of male population)"
+WB:WDI,SERIES,SP_POP_5559_FE_5Y,"Population ages 55-59, female (% of female population)"
+WB:WDI,SERIES,SP_POP_5559_MA_5Y,"Population ages 55-59, male (% of male population)"
+WB:WDI,SERIES,SP_POP_6064_FE_5Y,"Population ages 60-64, female (% of female population)"
+WB:WDI,SERIES,SP_POP_6064_MA_5Y,"Population ages 60-64, male (% of male population)"
+WB:WDI,SERIES,SP_POP_6569_FE_5Y,"Population ages 65-69, female (% of female population)"
+WB:WDI,SERIES,SP_POP_6569_MA_5Y,"Population ages 65-69, male (% of male population)"
+WB:WDI,SERIES,SP_POP_65UP_FE_IN,"Population ages 65 and above, female"
+WB:WDI,SERIES,SP_POP_65UP_FE_ZS,"Population ages 65 and above, female (% of female population)"
+WB:WDI,SERIES,SP_POP_65UP_MA_IN,"Population ages 65 and above, male"
+WB:WDI,SERIES,SP_POP_65UP_MA_ZS,"Population ages 65 and above, male (% of male population)"
+WB:WDI,SERIES,SP_POP_65UP_TO,"Population ages 65 and above, total"
+WB:WDI,SERIES,SP_POP_65UP_TO_ZS,Population ages 65 and above (% of total population)
+WB:WDI,SERIES,SP_POP_7074_FE_5Y,"Population ages 70-74, female (% of female population)"
+WB:WDI,SERIES,SP_POP_7074_MA_5Y,"Population ages 70-74, male (% of male population)"
+WB:WDI,SERIES,SP_POP_7579_FE_5Y,"Population ages 75-79, female (% of female population)"
+WB:WDI,SERIES,SP_POP_7579_MA_5Y,"Population ages 75-79, male (% of male population)"
+WB:WDI,SERIES,SP_POP_80UP_FE_5Y,"Population ages 80 and above, female (% of female population)"
+WB:WDI,SERIES,SP_POP_80UP_MA_5Y,"Population ages 80 and above, male (% of male population)"
+WB:WDI,SERIES,SP_POP_BRTH_MF,Sex ratio at birth (male births per female births)
+WB:WDI,SERIES,SP_POP_DPND,Age dependency ratio (% of working-age population)
+WB:WDI,SERIES,SP_POP_DPND_OL,"Age dependency ratio, old (% of working-age population)"
+WB:WDI,SERIES,SP_POP_DPND_YG,"Age dependency ratio, young (% of working-age population)"
+WB:WDI,SERIES,SP_POP_GROW,Population growth (annual %)
+WB:WDI,SERIES,SP_POP_SCIE_RD_P6,Researchers in R&D (per million people)
+WB:WDI,SERIES,SP_POP_TECH_RD_P6,Technicians in R&D (per million people)
+WB:WDI,SERIES,SP_POP_TOTL,"Population, total"
+WB:WDI,SERIES,SP_POP_TOTL_FE_IN,"Population, female"
+WB:WDI,SERIES,SP_POP_TOTL_FE_ZS,"Population, female (% of total population)"
+WB:WDI,SERIES,SP_POP_TOTL_MA_IN,"Population, male"
+WB:WDI,SERIES,SP_POP_TOTL_MA_ZS,"Population, male (% of total population)"
+WB:WDI,SERIES,SP_REG_BRTH_FE_ZS,"Completeness of birth registration, female (%)"
+WB:WDI,SERIES,SP_REG_BRTH_MA_ZS,"Completeness of birth registration, male (%)"
+WB:WDI,SERIES,SP_REG_BRTH_RU_ZS,"Completeness of birth registration, rural (%)"
+WB:WDI,SERIES,SP_REG_BRTH_UR_ZS,"Completeness of birth registration, urban (%)"
+WB:WDI,SERIES,SP_REG_BRTH_ZS,Completeness of birth registration (%)
+WB:WDI,SERIES,SP_REG_DTHS_ZS,Completeness of death registration with cause-of-death information (%)
+WB:WDI,SERIES,SP_RUR_TOTL,Rural population
+WB:WDI,SERIES,SP_RUR_TOTL_ZG,Rural population growth (annual %)
+WB:WDI,SERIES,SP_RUR_TOTL_ZS,Rural population (% of total population)
+WB:WDI,SERIES,SP_URB_GROW,Urban population growth (annual %)
+WB:WDI,SERIES,SP_URB_TOTL,Urban population
+WB:WDI,SERIES,SP_URB_TOTL_IN_ZS,Urban population (% of total population)
+WB:WDI,SERIES,SP_UWT_TFRT,Unmet need for contraception (% of married women ages 15-49)
+WB:WDI,SERIES,ST_INT_ARVL,"International tourism, number of arrivals"
+WB:WDI,SERIES,ST_INT_DPRT,"International tourism, number of departures"
+WB:WDI,SERIES,ST_INT_RCPT_CD,"International tourism, receipts (current US$)"
+WB:WDI,SERIES,ST_INT_RCPT_XP_ZS,"International tourism, receipts (% of total exports)"
+WB:WDI,SERIES,ST_INT_TRNR_CD,"International tourism, receipts for passenger transport items (current US$)"
+WB:WDI,SERIES,ST_INT_TRNX_CD,"International tourism, expenditures for passenger transport items (current US$)"
+WB:WDI,SERIES,ST_INT_TVLR_CD,"International tourism, receipts for travel items (current US$)"
+WB:WDI,SERIES,ST_INT_TVLX_CD,"International tourism, expenditures for travel items (current US$)"
+WB:WDI,SERIES,ST_INT_XPND_CD,"International tourism, expenditures (current US$)"
+WB:WDI,SERIES,ST_INT_XPND_MP_ZS,"International tourism, expenditures (% of total imports)"
+WB:WDI,SERIES,TG_VAL_TOTL_GD_ZS,Merchandise trade (% of GDP)
+WB:WDI,SERIES,TM_QTY_MRCH_XD_WD,Import volume index (2015 = 100)
+WB:WDI,SERIES,TM_TAX_MANF_BC_ZS,"Binding coverage, manufactured products (%)"
+WB:WDI,SERIES,TM_TAX_MANF_BR_ZS,"Bound rate, simple mean, manufactured products (%)"
+WB:WDI,SERIES,TM_TAX_MANF_SM_AR_ZS,"Tariff rate, applied, simple mean, manufactured products (%)"
+WB:WDI,SERIES,TM_TAX_MANF_SM_FN_ZS,"Tariff rate, most favored nation, simple mean, manufactured products (%)"
+WB:WDI,SERIES,TM_TAX_MANF_WM_AR_ZS,"Tariff rate, applied, weighted mean, manufactured products (%)"
+WB:WDI,SERIES,TM_TAX_MANF_WM_FN_ZS,"Tariff rate, most favored nation, weighted mean, manufactured products (%)"
+WB:WDI,SERIES,TM_TAX_MRCH_BC_ZS,"Binding coverage, all products (%)"
+WB:WDI,SERIES,TM_TAX_MRCH_BR_ZS,"Bound rate, simple mean, all products (%)"
+WB:WDI,SERIES,TM_TAX_MRCH_SM_AR_ZS,"Tariff rate, applied, simple mean, all products (%)"
+WB:WDI,SERIES,TM_TAX_MRCH_SM_FN_ZS,"Tariff rate, most favored nation, simple mean, all products (%)"
+WB:WDI,SERIES,TM_TAX_MRCH_WM_AR_ZS,"Tariff rate, applied, weighted mean, all products (%)"
+WB:WDI,SERIES,TM_TAX_MRCH_WM_FN_ZS,"Tariff rate, most favored nation, weighted mean, all products (%)"
+WB:WDI,SERIES,TM_TAX_TCOM_BC_ZS,"Binding coverage, primary products (%)"
+WB:WDI,SERIES,TM_TAX_TCOM_BR_ZS,"Bound rate, simple mean, primary products (%)"
+WB:WDI,SERIES,TM_TAX_TCOM_SM_AR_ZS,"Tariff rate, applied, simple mean, primary products (%)"
+WB:WDI,SERIES,TM_TAX_TCOM_SM_FN_ZS,"Tariff rate, most favored nation, simple mean, primary products (%)"
+WB:WDI,SERIES,TM_TAX_TCOM_WM_AR_ZS,"Tariff rate, applied, weighted mean, primary products (%)"
+WB:WDI,SERIES,TM_TAX_TCOM_WM_FN_ZS,"Tariff rate, most favored nation, weighted mean, primary products (%)"
+WB:WDI,SERIES,TM_UVI_MRCH_XD_WD,Import unit value index (2015 = 100)
+WB:WDI,SERIES,TM_VAL_AGRI_ZS_UN,Agricultural raw materials imports (% of merchandise imports)
+WB:WDI,SERIES,TM_VAL_FOOD_ZS_UN,Food imports (% of merchandise imports)
+WB:WDI,SERIES,TM_VAL_FUEL_ZS_UN,Fuel imports (% of merchandise imports)
+WB:WDI,SERIES,TM_VAL_ICTG_ZS_UN,ICT goods imports (% total goods imports)
+WB:WDI,SERIES,TM_VAL_INSF_ZS_WT,Insurance and financial services (% of commercial service imports)
+WB:WDI,SERIES,TM_VAL_MANF_ZS_UN,Manufactures imports (% of merchandise imports)
+WB:WDI,SERIES,TM_VAL_MMTL_ZS_UN,Ores and metals imports (% of merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_AL_ZS,Merchandise imports from economies in the Arab World (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_CD_WT,Merchandise imports (current US$)
+WB:WDI,SERIES,TM_VAL_MRCH_HI_ZS,Merchandise imports from high-income economies (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_OR_ZS,Merchandise imports from low- and middle-income economies outside region (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_R1_ZS,Merchandise imports from low- and middle-income economies in East Asia & Pacific (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_R2_ZS,Merchandise imports from low- and middle-income economies in Europe & Central Asia (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_R3_ZS,Merchandise imports from low- and middle-income economies in Latin America & the Caribbean (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_R4_ZS,Merchandise imports from low- and middle-income economies in Middle East & North Africa (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_R5_ZS,Merchandise imports from low- and middle-income economies in South Asia (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_R6_ZS,Merchandise imports from low- and middle-income economies in Sub-Saharan Africa (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_RS_ZS,"Merchandise imports by the reporting economy, residual (% of total merchandise imports)"
+WB:WDI,SERIES,TM_VAL_MRCH_WL_CD,Merchandise imports by the reporting economy (current US$)
+WB:WDI,SERIES,TM_VAL_MRCH_WR_ZS,Merchandise imports from low- and middle-income economies within region (% of total merchandise imports)
+WB:WDI,SERIES,TM_VAL_MRCH_XD_WD,Import value index (2015 = 100)
+WB:WDI,SERIES,TM_VAL_OTHR_ZS_WT,"Computer, communications and other services (% of commercial service imports)"
+WB:WDI,SERIES,TM_VAL_SERV_CD_WT,Commercial service imports (current US$)
+WB:WDI,SERIES,TM_VAL_TRAN_ZS_WT,Transport services (% of commercial service imports)
+WB:WDI,SERIES,TM_VAL_TRVL_ZS_WT,Travel services (% of commercial service imports)
+WB:WDI,SERIES,TT_PRI_MRCH_XD_WD,Net barter terms of trade index (2015 = 100)
+WB:WDI,SERIES,TX_MNF_TECH_ZS_UN,Medium and high-tech exports (% manufactured exports)
+WB:WDI,SERIES,TX_QTY_MRCH_XD_WD,Export volume index (2015 = 100)
+WB:WDI,SERIES,TX_UVI_MRCH_XD_WD,Export unit value index (2015 = 100)
+WB:WDI,SERIES,TX_VAL_AGRI_ZS_UN,Agricultural raw materials exports (% of merchandise exports)
+WB:WDI,SERIES,TX_VAL_FOOD_ZS_UN,Food exports (% of merchandise exports)
+WB:WDI,SERIES,TX_VAL_FUEL_ZS_UN,Fuel exports (% of merchandise exports)
+WB:WDI,SERIES,TX_VAL_ICTG_ZS_UN,ICT goods exports (% of total goods exports)
+WB:WDI,SERIES,TX_VAL_INSF_ZS_WT,Insurance and financial services (% of commercial service exports)
+WB:WDI,SERIES,TX_VAL_MANF_ZS_UN,Manufactures exports (% of merchandise exports)
+WB:WDI,SERIES,TX_VAL_MMTL_ZS_UN,Ores and metals exports (% of merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_AL_ZS,Merchandise exports to economies in the Arab World (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_CD_WT,Merchandise exports (current US$)
+WB:WDI,SERIES,TX_VAL_MRCH_HI_ZS,Merchandise exports to high-income economies (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_OR_ZS,Merchandise exports to low- and middle-income economies outside region (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_R1_ZS,Merchandise exports to low- and middle-income economies in East Asia & Pacific (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_R2_ZS,Merchandise exports to low- and middle-income economies in Europe & Central Asia (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_R3_ZS,Merchandise exports to low- and middle-income economies in Latin America & the Caribbean (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_R4_ZS,Merchandise exports to low- and middle-income economies in Middle East & North Africa (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_R5_ZS,Merchandise exports to low- and middle-income economies in South Asia (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_R6_ZS,Merchandise exports to low- and middle-income economies in Sub-Saharan Africa (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_RS_ZS,"Merchandise exports by the reporting economy, residual (% of total merchandise exports)"
+WB:WDI,SERIES,TX_VAL_MRCH_WL_CD,Merchandise exports by the reporting economy (current US$)
+WB:WDI,SERIES,TX_VAL_MRCH_WR_ZS,Merchandise exports to low- and middle-income economies within region (% of total merchandise exports)
+WB:WDI,SERIES,TX_VAL_MRCH_XD_WD,Export value index (2015 = 100)
+WB:WDI,SERIES,TX_VAL_OTHR_ZS_WT,"Computer, communications and other services (% of commercial service exports)"
+WB:WDI,SERIES,TX_VAL_SERV_CD_WT,Commercial service exports (current US$)
+WB:WDI,SERIES,TX_VAL_TECH_CD,High-technology exports (current US$)
+WB:WDI,SERIES,TX_VAL_TECH_MF_ZS,High-technology exports (% of manufactured exports)
+WB:WDI,SERIES,TX_VAL_TRAN_ZS_WT,Transport services (% of commercial service exports)
+WB:WDI,SERIES,TX_VAL_TRVL_ZS_WT,Travel services (% of commercial service exports)
+WB:WDI,SERIES,VA_EST,Voice and Accountability: Estimate
+WB:WDI,SERIES,VA_NO_SRC,Voice and Accountability: Number of Sources
+WB:WDI,SERIES,VA_PER_RNK,Voice and Accountability: Percentile Rank
+WB:WDI,SERIES,VA_PER_RNK_LOWER,"Voice and Accountability: Percentile Rank, Lower Bound of 90% Confidence Interval"
+WB:WDI,SERIES,VA_PER_RNK_UPPER,"Voice and Accountability: Percentile Rank, Upper Bound of 90% Confidence Interval"
+WB:WDI,SERIES,VA_STD_ERR,Voice and Accountability: Standard Error
+WB:WDI,SERIES,VC_BTL_DETH,Battle-related deaths (number of people)
+WB:WDI,SERIES,VC_IDP_NWCV,"Internally displaced persons, new displacement associated with conflict and violence (number of cases)"
+WB:WDI,SERIES,VC_IDP_NWDS,"Internally displaced persons, new displacement associated with disasters (number of cases)"
+WB:WDI,SERIES,VC_IHR_PSRC_FE_P5,"Intentional homicides, female (per 100,000 female)"
+WB:WDI,SERIES,VC_IHR_PSRC_MA_P5,"Intentional homicides, male (per 100,000 male)"
+WB:WDI,SERIES,VC_IHR_PSRC_P5,"Intentional homicides (per 100,000 people)"
