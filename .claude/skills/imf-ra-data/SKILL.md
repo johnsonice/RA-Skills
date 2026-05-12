@@ -3,28 +3,34 @@ name: imf-ra-data
 description: Use when the user wants to fetch, pull, download, or load IMF data series from any database (WEO, IFS, BOPS, GFS, DOTS, FSI, etc.) using the internal Python SDK. Covers single-series and multi-country panel pulls, frequency conversion, and country selection. See imf-ra for shared conventions.
 ---
 
-# IMF RA — Data
+# IMF RA - Data
+
+Fetching IMF data series via the internal Python SDK.
+
+## Before You Fetch
+
+See the umbrella `imf-ra` for shared conventions: country codes, frequencies, dates, units, and SDK environment setup.
+
+If the request includes WEO groups, regions, or informal country wording, normalize coverage through the umbrella WEO country-group reference before writing retrieval code. For selected-country iData pulls, prefer ISO-style WEO `countrycode` values such as `USA`, `CHN`, and `JPN` unless target dataset metadata requires another value.
 
 ## Frequencies
 
-> _Placeholder._ Document:
-> - How the SDK encodes A/Q/M.
-> - Conventions for quarter labels (`2010Q1` vs. `2010-Q1` vs. `2010-03-31`).
-> - When to convert frequencies and which method to use.
+- Use the frequency labels exposed by iData metadata. Common values are annual `A`, quarterly `Q`, monthly `M`, and daily `D`, but validate exact dimension values for the selected database.
+- WEO Live macro data is generally annual. Do not promise quarterly or monthly WEO data unless metadata confirms it.
+- Keep period labels in the SDK/native format during retrieval. Convert only after fetching, and document the conversion in the output.
+- Do not aggregate or disaggregate frequency unless the user asks for it and the method is clear.
 
 ## Dates
 
-> _Placeholder._ Document:
-> - Default date range conventions (e.g., "2010-present" → start=`2010`, end=`null`).
-> - How to handle release-vintage dates vs. data-period dates.
+- Treat phrases like `2010-present` as `start=2010` with no explicit end unless the user provides one.
+- Separate data-period dates from vintage/release dates. A WEO vintage such as `2026 APR` identifies the database snapshot, not the observation period.
+- If the user asks for `latest`, confirm whether they mean the latest WEO vintage, latest available observation, or latest forecast horizon when that distinction matters.
 
 ## Units
 
-> _Placeholder._ Document:
-> - Common unit conventions in IMF databases (USD billions, percent of GDP, index 2010=100).
-> - Where the unit metadata lives in the SDK return.
-
-Fetching IMF data series via the internal Python SDK.
+- Preserve the units and scale returned by metadata or attributes. Do not rescale silently.
+- Common IMF units include national currency, U.S. dollars, percent change, percent of GDP, index values, and per capita measures.
+- When candidates differ by unit, valuation, scale, or transformation, ask the user to choose before fetching.
 
 ## Default decision logic
 
@@ -68,16 +74,12 @@ This requirement also applies to quick exploratory or smoke-test requests: do no
 For data pulls, confirm at least:
 
 - time range (`start`, `end`, or vintage)
-- coverage (single country, explicit country list, country groups);if it is not  a cross-country panel request, then this field is optional
+- coverage (single country, explicit country list, or country group); this can be omitted only when the request is not country-specific or cross-country
 - concept/indicator/series selection
 - frequency (`A`, `Q`, `M`, `D`)
 - output shape preference (wide vs `longformat=True`; default to wide if not specified)
 
 If one or more items are missing, do not guess silently. Ask for the missing pieces first, then proceed.
-
-## Before you fetch
-
-See the umbrella `imf-ra` for shared conventions: country codes, frequencies, dates, and SDK environment setup.
 
 ## How to fetch
 
