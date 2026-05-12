@@ -20,7 +20,7 @@
 | Skill | What it does |
 |---|---|
 | **`imf-ra`** | Family entry point. Loads shared conventions (country codes, frequencies, dates, units, SDK setup) and routes to the right worker. |
-| **`imf-ra-catalog`** | Plain English → `(database, series, frequency, geo)`. Surfaces top candidates and asks for confirmation when a request is ambiguous. |
+| **`imf-ra-catalog`** | Plain English → `(database, dimension_name, code, frequency, geo)`. Surfaces top candidates and asks for confirmation when a request is ambiguous. |
 | **`imf-ra-data`** | Fetches single series or multi-country panels through the internal Python SDK. Honors LIVE vs vintage explicitly. |
 | **`imf-ra-charts`** | Hands tidy data to the internal charting tool. *Scaffolded — not yet implemented; route requests here only when wired up.* |
 
@@ -70,7 +70,7 @@ Behavioral test pack: [`tests/auto_test_instructions.md`](tests/auto_test_instru
 RA-Skills/
 ├── .claude/skills/
 │   ├── imf-ra/             # umbrella + shared conventions
-│   ├── imf-ra-catalog/     # database / indicator discovery
+│   ├── imf-ra-catalog/     # database / variable-code discovery
 │   ├── imf-ra-data/        # SDK-based data fetch
 │   └── imf-ra-charts/      # chart handoff (scaffold)
 ├── docs/specs/             # design docs
