@@ -9,13 +9,13 @@ Key aggregates,G110,Advanced Economies,110,Advanced Economies
 Key aggregates,G200,Emerging Market and Developing Economies,200,Emerging Market and Developing Economies
 Key aggregates,G505,Emerging and Developing Asia,505,Emerging and Developing Asia
 Key aggregates,G903,Emerging and Developing Europe,903,Emerging and Developing Europe
-Key aggregates,G995,Euro Area (EA) â€“ aggregate of member states,995,Euro area - aggregate of member country data
+Key aggregates,G995,Euro Area (EA) – aggregate of member states,995,Euro area - aggregate of member country data
 Key aggregates,G119,G7,119,G7
 Key aggregates,G205,Latin America and the Caribbean (LAC),205,Latin America and the Caribbean
 Key aggregates,G400,Middle East and Central Asia,400,Middle East and Central Asia
 Key aggregates,GX123,Other Advanced Economies (Advanced Economies excluding G7 and Euro Area countries),123,Other Advanced Economies (Advanced Economies excluding G7 and Euro Area countries)
 Key aggregates,G603,Sub-Saharan Africa (SSA),603,Sub-Sahara Africa
-Key aggregates,G001,World,001,World
+Key aggregates,G001,World,1,World
 Other Groups,G510,ASEAN-5,510,ASEAN-5 (new definition)
 Other Groups,G1201,Emerging Market and Middle-Income Economies,1201,Emerging Market and Middle-Income Economies
 Other Groups,G998,European Union (EU),998,European Union
@@ -48,3 +48,5 @@ WEO Analytical Groups,G089,EMDEs by Source of Export Earnings: Primary Products 
 WEO Analytical Groups,G084,"EMDEs by Source of Export Earnings: Services (including Income, Transfers)",84,"Emerging Market and Developing Economies by Source of Export Earnings: Services (including Income, Transfers)"
 WEO Analytical Groups,GX88,Emerging Market and Developing Economies by External Financing: Net Debtors without Arrears and/or Rescheduling During 2019-23,88,Emerging Market and Developing Economies by External Financing: Net Debtors without Arrears and/or Rescheduling During 2019-23
 WEO Analytical Groups,GX93,Emerging Market and Developing Economies by Source of Export Earnings: Nonfuel (excl. China),93,Emerging Market and Developing Economies by Source of Export Earnings: Nonfuel (excl. China)
+SPR,G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT
+SPR,G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification

@@ -1,4 +1,4 @@
-groupcode,groupname,groupcode_s,groupname_s,countrycode,countryname,countrycode_s,countryname_s
+﻿groupcode,groupname,groupcode_s,groupname_s,countrycode,countryname,countrycode_s,countryname_s
 G510,ASEAN-5,510,ASEAN-5 (new definition),IDN,Indonesia,536,Indonesia
 G510,ASEAN-5,510,ASEAN-5 (new definition),MYS,Malaysia,548,Malaysia
 G510,ASEAN-5,510,ASEAN-5 (new definition),PHL,Philippines,566,Philippines
@@ -1747,200 +1747,366 @@ G1614,Sub-Saharan Africa (SSA): Oil Exporters,1614,Sub-Saharan Africa: Oil Expor
 G1614,Sub-Saharan Africa (SSA): Oil Exporters,1614,Sub-Saharan Africa: Oil Exporters,GAB,Gabon,646,Gabon
 G1614,Sub-Saharan Africa (SSA): Oil Exporters,1614,Sub-Saharan Africa: Oil Exporters,NGA,Nigeria,694,Nigeria
 G1614,Sub-Saharan Africa (SSA): Oil Exporters,1614,Sub-Saharan Africa: Oil Exporters,SSD,"South Sudan, Republic of",733,South Sudan
-G001,World,001,World,AFG,"Afghanistan, Islamic Republic of",512,Afghanistan
-G001,World,001,World,ALB,Albania,914,Albania
-G001,World,001,World,DZA,Algeria,612,Algeria
-G001,World,001,World,AND,"Andorra, Principality of",171,Andorra
-G001,World,001,World,AGO,Angola,614,Angola
-G001,World,001,World,ATG,Antigua and Barbuda,311,Antigua and Barbuda
-G001,World,001,World,ARG,Argentina,213,Argentina
-G001,World,001,World,ARM,"Armenia, Republic of",911,Armenia
-G001,World,001,World,ABW,"Aruba, Kingdom of the Netherlands",314,Aruba
-G001,World,001,World,AUS,Australia,193,Australia
-G001,World,001,World,AUT,Austria,122,Austria
-G001,World,001,World,AZE,"Azerbaijan, Republic of",912,Azerbaijan
-G001,World,001,World,BHS,"Bahamas, The",313,"Bahamas, The"
-G001,World,001,World,BHR,"Bahrain, Kingdom of",419,Bahrain
-G001,World,001,World,BGD,Bangladesh,513,Bangladesh
-G001,World,001,World,BRB,Barbados,316,Barbados
-G001,World,001,World,BLR,"Belarus, Republic of",913,Belarus
-G001,World,001,World,BEL,Belgium,124,Belgium
-G001,World,001,World,BLZ,Belize,339,Belize
-G001,World,001,World,BEN,Benin,638,Benin
-G001,World,001,World,BTN,Bhutan,514,Bhutan
-G001,World,001,World,BOL,Bolivia,218,Bolivia
-G001,World,001,World,BIH,Bosnia and Herzegovina,963,Bosnia and Herzegovina
-G001,World,001,World,BWA,Botswana,616,Botswana
-G001,World,001,World,BRA,Brazil,223,Brazil
-G001,World,001,World,BRN,Brunei Darussalam,516,Brunei Darussalam
-G001,World,001,World,BGR,Bulgaria,918,Bulgaria
-G001,World,001,World,BFA,Burkina Faso,748,Burkina Faso
-G001,World,001,World,BDI,Burundi,618,Burundi
-G001,World,001,World,CPV,Cabo Verde,624,Cabo Verde
-G001,World,001,World,KHM,Cambodia,522,Cambodia
-G001,World,001,World,CMR,Cameroon,622,Cameroon
-G001,World,001,World,CAN,Canada,156,Canada
-G001,World,001,World,CAF,Central African Republic,626,Central African Republic
-G001,World,001,World,TCD,Chad,628,Chad
-G001,World,001,World,CHL,Chile,228,Chile
-G001,World,001,World,CHN,"China, People's Republic of",924,China
-G001,World,001,World,COL,Colombia,233,Colombia
-G001,World,001,World,COM,"Comoros, Union of the",632,Comoros
-G001,World,001,World,COD,"Congo, Democratic Republic of the",636,"Congo, Democratic Republic of the"
-G001,World,001,World,COG,"Congo, Republic of",634,"Congo, Republic of"
-G001,World,001,World,CRI,Costa Rica,238,Costa Rica
-G001,World,001,World,HRV,"Croatia, Republic of",960,Croatia
-G001,World,001,World,CYP,Cyprus,423,Cyprus
-G001,World,001,World,CZE,Czech Republic,935,Czech Republic
-G001,World,001,World,CIV,Côte d'Ivoire,662,Côte d'Ivoire
-G001,World,001,World,DNK,Denmark,128,Denmark
-G001,World,001,World,DJI,Djibouti,611,Djibouti
-G001,World,001,World,DMA,Dominica,321,Dominica
-G001,World,001,World,DOM,Dominican Republic,243,Dominican Republic
-G001,World,001,World,ECU,Ecuador,248,Ecuador
-G001,World,001,World,EGY,"Egypt, Arab Republic of",469,Egypt
-G001,World,001,World,SLV,El Salvador,253,El Salvador
-G001,World,001,World,GNQ,"Equatorial Guinea, Republic of",642,Equatorial Guinea
-G001,World,001,World,ERI,"Eritrea, The State of",643,Eritrea
-G001,World,001,World,EST,"Estonia, Republic of",939,Estonia
-G001,World,001,World,SWZ,"Eswatini, Kingdom of",734,Eswatini
-G001,World,001,World,ETH,"Ethiopia, The Federal Democratic Republic of",644,Ethiopia
-G001,World,001,World,FJI,"Fiji, Republic of",819,Fiji
-G001,World,001,World,FIN,Finland,172,Finland
-G001,World,001,World,FRA,France,132,France
-G001,World,001,World,GAB,Gabon,646,Gabon
-G001,World,001,World,GMB,"Gambia, The",648,"Gambia, The"
-G001,World,001,World,GEO,Georgia,915,Georgia
-G001,World,001,World,DEU,Germany,134,Germany
-G001,World,001,World,GHA,Ghana,652,Ghana
-G001,World,001,World,GRC,Greece,174,Greece
-G001,World,001,World,GRD,Grenada,328,Grenada
-G001,World,001,World,GTM,Guatemala,258,Guatemala
-G001,World,001,World,GIN,Guinea,656,Guinea
-G001,World,001,World,GNB,Guinea-Bissau,654,Guinea-Bissau
-G001,World,001,World,GUY,Guyana,336,Guyana
-G001,World,001,World,HTI,Haiti,263,Haiti
-G001,World,001,World,HND,Honduras,268,Honduras
-G001,World,001,World,HKG,"Hong Kong Special Administrative Region, People's Republic of China",532,Hong Kong SAR
-G001,World,001,World,HUN,Hungary,944,Hungary
-G001,World,001,World,ISL,Iceland,176,Iceland
-G001,World,001,World,IND,India,534,India
-G001,World,001,World,IDN,Indonesia,536,Indonesia
-G001,World,001,World,IRN,"Iran, Islamic Republic of",429,Iran
-G001,World,001,World,IRQ,Iraq,433,Iraq
-G001,World,001,World,IRL,Ireland,178,Ireland
-G001,World,001,World,ISR,Israel,436,Israel
-G001,World,001,World,ITA,Italy,136,Italy
-G001,World,001,World,JAM,Jamaica,343,Jamaica
-G001,World,001,World,JPN,Japan,158,Japan
-G001,World,001,World,JOR,Jordan,439,Jordan
-G001,World,001,World,KAZ,"Kazakhstan, Republic of",916,Kazakhstan
-G001,World,001,World,KEN,Kenya,664,Kenya
-G001,World,001,World,KIR,Kiribati,826,Kiribati
-G001,World,001,World,KOR,"Korea, Republic of",542,Korea
-G001,World,001,World,KOS,"Kosovo, Republic of",967,Kosovo
-G001,World,001,World,KWT,Kuwait,443,Kuwait
-G001,World,001,World,KGZ,Kyrgyz Republic,917,Kyrgyz Republic
-G001,World,001,World,LAO,Lao People's Democratic Republic,544,Lao P.D.R.
-G001,World,001,World,LVA,"Latvia, Republic of",941,Latvia
-G001,World,001,World,LBN,Lebanon,446,Lebanon
-G001,World,001,World,LSO,"Lesotho, Kingdom of",666,Lesotho
-G001,World,001,World,LBR,Liberia,668,Liberia
-G001,World,001,World,LBY,Libya,672,Libya
-G001,World,001,World,LIE,"Liechtenstein, Principality of",147,Liechtenstein
-G001,World,001,World,LTU,"Lithuania, Republic of",946,Lithuania
-G001,World,001,World,LUX,Luxembourg,137,Luxembourg
-G001,World,001,World,MAC,"Macao Special Administrative Region, People's Republic of China",546,Macao SAR
-G001,World,001,World,MDG,"Madagascar, Republic of",674,Madagascar
-G001,World,001,World,MWI,Malawi,676,Malawi
-G001,World,001,World,MYS,Malaysia,548,Malaysia
-G001,World,001,World,MDV,Maldives,556,Maldives
-G001,World,001,World,MLI,Mali,678,Mali
-G001,World,001,World,MLT,Malta,181,Malta
-G001,World,001,World,MHL,"Marshall Islands, Republic of the",867,Marshall Islands
-G001,World,001,World,MRT,"Mauritania, Islamic Republic of",682,Mauritania
-G001,World,001,World,MUS,Mauritius,684,Mauritius
-G001,World,001,World,MEX,Mexico,273,Mexico
-G001,World,001,World,FSM,"Micronesia, Federated States of",868,Micronesia
-G001,World,001,World,MDA,"Moldova, Republic of",921,Moldova
-G001,World,001,World,MNG,Mongolia,948,Mongolia
-G001,World,001,World,MNE,Montenegro,943,"Montenegro, Rep. of"
-G001,World,001,World,MAR,Morocco,686,Morocco
-G001,World,001,World,MOZ,"Mozambique, Republic of",688,Mozambique
-G001,World,001,World,MMR,Myanmar,518,Myanmar
-G001,World,001,World,NAM,Namibia,728,Namibia
-G001,World,001,World,NRU,"Nauru, Republic of",836,Nauru
-G001,World,001,World,NPL,Nepal,558,Nepal
-G001,World,001,World,NLD,"Netherlands, The",138,Netherlands
-G001,World,001,World,NZL,New Zealand,196,New Zealand
-G001,World,001,World,NIC,Nicaragua,278,Nicaragua
-G001,World,001,World,NER,Niger,692,Niger
-G001,World,001,World,NGA,Nigeria,694,Nigeria
-G001,World,001,World,MKD,"North Macedonia, Republic of",962,North Macedonia
-G001,World,001,World,NOR,Norway,142,Norway
-G001,World,001,World,OMN,Oman,449,Oman
-G001,World,001,World,PAK,Pakistan,564,Pakistan
-G001,World,001,World,PLW,"Palau, Republic of",565,Palau
-G001,World,001,World,PAN,Panama,283,Panama
-G001,World,001,World,PNG,Papua New Guinea,853,Papua New Guinea
-G001,World,001,World,PRY,Paraguay,288,Paraguay
-G001,World,001,World,PER,Peru,293,Peru
-G001,World,001,World,PHL,Philippines,566,Philippines
-G001,World,001,World,POL,"Poland, Republic of",964,Poland
-G001,World,001,World,PRT,Portugal,182,Portugal
-G001,World,001,World,PRI,Puerto Rico,359,Puerto Rico
-G001,World,001,World,QAT,Qatar,453,Qatar
-G001,World,001,World,ROU,Romania,968,Romania
-G001,World,001,World,RUS,Russian Federation,922,Russia
-G001,World,001,World,RWA,Rwanda,714,Rwanda
-G001,World,001,World,WSM,Samoa,862,Samoa
-G001,World,001,World,SMR,"San Marino, Republic of",135,San Marino
-G001,World,001,World,SAU,Saudi Arabia,456,Saudi Arabia
-G001,World,001,World,SEN,Senegal,722,Senegal
-G001,World,001,World,SRB,"Serbia, Republic of",942,Serbia
-G001,World,001,World,SYC,Seychelles,718,Seychelles
-G001,World,001,World,SLE,Sierra Leone,724,Sierra Leone
-G001,World,001,World,SGP,Singapore,576,Singapore
-G001,World,001,World,SVK,Slovak Republic,936,Slovak Republic
-G001,World,001,World,SVN,"Slovenia, Republic of",961,Slovenia
-G001,World,001,World,SLB,Solomon Islands,813,Solomon Islands
-G001,World,001,World,SOM,Somalia,726,Somalia
-G001,World,001,World,ZAF,South Africa,199,South Africa
-G001,World,001,World,SSD,"South Sudan, Republic of",733,South Sudan
-G001,World,001,World,ESP,Spain,184,Spain
-G001,World,001,World,LKA,Sri Lanka,524,Sri Lanka
-G001,World,001,World,KNA,St. Kitts and Nevis,361,St. Kitts and Nevis
-G001,World,001,World,LCA,St. Lucia,362,St. Lucia
-G001,World,001,World,VCT,St. Vincent and the Grenadines,364,St. Vincent and the Grenadines
-G001,World,001,World,SDN,Sudan,732,Sudan
-G001,World,001,World,SUR,Suriname,366,Suriname
-G001,World,001,World,SWE,Sweden,144,Sweden
-G001,World,001,World,CHE,Switzerland,146,Switzerland
-G001,World,001,World,SYR,Syrian Arab Republic,463,Syria
-G001,World,001,World,STP,"São Tomé and Príncipe, Democratic Republic of",716,São Tomé and Príncipe
-G001,World,001,World,TWN,Taiwan Province of China,528,Taiwan Province of China
-G001,World,001,World,TJK,"Tajikistan, Republic of",923,Tajikistan
-G001,World,001,World,TZA,"Tanzania, United Republic of",738,Tanzania
-G001,World,001,World,THA,Thailand,578,Thailand
-G001,World,001,World,TLS,"Timor-Leste, Democratic Republic of",537,Timor-Leste
-G001,World,001,World,TGO,Togo,742,Togo
-G001,World,001,World,TON,Tonga,866,Tonga
-G001,World,001,World,TTO,Trinidad and Tobago,369,Trinidad and Tobago
-G001,World,001,World,TUN,Tunisia,744,Tunisia
-G001,World,001,World,TKM,Turkmenistan,925,Turkmenistan
-G001,World,001,World,TUV,Tuvalu,869,Tuvalu
-G001,World,001,World,TUR,"Türkiye, Republic of",186,Türkiye
-G001,World,001,World,UGA,Uganda,746,Uganda
-G001,World,001,World,UKR,Ukraine,926,Ukraine
-G001,World,001,World,ARE,United Arab Emirates,466,United Arab Emirates
-G001,World,001,World,GBR,United Kingdom,112,United Kingdom
-G001,World,001,World,USA,United States,111,United States
-G001,World,001,World,URY,Uruguay,298,Uruguay
-G001,World,001,World,UZB,"Uzbekistan, Republic of",927,Uzbekistan
-G001,World,001,World,VUT,Vanuatu,846,Vanuatu
-G001,World,001,World,VEN,"Venezuela, República Bolivariana de",299,Venezuela
-G001,World,001,World,VNM,Vietnam,582,Vietnam
-G001,World,001,World,WBG,West Bank and Gaza,487,West Bank and Gaza
-G001,World,001,World,YEM,"Yemen, Republic of",474,Yemen
-G001,World,001,World,ZMB,Zambia,754,Zambia
-G001,World,001,World,ZWE,Zimbabwe,698,Zimbabwe
+G001,World,1,World,AFG,"Afghanistan, Islamic Republic of",512,Afghanistan
+G001,World,1,World,ALB,Albania,914,Albania
+G001,World,1,World,DZA,Algeria,612,Algeria
+G001,World,1,World,AND,"Andorra, Principality of",171,Andorra
+G001,World,1,World,AGO,Angola,614,Angola
+G001,World,1,World,ATG,Antigua and Barbuda,311,Antigua and Barbuda
+G001,World,1,World,ARG,Argentina,213,Argentina
+G001,World,1,World,ARM,"Armenia, Republic of",911,Armenia
+G001,World,1,World,ABW,"Aruba, Kingdom of the Netherlands",314,Aruba
+G001,World,1,World,AUS,Australia,193,Australia
+G001,World,1,World,AUT,Austria,122,Austria
+G001,World,1,World,AZE,"Azerbaijan, Republic of",912,Azerbaijan
+G001,World,1,World,BHS,"Bahamas, The",313,"Bahamas, The"
+G001,World,1,World,BHR,"Bahrain, Kingdom of",419,Bahrain
+G001,World,1,World,BGD,Bangladesh,513,Bangladesh
+G001,World,1,World,BRB,Barbados,316,Barbados
+G001,World,1,World,BLR,"Belarus, Republic of",913,Belarus
+G001,World,1,World,BEL,Belgium,124,Belgium
+G001,World,1,World,BLZ,Belize,339,Belize
+G001,World,1,World,BEN,Benin,638,Benin
+G001,World,1,World,BTN,Bhutan,514,Bhutan
+G001,World,1,World,BOL,Bolivia,218,Bolivia
+G001,World,1,World,BIH,Bosnia and Herzegovina,963,Bosnia and Herzegovina
+G001,World,1,World,BWA,Botswana,616,Botswana
+G001,World,1,World,BRA,Brazil,223,Brazil
+G001,World,1,World,BRN,Brunei Darussalam,516,Brunei Darussalam
+G001,World,1,World,BGR,Bulgaria,918,Bulgaria
+G001,World,1,World,BFA,Burkina Faso,748,Burkina Faso
+G001,World,1,World,BDI,Burundi,618,Burundi
+G001,World,1,World,CPV,Cabo Verde,624,Cabo Verde
+G001,World,1,World,KHM,Cambodia,522,Cambodia
+G001,World,1,World,CMR,Cameroon,622,Cameroon
+G001,World,1,World,CAN,Canada,156,Canada
+G001,World,1,World,CAF,Central African Republic,626,Central African Republic
+G001,World,1,World,TCD,Chad,628,Chad
+G001,World,1,World,CHL,Chile,228,Chile
+G001,World,1,World,CHN,"China, People's Republic of",924,China
+G001,World,1,World,COL,Colombia,233,Colombia
+G001,World,1,World,COM,"Comoros, Union of the",632,Comoros
+G001,World,1,World,COD,"Congo, Democratic Republic of the",636,"Congo, Democratic Republic of the"
+G001,World,1,World,COG,"Congo, Republic of",634,"Congo, Republic of"
+G001,World,1,World,CRI,Costa Rica,238,Costa Rica
+G001,World,1,World,HRV,"Croatia, Republic of",960,Croatia
+G001,World,1,World,CYP,Cyprus,423,Cyprus
+G001,World,1,World,CZE,Czech Republic,935,Czech Republic
+G001,World,1,World,CIV,Côte d'Ivoire,662,Côte d'Ivoire
+G001,World,1,World,DNK,Denmark,128,Denmark
+G001,World,1,World,DJI,Djibouti,611,Djibouti
+G001,World,1,World,DMA,Dominica,321,Dominica
+G001,World,1,World,DOM,Dominican Republic,243,Dominican Republic
+G001,World,1,World,ECU,Ecuador,248,Ecuador
+G001,World,1,World,EGY,"Egypt, Arab Republic of",469,Egypt
+G001,World,1,World,SLV,El Salvador,253,El Salvador
+G001,World,1,World,GNQ,"Equatorial Guinea, Republic of",642,Equatorial Guinea
+G001,World,1,World,ERI,"Eritrea, The State of",643,Eritrea
+G001,World,1,World,EST,"Estonia, Republic of",939,Estonia
+G001,World,1,World,SWZ,"Eswatini, Kingdom of",734,Eswatini
+G001,World,1,World,ETH,"Ethiopia, The Federal Democratic Republic of",644,Ethiopia
+G001,World,1,World,FJI,"Fiji, Republic of",819,Fiji
+G001,World,1,World,FIN,Finland,172,Finland
+G001,World,1,World,FRA,France,132,France
+G001,World,1,World,GAB,Gabon,646,Gabon
+G001,World,1,World,GMB,"Gambia, The",648,"Gambia, The"
+G001,World,1,World,GEO,Georgia,915,Georgia
+G001,World,1,World,DEU,Germany,134,Germany
+G001,World,1,World,GHA,Ghana,652,Ghana
+G001,World,1,World,GRC,Greece,174,Greece
+G001,World,1,World,GRD,Grenada,328,Grenada
+G001,World,1,World,GTM,Guatemala,258,Guatemala
+G001,World,1,World,GIN,Guinea,656,Guinea
+G001,World,1,World,GNB,Guinea-Bissau,654,Guinea-Bissau
+G001,World,1,World,GUY,Guyana,336,Guyana
+G001,World,1,World,HTI,Haiti,263,Haiti
+G001,World,1,World,HND,Honduras,268,Honduras
+G001,World,1,World,HKG,"Hong Kong Special Administrative Region, People's Republic of China",532,Hong Kong SAR
+G001,World,1,World,HUN,Hungary,944,Hungary
+G001,World,1,World,ISL,Iceland,176,Iceland
+G001,World,1,World,IND,India,534,India
+G001,World,1,World,IDN,Indonesia,536,Indonesia
+G001,World,1,World,IRN,"Iran, Islamic Republic of",429,Iran
+G001,World,1,World,IRQ,Iraq,433,Iraq
+G001,World,1,World,IRL,Ireland,178,Ireland
+G001,World,1,World,ISR,Israel,436,Israel
+G001,World,1,World,ITA,Italy,136,Italy
+G001,World,1,World,JAM,Jamaica,343,Jamaica
+G001,World,1,World,JPN,Japan,158,Japan
+G001,World,1,World,JOR,Jordan,439,Jordan
+G001,World,1,World,KAZ,"Kazakhstan, Republic of",916,Kazakhstan
+G001,World,1,World,KEN,Kenya,664,Kenya
+G001,World,1,World,KIR,Kiribati,826,Kiribati
+G001,World,1,World,KOR,"Korea, Republic of",542,Korea
+G001,World,1,World,KOS,"Kosovo, Republic of",967,Kosovo
+G001,World,1,World,KWT,Kuwait,443,Kuwait
+G001,World,1,World,KGZ,Kyrgyz Republic,917,Kyrgyz Republic
+G001,World,1,World,LAO,Lao People's Democratic Republic,544,Lao P.D.R.
+G001,World,1,World,LVA,"Latvia, Republic of",941,Latvia
+G001,World,1,World,LBN,Lebanon,446,Lebanon
+G001,World,1,World,LSO,"Lesotho, Kingdom of",666,Lesotho
+G001,World,1,World,LBR,Liberia,668,Liberia
+G001,World,1,World,LBY,Libya,672,Libya
+G001,World,1,World,LIE,"Liechtenstein, Principality of",147,Liechtenstein
+G001,World,1,World,LTU,"Lithuania, Republic of",946,Lithuania
+G001,World,1,World,LUX,Luxembourg,137,Luxembourg
+G001,World,1,World,MAC,"Macao Special Administrative Region, People's Republic of China",546,Macao SAR
+G001,World,1,World,MDG,"Madagascar, Republic of",674,Madagascar
+G001,World,1,World,MWI,Malawi,676,Malawi
+G001,World,1,World,MYS,Malaysia,548,Malaysia
+G001,World,1,World,MDV,Maldives,556,Maldives
+G001,World,1,World,MLI,Mali,678,Mali
+G001,World,1,World,MLT,Malta,181,Malta
+G001,World,1,World,MHL,"Marshall Islands, Republic of the",867,Marshall Islands
+G001,World,1,World,MRT,"Mauritania, Islamic Republic of",682,Mauritania
+G001,World,1,World,MUS,Mauritius,684,Mauritius
+G001,World,1,World,MEX,Mexico,273,Mexico
+G001,World,1,World,FSM,"Micronesia, Federated States of",868,Micronesia
+G001,World,1,World,MDA,"Moldova, Republic of",921,Moldova
+G001,World,1,World,MNG,Mongolia,948,Mongolia
+G001,World,1,World,MNE,Montenegro,943,"Montenegro, Rep. of"
+G001,World,1,World,MAR,Morocco,686,Morocco
+G001,World,1,World,MOZ,"Mozambique, Republic of",688,Mozambique
+G001,World,1,World,MMR,Myanmar,518,Myanmar
+G001,World,1,World,NAM,Namibia,728,Namibia
+G001,World,1,World,NRU,"Nauru, Republic of",836,Nauru
+G001,World,1,World,NPL,Nepal,558,Nepal
+G001,World,1,World,NLD,"Netherlands, The",138,Netherlands
+G001,World,1,World,NZL,New Zealand,196,New Zealand
+G001,World,1,World,NIC,Nicaragua,278,Nicaragua
+G001,World,1,World,NER,Niger,692,Niger
+G001,World,1,World,NGA,Nigeria,694,Nigeria
+G001,World,1,World,MKD,"North Macedonia, Republic of",962,North Macedonia
+G001,World,1,World,NOR,Norway,142,Norway
+G001,World,1,World,OMN,Oman,449,Oman
+G001,World,1,World,PAK,Pakistan,564,Pakistan
+G001,World,1,World,PLW,"Palau, Republic of",565,Palau
+G001,World,1,World,PAN,Panama,283,Panama
+G001,World,1,World,PNG,Papua New Guinea,853,Papua New Guinea
+G001,World,1,World,PRY,Paraguay,288,Paraguay
+G001,World,1,World,PER,Peru,293,Peru
+G001,World,1,World,PHL,Philippines,566,Philippines
+G001,World,1,World,POL,"Poland, Republic of",964,Poland
+G001,World,1,World,PRT,Portugal,182,Portugal
+G001,World,1,World,PRI,Puerto Rico,359,Puerto Rico
+G001,World,1,World,QAT,Qatar,453,Qatar
+G001,World,1,World,ROU,Romania,968,Romania
+G001,World,1,World,RUS,Russian Federation,922,Russia
+G001,World,1,World,RWA,Rwanda,714,Rwanda
+G001,World,1,World,WSM,Samoa,862,Samoa
+G001,World,1,World,SMR,"San Marino, Republic of",135,San Marino
+G001,World,1,World,SAU,Saudi Arabia,456,Saudi Arabia
+G001,World,1,World,SEN,Senegal,722,Senegal
+G001,World,1,World,SRB,"Serbia, Republic of",942,Serbia
+G001,World,1,World,SYC,Seychelles,718,Seychelles
+G001,World,1,World,SLE,Sierra Leone,724,Sierra Leone
+G001,World,1,World,SGP,Singapore,576,Singapore
+G001,World,1,World,SVK,Slovak Republic,936,Slovak Republic
+G001,World,1,World,SVN,"Slovenia, Republic of",961,Slovenia
+G001,World,1,World,SLB,Solomon Islands,813,Solomon Islands
+G001,World,1,World,SOM,Somalia,726,Somalia
+G001,World,1,World,ZAF,South Africa,199,South Africa
+G001,World,1,World,SSD,"South Sudan, Republic of",733,South Sudan
+G001,World,1,World,ESP,Spain,184,Spain
+G001,World,1,World,LKA,Sri Lanka,524,Sri Lanka
+G001,World,1,World,KNA,St. Kitts and Nevis,361,St. Kitts and Nevis
+G001,World,1,World,LCA,St. Lucia,362,St. Lucia
+G001,World,1,World,VCT,St. Vincent and the Grenadines,364,St. Vincent and the Grenadines
+G001,World,1,World,SDN,Sudan,732,Sudan
+G001,World,1,World,SUR,Suriname,366,Suriname
+G001,World,1,World,SWE,Sweden,144,Sweden
+G001,World,1,World,CHE,Switzerland,146,Switzerland
+G001,World,1,World,SYR,Syrian Arab Republic,463,Syria
+G001,World,1,World,STP,"São Tomé and Príncipe, Democratic Republic of",716,São Tomé and Príncipe
+G001,World,1,World,TWN,Taiwan Province of China,528,Taiwan Province of China
+G001,World,1,World,TJK,"Tajikistan, Republic of",923,Tajikistan
+G001,World,1,World,TZA,"Tanzania, United Republic of",738,Tanzania
+G001,World,1,World,THA,Thailand,578,Thailand
+G001,World,1,World,TLS,"Timor-Leste, Democratic Republic of",537,Timor-Leste
+G001,World,1,World,TGO,Togo,742,Togo
+G001,World,1,World,TON,Tonga,866,Tonga
+G001,World,1,World,TTO,Trinidad and Tobago,369,Trinidad and Tobago
+G001,World,1,World,TUN,Tunisia,744,Tunisia
+G001,World,1,World,TKM,Turkmenistan,925,Turkmenistan
+G001,World,1,World,TUV,Tuvalu,869,Tuvalu
+G001,World,1,World,TUR,"Türkiye, Republic of",186,Türkiye
+G001,World,1,World,UGA,Uganda,746,Uganda
+G001,World,1,World,UKR,Ukraine,926,Ukraine
+G001,World,1,World,ARE,United Arab Emirates,466,United Arab Emirates
+G001,World,1,World,GBR,United Kingdom,112,United Kingdom
+G001,World,1,World,USA,United States,111,United States
+G001,World,1,World,URY,Uruguay,298,Uruguay
+G001,World,1,World,UZB,"Uzbekistan, Republic of",927,Uzbekistan
+G001,World,1,World,VUT,Vanuatu,846,Vanuatu
+G001,World,1,World,VEN,"Venezuela, República Bolivariana de",299,Venezuela
+G001,World,1,World,VNM,Vietnam,582,Vietnam
+G001,World,1,World,WBG,West Bank and Gaza,487,West Bank and Gaza
+G001,World,1,World,YEM,"Yemen, Republic of",474,Yemen
+G001,World,1,World,ZMB,Zambia,754,Zambia
+G001,World,1,World,ZWE,Zimbabwe,698,Zimbabwe
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,AFG,Afghanistan,512,Afghanistan
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,BGD,Bangladesh,513,Bangladesh
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,BEN,Benin,638,Benin
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,BTN,Bhutan,514,Bhutan
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,BFA,Burkina Faso,748,Burkina Faso
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,BDI,Burundi,618,Burundi
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,KHM,Cambodia,522,Cambodia
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,CMR,Cameroon,622,Cameroon
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,CPV,Cabo Verde,624,Cabo Verde
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,CAF,Central African Republic,626,Central African Republic
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,TCD,Chad,628,Chad
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,COM,Comoros,632,Comoros
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,COG,"Congo, Republic of",634,"Congo, Republic of"
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,COD,"Congo, Democratic Republic of the",636,"Congo, Democratic Republic of the"
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,CIV,Côte d'Ivoire,662,Côte d'Ivoire
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,DJI,Djibouti,611,Djibouti
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,DMA,Dominica,321,Dominica
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,ERI,Eritrea,643,Eritrea
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,ETH,Ethiopia,644,Ethiopia
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,GMB,"Gambia, The",648,"Gambia, The"
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,GHA,Ghana,652,Ghana
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,GRD,Grenada,328,Grenada
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,GIN,Guinea,656,Guinea
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,GNB,Guinea-Bissau,654,Guinea-Bissau
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,HTI,Haiti,263,Haiti
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,HND,Honduras,268,Honduras
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,KEN,Kenya,664,Kenya
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,KIR,Kiribati,826,Kiribati
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,KGZ,Kyrgyz Republic,917,Kyrgyz Republic
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,LAO,Lao P.D.R.,544,Lao P.D.R.
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,LSO,Lesotho,666,Lesotho
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,LBR,Liberia,668,Liberia
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MDG,Madagascar,674,Madagascar
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MWI,Malawi,676,Malawi
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MDV,Maldives,556,Maldives
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MLI,Mali,678,Mali
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MHL,Marshall Islands,867,Marshall Islands
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MRT,Mauritania,682,Mauritania
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,FSM,Micronesia,868,Micronesia
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MDA,Moldova,921,Moldova
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MOZ,Mozambique,688,Mozambique
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,MMR,Myanmar,518,Myanmar
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,NPL,Nepal,558,Nepal
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,NIC,Nicaragua,278,Nicaragua
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,NER,Niger,692,Niger
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,PNG,Papua New Guinea,853,Papua New Guinea
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,RWA,Rwanda,714,Rwanda
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,WSM,Samoa,862,Samoa
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,STP,São Tomé and Príncipe,716,São Tomé and Príncipe
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,SEN,Senegal,722,Senegal
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,SLE,Sierra Leone,724,Sierra Leone
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,SLB,Solomon Islands,813,Solomon Islands
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,SOM,Somalia,726,Somalia
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,SSD,South Sudan,733,South Sudan
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,LCA,St. Lucia,362,St. Lucia
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,VCT,St. Vincent and the Grenadines,364,St. Vincent and the Grenadines
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,SDN,Sudan,732,Sudan
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,SYR,Syria,463,Syria
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,TJK,Tajikistan,923,Tajikistan
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,TZA,Tanzania,738,Tanzania
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,TLS,Timor-Leste,537,Timor-Leste
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,TGO,Togo,742,Togo
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,TON,Tonga,866,Tonga
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,TUV,Tuvalu,869,Tuvalu
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,UGA,Uganda,746,Uganda
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,UZB,Uzbekistan,927,Uzbekistan
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,VUT,Vanuatu,846,Vanuatu
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,YEM,Yemen,474,Yemen
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,ZMB,Zambia,754,Zambia
+G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT,ZWE,Zimbabwe,698,Zimbabwe
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ALB,Albania,914,Albania
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,DZA,Algeria,612,Algeria
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,AGO,Angola,614,Angola
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ATG,Antigua and Barbuda,311,Antigua and Barbuda
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ARG,Argentina,213,Argentina
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ARM,"Armenia, Republic of",911,Armenia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ABW,"Aruba, Kingdom of the Netherlands",314,Aruba
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,AZE,"Azerbaijan, Republic of",912,Azerbaijan
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BHS,"Bahamas, The",313,"Bahamas, The"
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BHR,"Bahrain, Kingdom of",419,Bahrain
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BRB,Barbados,316,Barbados
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BLR,"Belarus, Republic of",913,Belarus
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BLZ,Belize,339,Belize
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BOL,Bolivia,218,Bolivia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BIH,Bosnia and Herzegovina,963,Bosnia and Herzegovina
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BWA,Botswana,616,Botswana
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BRA,Brazil,223,Brazil
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,BRN,Brunei Darussalam,516,Brunei Darussalam
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,CPV,Cabo Verde,624,Cabo Verde
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,CHL,Chile,228,Chile
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,CHN,"China, People's Republic of",924,China
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,COL,Colombia,233,Colombia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,CRI,Costa Rica,238,Costa Rica
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,DMA,Dominica,321,Dominica
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,DOM,Dominican Republic,243,Dominican Republic
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ECU,Ecuador,248,Ecuador
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,EGY,"Egypt, Arab Republic of",469,Egypt
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,SLV,El Salvador,253,El Salvador
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,GNQ,"Equatorial Guinea, Republic of",642,Equatorial Guinea
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,SWZ,"Eswatini, Kingdom of",734,Eswatini
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,FJI,"Fiji, Republic of",819,Fiji
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,GAB,Gabon,646,Gabon
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,GEO,Georgia,915,Georgia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,GRD,Grenada,328,Grenada
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,GTM,Guatemala,258,Guatemala
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,GUY,Guyana,336,Guyana
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,HUN,Hungary,944,Hungary
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,IND,India,534,India
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,IDN,Indonesia,536,Indonesia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,IRN,"Iran, Islamic Republic of",429,Iran
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,IRQ,Iraq,433,Iraq
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,JAM,Jamaica,343,Jamaica
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,JOR,Jordan,439,Jordan
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,KAZ,"Kazakhstan, Republic of",916,Kazakhstan
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,KOS,"Kosovo, Republic of",967,Kosovo
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,KWT,Kuwait,443,Kuwait
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,LBN,Lebanon,446,Lebanon
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,LBY,Libya,672,Libya
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MYS,Malaysia,548,Malaysia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MDV,Maldives,556,Maldives
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MHL,"Marshall Islands, Republic of the",867,Marshall Islands
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MUS,Mauritius,684,Mauritius
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MEX,Mexico,273,Mexico
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,FSM,"Micronesia, Federated States of",868,Micronesia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MNG,Mongolia,948,Mongolia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MNE,Montenegro,943,"Montenegro, Rep. of"
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MAR,Morocco,686,Morocco
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,NAM,Namibia,728,Namibia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,NRU,"Nauru, Republic of",836,Nauru
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,MKD,"North Macedonia, Republic of",962,North Macedonia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,OMN,Oman,449,Oman
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PAK,Pakistan,564,Pakistan
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PLW,"Palau, Republic of",565,Palau
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PAN,Panama,283,Panama
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRY,Paraguay,288,Paraguay
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PER,Peru,293,Peru
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PHL,Philippines,566,Philippines
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,POL,"Poland, Republic of",964,Poland
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,QAT,Qatar,453,Qatar
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ROU,Romania,968,Romania
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,RUS,Russian Federation,922,Russia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,WSM,Samoa,862,Samoa
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,SAU,Saudi Arabia,456,Saudi Arabia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,SRB,"Serbia, Republic of",942,Serbia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,SYC,Seychelles,718,Seychelles
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ZAF,South Africa,199,South Africa
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,LKA,Sri Lanka,524,Sri Lanka
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,KNA,St. Kitts and Nevis,361,St. Kitts and Nevis
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,LCA,St. Lucia,362,St. Lucia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,VCT,St. Vincent and the Grenadines,364,St. Vincent and the Grenadines
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,SUR,Suriname,366,Suriname
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,THA,Thailand,578,Thailand
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,TON,Tonga,866,Tonga
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,TTO,Trinidad and Tobago,369,Trinidad and Tobago
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,TUN,Tunisia,744,Tunisia
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,TKM,Turkmenistan,925,Turkmenistan
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,TUV,Tuvalu,869,Tuvalu
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,TUR,"Türkiye, Republic of",186,Türkiye
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,UKR,Ukraine,926,Ukraine
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,ARE,United Arab Emirates,466,United Arab Emirates
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,URY,Uruguay,298,Uruguay
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,VUT,Vanuatu,846,Vanuatu
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,VEN,"Venezuela, República Bolivariana de",299,Venezuela
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,VNM,Vietnam,582,Vietnam
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,WBG,West Bank and Gaza,487,West Bank and Gaza
+G-PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT-EM,Emerging Market and Middle-Income Economies under PRGT classification,NGA,Nigeria,694,Nigeria
