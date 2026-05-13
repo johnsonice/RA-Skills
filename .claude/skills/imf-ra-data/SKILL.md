@@ -136,7 +136,12 @@ The iData key is a dot-separated string of all dimension values in the exact ord
 Before executing, always ask the user which output format they want. Do **not** assume a format.
 
 > **Output format** — which would you like?
-> - **Refreshable** — RA enriched Excel (`.xlsx`) with human-readable indicator labels; `CountryName`, `ISO3`, `IFSCODE` added when a country dimension is present. Layout auto-selected: single-indicator → wide (dates as columns, one row per series); multi-indicator → card (first column = Label with metadata rows then date rows, one column per series). Always `.xlsx`.
+> - **Refreshable** — RA enriched Excel (`.xlsx`) with human-readable indicator labels; `CountryName`, `ISO3`, `IFSCODE` added when a country dimension is present. Layout auto-selected by data shape:
+>   - **Multi-sheet card** (triggered when indicators > 1 AND countries > 1 AND time periods > 1): one tab per indicator; each tab is card format (first column = `Label` with metadata + date rows, one column per series/country).
+>   - **Wide** (single indicator cases): single sheet, dates as columns, one row per series.
+>   - **Long** (all other cases): single sheet, card format.
+>
+>   Always `.xlsx`.
 > - **Wide** — raw API output as-is, dates as rows, series as columns.
 > - **Long** — raw API output as-is, one row per observation.
 >
@@ -183,9 +188,9 @@ Add `--excel` to save Wide or Long output as `.xlsx` instead of `.csv`. Add `--o
 
 **Always use this script — never return raw SDK output directly.**
 
-Refreshable output layout is auto-selected by number of indicators:
+Refreshable output layout is auto-selected by data shape (indicators × countries × time periods):
 
-**Single indicator → Wide layout** (one row per series, dates as columns):
+**Case 1 — Single indicator → Wide layout** (one row per series, dates as columns):
 
 | Column | Present when | Source |
 |---|---|---|
@@ -198,7 +203,9 @@ Refreshable output layout is auto-selected by number of indicators:
 | `<indicator dim_name>` | When indicator dim detected | Human-readable label from `get_dimension_values()["Name"]` |
 | `2019`, `2019Q1`, `2019M1` … | Always | Pivoted date columns; format matches frequency (A/Q/M/D) |
 
-**Multiple indicators → Card layout** (one column per series, dates as rows):
+**Case 2 — Multi-sheet card** (triggered when indicators > 1 AND countries > 1 AND time periods > 1):
+
+One tab per indicator (named by indicator label, max 31 chars). Within each tab:
 
 | Row label | Content |
 |---|---|
@@ -208,10 +215,14 @@ Refreshable output layout is auto-selected by number of indicators:
 | `ISO3` | Country code (when country dimension present) |
 | `IFSCODE` | IFS code (when country dimension present) |
 | `<dim_name>` | Raw code for each non-country, non-indicator dimension |
-| `<indicator dim_name>` | Human-readable label for the indicator |
+| `<indicator dim_name>` | Human-readable label (same for all columns within one tab) |
 | `2019`, `2019Q1`, `2016-02-25` … | Observation value for that series at that date |
 
-The first column (`Label`) contains the row labels above. Each subsequent column is one series, named by its `Series_Code`.
+First column = `Label` (row labels). Each subsequent column = one series (named by `Series_Code`).
+
+**Case 3 — Single card sheet** (indicators > 1, but not all three dimensions plural):
+
+Same card format as Case 2, but a single sheet containing all indicators together. Layout is identical — `Label` column + one column per series across all indicators.
 
 ## Before you fetch
 

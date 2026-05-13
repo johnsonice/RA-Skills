@@ -152,19 +152,129 @@ def detect_freq(df):
     return None
 
 
+def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
+                      indicator_col, ind_map, freq_code, date_col, val_col):
+    """Build card format for one indicator: Label column + one column per series.
+
+    Rows: metadata labels (DATASET, Series_Code, CountryName, ISO3, IFSCODE,
+    other dims, indicator label) followed by date rows.
+    Columns: one per unique series (named by Series_Code).
+    """
+    series_data: dict = {}
+    for series_key, sg in grp.groupby(id_cols, sort=False):
+        if not isinstance(series_key, tuple):
+            series_key = (series_key,)
+        series_code = ".".join(str(v) for v in series_key if pd.notna(v) and str(v) != "")
+
+        row_data: dict = {"DATASET": db, "Series_Code": series_code}
+        if country_col:
+            idx = id_cols.index(country_col)
+            cv  = str(series_key[idx])
+            row_data["CountryName"] = country_lookup.get(cv, {}).get("name", "")
+            row_data["ISO3"]        = cv
+            row_data["IFSCODE"]     = country_lookup.get(cv, {}).get("ifs",  "")
+        for i, col in enumerate(id_cols):
+            if col == country_col:
+                continue
+            val = str(series_key[i])
+            row_data[col] = ind_map.get(val, val) if col == indicator_col else val
+        for _, r in sg.sort_values(date_col).iterrows():
+            lbl = format_date_label(pd.Timestamp(r[date_col]), freq_code)
+            row_data[lbl] = r[val_col]
+        series_data[series_code] = row_data
+
+    meta_labels = ["DATASET", "Series_Code"]
+    if country_col:
+        meta_labels += ["CountryName", "ISO3", "IFSCODE"]
+    for col in id_cols:
+        if col != country_col:
+            meta_labels.append(col)
+
+    date_ts: dict = {}
+    for _, r in grp.iterrows():
+        ts  = pd.Timestamp(r[date_col])
+        lbl = format_date_label(ts, freq_code)
+        date_ts[lbl] = ts
+    sorted_dates = sorted(date_ts, key=lambda x: date_ts[x])
+
+    all_labels = meta_labels + sorted_dates
+    result = pd.DataFrame({"Label": all_labels})
+    for sc, data in series_data.items():
+        result[sc] = [data.get(lbl, "") for lbl in all_labels]
+    return result.reset_index(drop=True)
+
+
+def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
+                      indicator_col, ind_map, freq_code, date_col, val_col):
+    """Build one wide DataFrame (dates as columns) for a single-indicator group."""
+    out = pd.DataFrame()
+    out["DATASET"] = db
+
+    if id_cols:
+        out["Series_Code"] = grp[id_cols].apply(
+            lambda row: ".".join(str(v) for v in row if pd.notna(v) and str(v) != ""),
+            axis=1,
+        )
+    else:
+        out["Series_Code"] = ""
+
+    if country_col:
+        iso3 = grp[country_col].astype(str)
+        out["CountryName"] = iso3.map(lambda x: country_lookup.get(x, {}).get("name", ""))
+        out["ISO3"]        = iso3
+        out["IFSCODE"]     = iso3.map(lambda x: country_lookup.get(x, {}).get("ifs",  ""))
+
+    for col in id_cols:
+        if col == country_col:
+            continue
+        if col == indicator_col:
+            out[col] = grp[col].astype(str).map(lambda x: ind_map.get(x, x)).values
+        else:
+            out[col] = grp[col].values
+
+    grp = grp.copy()
+    grp["_label"] = grp[date_col].apply(lambda t: format_date_label(t, freq_code))
+    label_to_date = (
+        grp[["_label", date_col]].drop_duplicates()
+        .sort_values(date_col)
+        .set_index("_label")[date_col].to_dict()
+    )
+    date_labels_sorted = sorted(label_to_date, key=lambda x: label_to_date[x])
+
+    out = out.reset_index(drop=True)
+    out["_date_label"] = grp["_label"].values
+    out["_value"]      = grp[val_col].values
+    pivot = out.pivot_table(
+        index=[c for c in out.columns if c not in ("_date_label", "_value")],
+        columns="_date_label",
+        values="_value",
+        aggfunc="first",
+    ).reset_index()
+    pivot.columns.name = None
+
+    non_date   = [c for c in pivot.columns if c not in date_labels_sorted]
+    date_present = [c for c in date_labels_sorted if c in pivot.columns]
+    return pivot[non_date + date_present]
+
+
 def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None):
-    """Build the RA refreshable enriched format. Layout is auto-selected:
+    """Build the RA refreshable enriched format. Layout is auto-selected by data shape:
 
-    - Single indicator → wide layout (dates as columns, one row per series):
-        DATASET | Series_Code | [CountryName | ISO3 | IFSCODE] |
-        [other dim cols] | <indicator label col> | 2019 | 2020 | ...
+    1. Wide (n_indicators == 1):
+       Single sheet, dates as columns, one row per series.
 
-    - Multiple indicators → long layout (one row per observation):
-        DATASET | Series_Code | [CountryName | ISO3 | IFSCODE] |
-        [dim cols — indicator dim shows label] | Date | Value
+    2. Multi-sheet card (n_indicators > 1 AND n_countries > 1 AND n_dates > 1):
+       dict[sheet_name → DataFrame]. One card sheet per indicator (sheet name =
+       indicator label, max 31 chars). Each sheet: Label col + one col per series.
+
+    3. Single card (n_indicators > 1, but not all three dimensions plural):
+       Single card DataFrame. Label col + one col per series (all indicators together).
 
     Country columns (CountryName, ISO3, IFSCODE) are included only when a country
     dimension is detected. The indicator column always shows the human-readable label.
+
+    Returns:
+        DataFrame (cases 1 and 3) or dict[str, DataFrame] (case 2).
 
     Args:
         indicator_dim: explicit indicator dimension name from catalog handoff
@@ -198,12 +308,11 @@ def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None):
     else:
         indicator_col = next((c for c in _INDICATOR_DIMS if c in id_cols), None)
 
-    # ── 4. Detect frequency and decide layout ─────────────────────────────────
+    # ── 4. Detect frequency ───────────────────────────────────────────────────
     freq_code = detect_freq(df_long)
     n_indicators = df_long[indicator_col].nunique() if indicator_col else 0
-    use_wide = n_indicators <= 1  # single indicator → wide; multiple → long
 
-    # ── 5. Look up indicator labels once ─────────────────────────────────────
+    # ── 5. Look up indicator labels once ──────────────────────────────────────
     ind_map = {}
     if indicator_col:
         try:
@@ -212,126 +321,39 @@ def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None):
         except Exception:
             pass
 
-    # ── 6. Build shared metadata columns ─────────────────────────────────────
-    # These are the same regardless of wide/long layout.
-    out = pd.DataFrame()
-    out["DATASET"] = db
+    shared = dict(
+        db=db, country_lookup=country_lookup, id_cols=id_cols,
+        country_col=country_col, indicator_col=indicator_col,
+        ind_map=ind_map, freq_code=freq_code, date_col=date_col, val_col=val_col,
+    )
 
-    # Series_Code: all dimension values joined with "." in key order
-    if id_cols:
-        out["Series_Code"] = df_long[id_cols].apply(
-            lambda row: ".".join(str(v) for v in row if pd.notna(v) and str(v) != ""),
-            axis=1,
-        )
-    else:
-        out["Series_Code"] = ""
+    # ── 6. Decide layout ──────────────────────────────────────────────────────
+    n_countries = df_long[country_col].nunique() if country_col else 0
+    n_dates     = df_long[date_col].nunique()
 
-    # Country enrichment — only when a country dimension is present.
-    # ISO3 is the raw country code; CountryName and IFSCODE are best-effort enrichments.
-    if country_col:
-        iso3 = df_long[country_col].astype(str)
-        out["CountryName"] = iso3.map(lambda x: country_lookup.get(x, {}).get("name", ""))
-        out["ISO3"]        = iso3
-        out["IFSCODE"]     = iso3.map(lambda x: country_lookup.get(x, {}).get("ifs",  ""))
+    # Multi-sheet card: only when all three dimensions are plural
+    if n_indicators > 1 and n_countries > 1 and n_dates > 1:
+        sheets: dict = {}
+        used_names: dict = {}
+        for ind_code, grp in df_long.groupby(indicator_col, sort=False):
+            label = ind_map.get(str(ind_code), str(ind_code))
+            base  = label[:31]
+            if base in used_names:
+                used_names[base] += 1
+                sheet_name = base[:28] + f"_{used_names[base]}"
+            else:
+                used_names[base] = 1
+                sheet_name = base
+            sheets[sheet_name] = _build_card_sheet(grp.reset_index(drop=True), **shared)
+        return sheets
 
-    # Non-country, non-indicator dimension columns retain their actual names and codes.
-    other_dims = [c for c in id_cols if c != country_col and c != indicator_col]
-    for col in other_dims:
-        out[col] = df_long[col].values
+    # n_indicators > 1 but not all three dimensions plural:
+    # single card sheet with all series together
+    if n_indicators > 1:
+        return _build_card_sheet(df_long, **shared)
 
-    # Indicator column always shows the human-readable label.
-    if indicator_col:
-        out[indicator_col] = df_long[indicator_col].astype(str).map(lambda x: ind_map.get(x, x))
-
-    # ── 7a. Wide layout (single indicator) — pivot dates to columns ───────────
-    if use_wide:
-        df_long["_label"] = df_long[date_col].apply(lambda t: format_date_label(t, freq_code))
-
-        # Build a mapping from label → date for chronological sort
-        label_to_date = (
-            df_long[["_label", date_col]].drop_duplicates()
-            .sort_values(date_col)
-            .set_index("_label")[date_col].to_dict()
-        )
-        date_labels_sorted = sorted(label_to_date, key=lambda x: label_to_date[x])
-
-        # Add value and date label columns, then pivot
-        out = out.reset_index(drop=True)
-        out["_date_label"] = df_long["_label"].values
-        out["_value"] = df_long[val_col].values
-        pivot = out.pivot_table(
-            index=[c for c in out.columns if c not in ("_date_label", "_value")],
-            columns="_date_label",
-            values="_value",
-            aggfunc="first",
-        ).reset_index()
-        pivot.columns.name = None
-
-        # Reorder date columns chronologically
-        non_date = [c for c in pivot.columns if c not in date_labels_sorted]
-        date_present = [c for c in date_labels_sorted if c in pivot.columns]
-        return pivot[non_date + date_present]
-
-    # ── 7b. Card layout (multiple indicators) ────────────────────────────────
-    # Structure: Label column + one column per series (named by Series_Code).
-    # Rows: metadata labels (DATASET, Series_Code, dim names) followed by date rows.
-    # Each series column holds the metadata values and then the time-series values.
-
-    # Collect per-series data: {series_code: {label → value}}
-    series_data = {}
-    for series_key, grp in df_long.groupby(id_cols, sort=False):
-        if not isinstance(series_key, tuple):
-            series_key = (series_key,)
-
-        series_code = ".".join(
-            str(v) for v in series_key if pd.notna(v) and str(v) != ""
-        )
-
-        row_data: dict = {}
-        row_data["DATASET"] = db
-        row_data["Series_Code"] = series_code
-
-        if country_col:
-            idx = id_cols.index(country_col)
-            cv = str(series_key[idx])
-            row_data["CountryName"] = country_lookup.get(cv, {}).get("name", "")
-            row_data["ISO3"]        = cv
-            row_data["IFSCODE"]     = country_lookup.get(cv, {}).get("ifs", "")
-
-        for i, col in enumerate(id_cols):
-            if col == country_col:
-                continue
-            val = str(series_key[i])
-            row_data[col] = ind_map.get(val, val) if col == indicator_col else val
-
-        for _, r in grp.sort_values(date_col).iterrows():
-            lbl = format_date_label(pd.Timestamp(r[date_col]), freq_code)
-            row_data[lbl] = r[val_col]
-
-        series_data[series_code] = row_data
-
-    # Determine label order: fixed metadata rows first, then dates chronologically
-    meta_labels = ["DATASET", "Series_Code"]
-    if country_col:
-        meta_labels += ["CountryName", "ISO3", "IFSCODE"]
-    for col in id_cols:
-        if col != country_col:
-            meta_labels.append(col)
-
-    date_ts: dict = {}
-    for _, r in df_long.iterrows():
-        ts  = pd.Timestamp(r[date_col])
-        lbl = format_date_label(ts, freq_code)
-        date_ts[lbl] = ts
-    sorted_date_labels = sorted(date_ts, key=lambda x: date_ts[x])
-
-    all_labels = meta_labels + sorted_date_labels
-
-    # Build result: first column = Label, one column per series
-    result = pd.DataFrame({"Label": all_labels})
-    for sc, data in series_data.items():
-        result[sc] = [data.get(lbl, "") for lbl in all_labels]
-    return result.reset_index(drop=True)
+    # n_indicators <= 1: single wide sheet
+    return _build_wide_sheet(df_long, **shared)
 
 
 # Required columns that must always be present in refreshable output.
@@ -344,81 +366,92 @@ _DATE_LABEL_RE = re.compile(
 )
 
 
-def validate_refreshable_output(df, db):
-    """Validate the refreshable output against the RA standard format.
-    Returns (is_valid, list_of_error_strings).
-    """
+def _validate_wide_sheet(df, db):
+    """Validate one wide refreshable sheet. Returns list of error strings."""
     errors = []
-
-    # 1. Core columns always present
     missing = _REFRESHABLE_REQUIRED_COLS - set(df.columns)
     if missing:
         errors.append(f"Missing required columns: {', '.join(sorted(missing))}")
-        return False, errors
-
+        return errors
     if df.empty:
-        errors.append("Output is empty.")
-        return False, errors
-
-    # 2. DATASET — must match --db argument
+        errors.append("Sheet is empty.")
+        return errors
     if not (df["DATASET"] == db).all():
         errors.append(f"DATASET column does not match database '{db}'.")
-
-    # 3. Series_Code — must be dot-separated
     no_dot = df["Series_Code"].dropna().astype(str)
     no_dot = no_dot[~no_dot.str.contains(r"\.", regex=True)]
     if not no_dot.empty:
-        errors.append("Series_Code has values without dots — key construction may be incorrect.")
-
-    # 4. Country columns — validate only when present
+        errors.append("Series_Code has values without dots.")
     if "ISO3" in df.columns:
-        bad_iso = df["ISO3"].dropna().astype(str)
-        bad_iso = bad_iso[~bad_iso.str.match(r"^[A-Z]{2,4}$|^G\w+$")]
-        if not bad_iso.empty:
-            errors.append(f"ISO3 has unexpected values: {bad_iso.unique()[:3].tolist()}")
-
+        bad = df["ISO3"].dropna().astype(str)
+        bad = bad[~bad.str.match(r"^[A-Z]{2,4}$|^G\w+$")]
+        if not bad.empty:
+            errors.append(f"ISO3 has unexpected values: {bad.unique()[:3].tolist()}")
     if "IFSCODE" in df.columns:
-        bad_ifs = df["IFSCODE"].dropna().astype(str)
-        bad_ifs = bad_ifs[~bad_ifs.str.match(r"^\d+$|^$")]
-        if not bad_ifs.empty:
-            errors.append(f"IFSCODE has non-numeric values: {bad_ifs.unique()[:3].tolist()}")
-
+        bad = df["IFSCODE"].dropna().astype(str)
+        bad = bad[~bad.str.match(r"^\d+$|^$")]
+        if not bad.empty:
+            errors.append(f"IFSCODE has non-numeric values: {bad.unique()[:3].tolist()}")
     if "CountryName" in df.columns:
         if (df["CountryName"].isna() | (df["CountryName"].astype(str).str.strip() == "")).all():
             errors.append("CountryName is empty — country lookup may have failed.")
+    date_cols = [c for c in df.columns
+                 if c not in _REFRESHABLE_REQUIRED_COLS
+                 and c not in ("CountryName", "ISO3", "IFSCODE")
+                 and _DATE_LABEL_RE.match(str(c))]
+    if not date_cols:
+        errors.append("No date columns found — pivot may have failed.")
+    return errors
 
-    # 5. Layout-specific checks
-    if "Label" in df.columns:
-        # Card layout (multi-indicator): Label column + series columns
-        label_vals = df["Label"].astype(str).tolist()
-        if "DATASET" not in label_vals:
-            errors.append("Card layout is missing a DATASET label row.")
-        if "Series_Code" not in label_vals:
-            errors.append("Card layout is missing a Series_Code label row.")
-        date_rows = [v for v in label_vals if _DATE_LABEL_RE.match(v)]
-        if not date_rows:
-            errors.append("Card layout has no date rows — data may be empty.")
-        series_cols = [c for c in df.columns if c != "Label"]
-        if not series_cols:
-            errors.append("Card layout has no series columns.")
-    elif "Date" in df.columns:
-        # Tabular long (not currently used but guard against regression)
-        bad_dates = df["Date"].dropna().astype(str)
-        bad_dates = bad_dates[~bad_dates.str.match(_DATE_LABEL_RE.pattern)]
-        if not bad_dates.empty:
-            errors.append(f"Date column has unexpected format: {bad_dates.unique()[:3].tolist()}")
-        if "Value" not in df.columns:
-            errors.append("Long layout is missing the Value column.")
+
+def _validate_card_sheet(df, db):
+    """Validate one card-format sheet. Returns list of error strings."""
+    errors = []
+    if "Label" not in df.columns:
+        errors.append("Missing 'Label' column.")
+        return errors
+    if df.empty:
+        errors.append("Sheet is empty.")
+        return errors
+    label_vals = df["Label"].astype(str).tolist()
+    if "DATASET" not in label_vals:
+        errors.append("Missing DATASET label row.")
+    if "Series_Code" not in label_vals:
+        errors.append("Missing Series_Code label row.")
+    date_rows = [v for v in label_vals if _DATE_LABEL_RE.match(v)]
+    if not date_rows:
+        errors.append("No date rows found — data may be empty.")
+    if len(df.columns) < 2:
+        errors.append("No series columns — expected one column per series.")
+    # Check DATASET value in each series column
+    if "DATASET" in label_vals:
+        ds_idx = label_vals.index("DATASET")
+        for col in df.columns[1:]:
+            if str(df.at[ds_idx, col]) != db:
+                errors.append(f"Column '{col}': DATASET row does not match '{db}'.")
+                break
+    return errors
+
+
+def validate_refreshable_output(out, db):
+    """Validate refreshable output (DataFrame or dict of DataFrames).
+    Returns (is_valid, list_of_error_strings).
+    """
+    if isinstance(out, dict):
+        # Multi-sheet card
+        all_errors = []
+        for sheet_name, df in out.items():
+            for e in _validate_card_sheet(df, db):
+                all_errors.append(f"[{sheet_name}] {e}")
+        return len(all_errors) == 0, all_errors
+    elif "Label" in out.columns:
+        # Single card sheet
+        errors = _validate_card_sheet(out, db)
+        return len(errors) == 0, errors
     else:
-        # Wide layout (single indicator) — check that at least one date column exists
-        date_cols = [c for c in df.columns
-                     if c not in _REFRESHABLE_REQUIRED_COLS
-                     and c not in ("CountryName", "ISO3", "IFSCODE")
-                     and _DATE_LABEL_RE.match(str(c))]
-        if not date_cols:
-            errors.append("Wide layout has no date columns — pivot may have failed.")
-
-    return len(errors) == 0, errors
+        # Wide sheet
+        errors = _validate_wide_sheet(out, db)
+        return len(errors) == 0, errors
 
 
 def validate_output_format(fmt, excel, output_path):
@@ -581,14 +614,27 @@ def main():
         for e in rf_errors:
             print(f"  - {e}", file=sys.stderr)
 
-    layout = "card" if "Label" in out.columns else "wide"
-    print(f"Layout   : refreshable ({layout})")
-    print(f"Output shape: {out.shape[0]} rows x {out.shape[1]} columns")
-    print()
-    print(out.head().to_string())
-
-    saved = save_output(out, args.output)
-    print(f"\nSaved to: {saved}")
+    if isinstance(out, dict):
+        print(f"Layout   : refreshable (multi-sheet card, {len(out)} indicators)")
+        try:
+            with pd.ExcelWriter(args.output) as writer:
+                for sheet_name, df_sheet in out.items():
+                    df_sheet.to_excel(writer, sheet_name=sheet_name, index=False)
+                    print(f"  Sheet '{sheet_name}': {df_sheet.shape[0]} rows x {df_sheet.shape[1]} cols")
+        except ImportError:
+            fallback = args.output.replace(".xlsx", ".csv")
+            print("Warning: no Excel writer engine — saving first sheet as CSV.", file=sys.stderr)
+            next(iter(out.values())).to_csv(fallback, index=False)
+            args.output = fallback
+        print(f"\nSaved to: {args.output}")
+    else:
+        layout = "card" if "Label" in out.columns else "wide"
+        print(f"Layout   : refreshable ({layout})")
+        print(f"Output shape: {out.shape[0]} rows x {out.shape[1]} columns")
+        print()
+        print(out.head().to_string())
+        saved = save_output(out, args.output)
+        print(f"\nSaved to: {saved}")
 
 
 if __name__ == "__main__":
