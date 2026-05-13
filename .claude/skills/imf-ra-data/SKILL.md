@@ -197,9 +197,9 @@ Refreshable output column layout:
 Always load **`imf-ra`** first for shared conventions:
 
 - **Country and group codes** — translate RA-friendly names ("advanced economies", "EMDE", "G7") through the WEO group reference in `imf-ra`, not from memory.
-- **Frequencies** — follow standard frequency codes (`A`, `Q`, `M`, `D`) and date-handling rules in [imf-ra/references/conventions.md](../imf-ra/references/conventions.md).
+- **Frequencies** — follow standard frequency codes (`A`, `Q`, `M`, `D`) and confirm date handling from dataset metadata when needed.
 - **Time range** — always confirm `start` and `end` with the user before fetching.
-- **SDK environment setup** — PRIVATE flag and environment configuration are covered in [imf-ra/references/conventions.md](../imf-ra/references/conventions.md).
+- **SDK environment setup** — set the required private-data access flags described in this skill before retrieval.
 
 ## How to fetch
 
