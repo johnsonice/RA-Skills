@@ -7,6 +7,7 @@ import argparse
 import csv
 import re
 import sys
+import unicodedata
 from pathlib import Path
 from typing import Iterable
 
@@ -46,10 +47,22 @@ GROUP_ALIASES = {
     "cca": "G940",
     "mena": "G406",
 }
+COUNTRY_ALIASES = {
+    "america": "USA",
+    "united states of america": "USA",
+    "us": "USA",
+    "u s": "USA",
+    "mainland": "CHN",
+    "mainland china": "CHN",
+    "china mainland": "CHN",
+    "cote d ivoire": "CIV",
+    "ivory coast": "CIV",
+}
 
 
 def _norm(value: str) -> str:
-    return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
+    ascii_value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"[^a-z0-9]+", " ", ascii_value.lower()).strip()
 
 
 def _compact(value: str) -> str:
@@ -60,6 +73,10 @@ def group_alias_code(query: str) -> str | None:
     return GROUP_ALIASES.get(_norm(query))
 
 
+def country_alias_code(query: str) -> str | None:
+    return COUNTRY_ALIASES.get(_norm(query))
+
+
 class CsvTables:
     def __init__(self, csv_dir: Path) -> None:
         self.csv_dir = csv_dir
@@ -68,8 +85,13 @@ class CsvTables:
         csv_path = self.csv_dir / CSV_FILES[table_name]
         if not csv_path.exists():
             raise FileNotFoundError(f"Missing WEO country-group CSV: {csv_path}")
-        with csv_path.open(newline="", encoding="utf-8-sig") as f:
-            return list(csv.DictReader(f))
+        for encoding in ("utf-8-sig", "cp1252"):
+            try:
+                with csv_path.open(newline="", encoding=encoding) as f:
+                    return list(csv.DictReader(f))
+            except UnicodeDecodeError:
+                continue
+        raise UnicodeDecodeError("utf-8-sig", b"", 0, 1, f"Could not decode {csv_path}")
 
 
 def matches(row: dict[str, str], query: str, fields: Iterable[str]) -> bool:
@@ -97,23 +119,29 @@ def cmd_groups(tables: CsvTables, args: argparse.Namespace) -> None:
     rows = tables.rows("groups")
     if args.query:
         alias_code = group_alias_code(args.query)
-        rows = [
-            r
-            for r in rows
-            if (alias_code and r.get("groupcode") == alias_code)
-            or matches(r, args.query, ["grouptype", "groupcode", "groupname", "groupcode_s", "groupname_s"])
-        ]
+        if alias_code:
+            rows = [r for r in rows if r.get("groupcode") == alias_code]
+        else:
+            rows = [
+                r
+                for r in rows
+                if matches(r, args.query, ["grouptype", "groupcode", "groupname", "groupcode_s", "groupname_s"])
+            ]
     write_rows(rows, ["grouptype", "groupcode", "groupname", "groupcode_s", "groupname_s"])
 
 
 def cmd_countries(tables: CsvTables, args: argparse.Namespace) -> None:
     rows = tables.rows("countries")
     if args.query:
-        rows = [
-            r
-            for r in rows
-            if matches(r, args.query, ["countrycode", "countryname", "countrycode_s", "countryname_s", "department"])
-        ]
+        alias_code = country_alias_code(args.query)
+        if alias_code:
+            rows = [r for r in rows if r.get("countrycode") == alias_code]
+        else:
+            rows = [
+                r
+                for r in rows
+                if matches(r, args.query, ["countrycode", "countryname", "countrycode_s", "countryname_s", "department"])
+            ]
     write_rows(rows, ["countrycode", "countryname", "countrycode_s", "countryname_s", "department"])
 
 
@@ -141,7 +169,13 @@ def cmd_members(tables: CsvTables, args: argparse.Namespace) -> None:
 
 def cmd_memberships(tables: CsvTables, args: argparse.Namespace) -> None:
     countries = tables.rows("countries")
-    exact_countries = [r for r in countries if exact_matches(r, args.country, ["countrycode", "countryname", "countrycode_s", "countryname_s"])]
+    alias_code = country_alias_code(args.country)
+    exact_countries = [
+        r
+        for r in countries
+        if (alias_code and r.get("countrycode") == alias_code)
+        or exact_matches(r, args.country, ["countrycode", "countryname", "countrycode_s", "countryname_s"])
+    ]
     country_codes = {r["countrycode"] for r in exact_countries}
     composition = tables.rows("composition")
     if country_codes:
