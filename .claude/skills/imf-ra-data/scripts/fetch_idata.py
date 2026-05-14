@@ -607,12 +607,13 @@ def main():
     country_lookup = load_country_lookup()
     out = build_refreshable_output(df, args.db, country_lookup, indicator_dim=args.indicator_dim)
 
-    # Validate refreshable output before saving
+    # Validate refreshable output — hard fail so no misleading file is saved
     rf_valid, rf_errors = validate_refreshable_output(out, args.db)
     if not rf_valid:
-        print("WARNING: Refreshable output failed validation:", file=sys.stderr)
+        print("ERROR: Refreshable output failed validation — file not saved:", file=sys.stderr)
         for e in rf_errors:
             print(f"  - {e}", file=sys.stderr)
+        sys.exit(1)
 
     if isinstance(out, dict):
         print(f"Layout   : refreshable (multi-sheet card, {len(out)} indicators)")
