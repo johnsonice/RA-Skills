@@ -41,6 +41,7 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 | `databases/non_vintage_datasets.csv` | Default dataset and dataflow catalog for non-vintage lookup. |
 | `databases/vintage_datasets.csv` | Vintage-only dataset and dataflow catalog. Use only for explicit vintage or historical-release requests. |
 | `databases/database_overview.md` | High-level summaries of major database families, coverage, and common use cases. |
+| `databases/haver_databases.md` | Haver database directory and routing guide. Use to identify which Haver database covers a given concept before searching indicator metadata. |
 
 ### Indicator Catalogs
 
@@ -50,6 +51,7 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 | `indicators/2. bbg_variable_list.csv` | Bloomberg variable catalog. Use when the user requests Bloomberg or `IMF.CSF:BBGDL`. |
 | `indicators/3. wdi_variable_list.csv` | World Bank WDI variable catalog. Use when the user requests WDI or `WB:WDI`. |
 | `indicators/4. wto_variable_List.csv` | WTO variable catalog. Use when the user requests WTO goods, tariff, or commodity codes. |
+| `indicators/haver/<DB>.csv` | Haver indicator metadata, one CSV per database. Schema: `code`, `descriptor`, `frequency`, `startdate`, `enddate`, `shortsource`. Use only after routing to a specific database via `haver_databases.md`. Currently available: `EMERGE.csv`, `USECON.csv`, `WEEKLY.csv`. |
 
 ## Default Selection Policy
 
@@ -57,8 +59,9 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 2. Use vintage datasets only when the user explicitly asks for a vintage, historical publication, dated snapshot, or versioned release.
 3. For WEO-style macroeconomic concepts, begin with non-vintage `IMF.RES.WEO:WEO_LIVE` unless the user asks for another source or the concept is clearly outside WEO coverage.
 4. Do not silently replace non-vintage `WEO_LIVE` with a dated WEO vintage. If the user asks for a WEO vintage but does not specify one, ask whether they want the latest available WEO Live vintage or a specific historical vintage.
-5. Search all databases only when WEO Live, GAS live and other highlighted database in database_overview.mdlack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
+5. Search all databases only when WEO Live, GAS live and other highlighted database in database_overview.md lack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
 6. Use database-specific indicator files for Bloomberg, WDI, and WTO requests rather than the general non-vintage variable list.
+7. For Haver requests, follow the two-step Haver routing workflow below — do not search all Haver CSVs blindly.
 
 ## Lookup Workflow
 
@@ -69,6 +72,36 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 5. **Preserve dimensions.** Always carry through `dimension_name`; do not assume the code dimension is `INDICATOR`.
 6. **Resolve ambiguity.** Compare candidates by unit, transformation, valuation, frequency, price basis, and database coverage.
 7. **Return the result.** Commit to a single identifier only when the match is exact and unambiguous. Otherwise, return a short candidate list and ask for confirmation.
+
+## Haver Lookup (Temporary — pre-SQLite)
+
+> **Note:** Haver indicator metadata is not yet in the unified catalog. Use the two-step routing below to locate indicators. This section will be replaced once metadata moves to a searchable database.
+
+### Step 1 — Identify the database
+
+Read `databases/haver_databases.md` and use the **Routing Guidance** section at the bottom to narrow the request to one or two candidate databases. Do not open any indicator CSV yet.
+
+### Step 2 — Search the candidate CSV(s)
+
+Once you have a candidate database, check whether its CSV exists in `indicators/haver/`. Currently available: `EMERGE`, `USECON`, `WEEKLY`.
+
+- If the database has a CSV: search `descriptor` for keywords matching the user's concept. Match on `code` + `descriptor`. Note `frequency`, `startdate`, and `enddate` as part of the result.
+- If the database does not yet have a CSV: tell the user the likely database based on routing, but explain the indicator metadata for that database is not yet loaded. Do not invent a code.
+
+### Output
+
+Return the same format as other catalog results, using `code` as the indicator code and `descriptor` as the name. There is no `dimension_name` concept in Haver — omit that field or set it to `N/A`.
+
+```text
+database: HAVER:<DB_CODE>   (e.g. HAVER:USECON)
+dimension_name: N/A
+code: <haver_code>
+name: <descriptor>
+frequency: <A/Q/M/W/D>
+coverage: <startdate> – <enddate>
+source: <shortsource>
+notes: <brief reason this is the best match>
+```
 
 ## Use of Helper Scripts
 
