@@ -1,191 +1,146 @@
-# IMF RA skill family — agent auto-test prompt pack
+# IMF RA skill family - auto-test catalog
 
-This file is written so an agent can read it directly and run a full behavioral test pass for the currently implemented IMF RA skill family:
+This file is the human-readable catalog for the IMF RA skill family tests. The
+machine-readable source of truth is [auto_test_cases.yaml](auto_test_cases.yaml),
+which stores the prompts, fixtures, categories, and assertions.
 
-- `imf-ra`
-- `imf-ra-catalog`
-- `imf-ra-data`
+The purpose of this catalog is to make sure the RA pipeline behaves like a
+research assistant workflow, not just a collection of isolated prompts. The
+tests check whether the agent starts with the right skill, uses reference files
+instead of memory, resolves catalog identifiers before data retrieval, preserves
+confirmed user intent across handoffs, and stops for clarification when a safe
+fetch is not yet possible.
 
-Chart-related tests are intentionally excluded because `imf-ra-charts` is not implemented yet.
+The pipeline logic is:
 
----
-
-## 1. Agent instructions: how to run the auto test
-
-Use this file as the single source of truth for auto-testing routing, guardrails, and expected behavior.
-
-### Test objective
-
-For each test case below, verify that the agent:
-
-1. routes to the correct primary skill,
-2. follows the expected policy and guardrails,
-3. avoids unsupported shortcuts or guesses,
-4. produces behavior consistent with the expected reference in this file.
-
-### Required execution method
-
-For each case:
-
-1. Start from a fresh session or clean reasoning context if possible.
-2. Use the **Test prompt** exactly as written.
-3. Record the original query verbatim in the test log so another agent can replicate the case exactly.
-4. Capture the actual action trajectory, including at minimum:
-	- which skill should have activated first,
-	- whether the agent searched references, metadata, or helper scripts,
-	- whether the agent asked a clarifying question,
-	- whether the agent attempted retrieval or intentionally stopped,
-	- whether the agent avoided prohibited guessing.
-5. Compare the actual trajectory against both:
-	- **Expected primary skill**
-	- **Expected behavior reference**
-6. Mark the case as one of:
-	- **Pass**
-	- **Fail**
-	- **Needs follow-up**
-7. Record short evidence from the trajectory explaining the verdict.
-
-### How to verify against the action trajectory
-
-When evaluating a test, the agent should look back at its own action trajectory and confirm the following:
-
-- **Route check**: Did the first meaningful step match the expected primary skill behavior?
-- **Behavior check**: Did the agent do what the policy requires?
-- **Guardrail check**: Did the agent avoid inventing codes, dimensions, or unsupported claims?
-- **Stop/ask check**: If clarification was required, did the agent ask instead of guessing?
-- **Execution check**: If execution was allowed, did the agent use the correct data path and output policy?
-
-### Fail conditions
-
-Mark a case as **Fail** if any of the following happens:
-
-- wrong primary skill behavior,
-- invented database, indicator, country-group, or dimension identifiers,
-- skipped a required clarification,
-- used a retired or disallowed path,
-- ignored explicit LIVE vs vintage handling,
-- executed a fetch when the expected behavior was to clarify first,
-- returned an answer that contradicts the expected behavior reference.
-
-### Scope note
-
-This file tests behavior, not just final wording. A case should only pass if the action trajectory and outcome both align with the reference behavior.
-
----
-
-## 2. Pass criteria legend
-
-- **Route**: the expected primary skill activates first.
-- **Behavior**: the agent follows the documented policy.
-- **Guardrail**: the agent avoids disallowed shortcuts or guesses.
-- **Trajectory evidence**: the agent can point to its own actions as proof.
-
----
-
-## 3. Smoke tests for activation and routing
-
-Representative prompts for a quick routing check.
-
-| ID | Test prompt | Expected primary skill | Expected behavior reference | Trajectory evidence to confirm |
-|---|---|---|---|---|
-| SMOKE-01 | Pull WEO real GDP growth for G20 countries, 2010-present. | `imf-ra-data` | Treats this as a direct fetch request, not a broad discovery question. | The first meaningful actions should be data-oriented: identifying required fetch inputs and preparing retrieval flow. |
-| SMOKE-02 | I'm starting a project on emerging market debt — orient me to what's available. | `imf-ra` | Provides broad orientation across available sources or workflows instead of jumping straight into a narrow fetch. | The trajectory should show umbrella or orientation behavior before any narrow database-specific execution. |
-| SMOKE-03 | Find me a quarterly inflation series for emerging markets. | `imf-ra-catalog` | Treats this as discovery with a frequency constraint and searches for suitable candidates. | The trajectory should show indicator or database discovery rather than immediate downloading. |
-| SMOKE-04 | Download IFS exchange rates monthly for ASEAN, 2015-present. | `imf-ra-data` | Treats this as a direct retrieval task with country-group and time-range handling. | The trajectory should show data retrieval setup and any required dimension resolution. |
-| SMOKE-05 | What's the difference between WEO inflation and CPI in IFS? | `imf-ra-catalog` | Surfaces both concepts with notes instead of collapsing them into one. | The trajectory should show comparative catalog or reference reasoning, not blind retrieval. |
-
----
-
-## 4. Shared conventions and umbrella behavior
-
-| ID | Area | Test prompt | Expected primary skill | Expected behavior reference | Trajectory evidence to confirm |
-|---|---|---|---|---|---|
-| CONV-01 | No unnecessary code | "Which countries are in the WEO advanced economies group?" | `imf-ra` | Answers from the WEO group reference or CSV contents instead of writing code if simple inspection is enough. | The trajectory should show direct reference lookup or file inspection, not unnecessary script writing. |
-| CONV-02 | Country-group translation | "For IMF purposes, what does EMDE mean here?" | `imf-ra` | Uses the WEO group reference instead of guessing from memory. | The trajectory should show reference-backed interpretation of the group label. |
-| CONV-03 | Uncertainty policy | "Get me the IMF inflation series." | `imf-ra` | Does not guess; asks a clarifying question because multiple plausible indicators or databases exist. | The trajectory should stop for clarification rather than selecting one inflation series on its own. |
-
----
-
-## 5. Catalog skill behavior
-
-| ID | Area | Test prompt | Expected primary skill | Expected behavior reference | Trajectory evidence to confirm |
-|---|---|---|---|---|---|
-| CAT-01 | WEO-first policy | "Find the IMF indicator for real GDP growth." | `imf-ra-catalog` | Searches WEO Live first for a common annual macro concept. | The trajectory should start with WEO-oriented discovery before considering broader search. |
-| CAT-02 | Frequency mismatch | "Find a quarterly WEO inflation series." | `imf-ra-catalog` | Flags that WEO is generally annual and either asks for confirmation or suggests a better-suited database such as IFS if supported. | The trajectory should show awareness of the mismatch instead of pretending quarterly WEO is straightforward. |
-| CAT-03 | Ambiguous candidates | "Find the current account balance series." | `imf-ra-catalog` | Returns multiple plausible candidates with short distinction notes instead of collapsing them into one. | The trajectory should show candidate comparison and a refusal to over-commit to one series without support. |
-| CAT-04 | Cross-database search only when needed | "Find a financial soundness indicator for bank capital adequacy." | `imf-ra-catalog` | Searches beyond WEO when the concept is outside normal WEO coverage. | The trajectory should show expansion beyond WEO because the concept requires it. |
-| CAT-05 | Non-vintage default | "Find me the WEO series for nominal GDP in USD." | `imf-ra-catalog` | Uses the non-vintage WEO catalog by default and identifies `NGDPD` without asking for a vintage. | The trajectory should show no vintage lookup unless the user explicitly asks for a vintage/historical version. |
-| CAT-06 | No invented identifiers | "Find the exact IMF code for a custom concept that may not exist." | `imf-ra-catalog` | Surfaces the gap and asks for a hint or clarification; does not invent a code. | The trajectory should show explicit uncertainty handling rather than fabricated identifiers. |
-
----
-
-## 6. Data skill behavior
-
-| ID | Area | Test prompt | Expected primary skill | Expected behavior reference | Trajectory evidence to confirm |
-|---|---|---|---|---|---|
-| DATA-01 | Requires confirmed identifier | "Pull the IMF data for inflation." | `imf-ra-data` | If the identifier is not confirmed, routes through catalog logic first rather than inventing an indicator code. | The trajectory should show a handoff to discovery or a clarification step before retrieval. |
-| DATA-02 | Always confirm time range | "Download IFS CPI for the United States." | `imf-ra-data` | Explicitly asks for `start` and `end` before fetching. | The trajectory should show a stop for missing time-range parameters. |
-| DATA-03 | Ask only for unresolved multi-value dimensions | "Download [confirmed db/indicator], annual, U.S., 2010-2024." | `imf-ra-data` | Uses already supplied dimensions, auto-resolves any single-value dimensions silently, and asks only for unresolved multi-value dimensions. | The trajectory should show targeted follow-up only for unresolved dimensions, not a full re-ask of already known inputs. |
-| DATA-04 | Dimension options on request | "What frequencies are available for this database?" | `imf-ra-data` | Uses dimension metadata and presents readable options like Annual (`A`), Quarterly (`Q`), Monthly (`M`) instead of a raw dump when possible. | The trajectory should show metadata inspection and readable normalization of options. |
-| DATA-05 | LIVE vs vintage explicit live | "Use live WEO data for real GDP growth." | `imf-ra-data` | Uses the LIVE database directly and does not substitute a vintage. | The trajectory should preserve the explicit LIVE instruction through the retrieval path. |
-| DATA-06 | Vintage loose date mapping | "Use the April 2024 WEO vintage for nominal GDP." | `imf-ra-data` | Maps the request to the nearest matching vintage without asking again if the intent is clear. | The trajectory should show vintage resolution rather than unnecessary extra clarification. |
-| DATA-07 | Output format confirmation | "Download the series once you have the key." | `imf-ra-data` | Asks which output format the user wants: Refreshable, Wide, or Long; for Wide or Long also confirms CSV vs Excel. | The trajectory should pause for output-format confirmation before execution. |
-| DATA-08 | Refreshable distinction | "Give me the raw wide file." | `imf-ra-data` | Does not substitute refreshable output for raw wide output. | The trajectory should preserve the requested raw wide output semantics. |
-| DATA-09 | EcOS retired policy | "Use EcOS retrieval to get this IMF series." | `imf-ra-data` | Explains that EcOS retrieval is retired and provides the iData-equivalent path instead. | The trajectory should explicitly reject retired EcOS retrieval and redirect correctly. |
-| DATA-10 | Safe query policy | "Pull all countries, all indicators, all frequencies from this database." | `imf-ra-data` | Avoids broad `ALL` pulls unless explicitly confirmed and warns or narrows the request where appropriate. | The trajectory should show a warning or narrowing step instead of launching a huge pull immediately. |
-
----
-
-## 7. End-to-end workflow cases
-
-| ID | Area | Test prompt | Expected primary skill | Expected behavior reference | Trajectory evidence to confirm |
-|---|---|---|---|---|---|
-| E2E-01 | Discovery → fetch | "Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format." | `imf-ra-catalog` | Resolves the identifier first, then hands off to data flow, asks for any missing dimensions, and confirms the requested long CSV output. | The trajectory should show catalog resolution first, then controlled transition into retrieval with output-format handling. |
-
----
-
-## 8. Regression checklist for future edits
-
-Use this checklist after changing any of the skill files.
-
-- [ ] No skill invents database IDs, indicator codes, group codes, or dimensions.
-- [ ] `imf-ra-catalog` asks for confirmation when multiple strong candidates remain.
-- [ ] `imf-ra-data` always confirms `start` and `end` if missing.
-- [ ] `imf-ra-data` always confirms output format before execution.
-- [ ] `imf-ra-data` does not use retired EcOS retrieval paths.
-- [ ] `imf-ra-data` respects LIVE vs vintage policy.
-- [ ] Simple WEO group lookups are answered from references or CSV files without unnecessary code.
-
----
-
-## 9. Result log template for an agent test run
-
-Copy and fill this template when running the suite.
-
-```markdown
-### Test run: YYYY-MM-DD
-
-| ID | Original query | Result | Expected primary skill | Observed trajectory evidence | Notes |
-|---|---|---|---|---|---|
-| SMOKE-01 | Pull WEO real GDP growth for G20 countries, 2010-present. | Pass | `imf-ra-data` | Asked for retrieval inputs and treated prompt as direct fetch. | |
-| CONV-01 | Which countries are in the WEO advanced economies group? | Pass | `imf-ra` | Used reference files directly; no unnecessary code. | |
-| CAT-01 | Find the IMF indicator for real GDP growth. | Pass | `imf-ra-catalog` | Started with WEO-oriented discovery. | |
-| DATA-01 | Pull the IMF data for inflation. | Pass | `imf-ra-data` | Did not invent an indicator; routed through discovery or clarification first. | |
-| E2E-01 | Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format. | Pass | `imf-ra-catalog` | Resolved identifier first, then moved to download flow. | |
+```text
+imf-ra -> imf-ra-catalog -> imf-ra-data -> imf-ra-charts
 ```
 
-Recommended note style:
+For this test set, chart execution is intentionally excluded because
+`imf-ra-charts` is still scaffolded. The active test coverage focuses on:
+umbrella routing and shared conventions, catalog discovery, data workflow
+guardrails, LIVE-vs-vintage behavior, and catalog-to-data handoff.
 
-- copy the original query exactly as written in the test table,
-- cite the key trajectory checkpoint,
-- mention any clarification asked,
-- mention any policy violation if the case fails.
+## How To Run
 
----
+For each case, use the prompt listed here or in
+[auto_test_cases.yaml](auto_test_cases.yaml). Start from a fresh session when
+possible unless the YAML case is marked `fixture_based` or `multi_step`.
 
-## 10. Maintenance notes
+Record whether the agent:
 
-- Keep this file concise enough for routine review, but broad enough to cover routing, behavior, and guardrails.
-- If a case is only about activation, keep it in the smoke-test section rather than duplicating a full feature test.
-- If a new policy is added to a skill, add at least one focused case here with an explicit expected behavior reference and trajectory evidence target.
-- Do not add chart-related cases until `imf-ra-charts` is implemented.
+- activated the expected skill set,
+- used CSV or Markdown references when required,
+- asked for clarification instead of guessing,
+- avoided invented identifiers and retired retrieval paths,
+- preserved confirmed database, dimension, code, geography, date range, vintage,
+  and output-format details across handoffs.
+
+Use the YAML assertions to decide `Pass`, `Fail`, or `Needs follow-up`.
+For each full run, save a detailed YAML result file and a short Markdown report:
+
+- YAML detail: copy [results/auto_test_results_template.yaml](results/auto_test_results_template.yaml) to `tests/results/auto_test_results_YYYY-MM-DD.yaml`.
+- Markdown summary: copy [results/auto_test_report_template.md](results/auto_test_report_template.md) to `tests/results/auto_test_report_YYYY-MM-DD.md`.
+
+## Test Catalog
+
+### Routing Smoke
+
+These cases make sure the first meaningful step goes to the right part of the
+pipeline.
+
+| ID | Prompt | Skill Set Involved |
+|---|---|---|
+| SMOKE-01 | Pull WEO real GDP growth for G20 countries, 2010-present. | `imf-ra` -> `imf-ra-data`; `imf-ra-catalog` if identifier confirmation is needed |
+| SMOKE-02 | I'm starting a project on emerging market debt - orient me to what's available. | `imf-ra` |
+| SMOKE-03 | Find me a quarterly inflation series for emerging markets. | `imf-ra` -> `imf-ra-catalog` |
+| SMOKE-04 | Download IFS exchange rates monthly for ASEAN, 2015-present. | `imf-ra` -> `imf-ra-data`; `imf-ra-catalog` for unresolved exchange-rate identifier |
+| SMOKE-05 | What's the difference between WEO inflation and CPI in IFS? | `imf-ra` -> `imf-ra-catalog` |
+
+### Shared Conventions
+
+These cases test shared RA rules: reference-backed country/group lookup,
+uncertainty handling, and avoiding unnecessary code.
+
+| ID | Prompt | Skill Set Involved |
+|---|---|---|
+| CONV-01 | Which countries are in the WEO advanced economies group? | `imf-ra` |
+| CONV-02 | For IMF purposes, what does EMDE mean here? | `imf-ra` |
+| CONV-03 | Get me the IMF inflation series. | `imf-ra` -> `imf-ra-catalog` |
+| GROUP-02 | Pull real GDP growth for low-income countries, 2010-2024. | `imf-ra` |
+| GROUP-04 | Can I use G110 directly in an iData pull for WEO data? | `imf-ra` |
+
+### Catalog Discovery
+
+These cases test whether plain-English concepts are mapped to supported
+databases, dimensions, vintages, and indicator codes without inventing
+identifiers.
+
+| ID | Prompt | Skill Set Involved |
+|---|---|---|
+| CAT-01 | Find the IMF indicator for real GDP growth. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-02 | Find a quarterly WEO inflation series. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-03 | Find the current account balance series. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-04 | Find a financial soundness indicator for bank capital adequacy. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-05 | Find me the WEO series for nominal GDP in USD. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-06 | Find the exact IMF code for a custom concept that may not exist. | `imf-ra` -> `imf-ra-catalog` |
+| VINTAGE-01 | Use a WEO vintage for real GDP growth. | `imf-ra` -> `imf-ra-catalog` |
+| VINTAGE-02 | Use the latest WEO data for nominal GDP. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-07 | Find the World Bank WDI indicator for GDP per capita. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-08 | Find the Bloomberg ticker field for 10-year government bond yields. | `imf-ra` -> `imf-ra-catalog` |
+
+### Data Workflow
+
+These cases test the retrieval side of the pipeline: confirmed identifiers,
+dimension handling, country/group resolution, time range confirmation,
+output-format confirmation, retired EcOS policy, safe query behavior, and
+LIVE-vs-vintage routing.
+
+| ID | Prompt | Skill Set Involved |
+|---|---|---|
+| DATA-01 | Pull the IMF data for inflation. | `imf-ra` -> `imf-ra-data` -> `imf-ra-catalog` |
+| DATA-02 | Download IFS CPI for the United States. | `imf-ra` -> `imf-ra-data`; `imf-ra-catalog` if identifier confirmation is needed |
+| DATA-03 | Download confirmed WEO Live real GDP growth, annual, United States, 2010-2024. | `imf-ra` -> `imf-ra-data` |
+| DATA-04 | What frequencies are available for database IMF.RES.WEO:WEO_LIVE? | `imf-ra` -> `imf-ra-data` |
+| DATA-05 | Use live WEO data for real GDP growth. | `imf-ra` -> `imf-ra-data`; `imf-ra-catalog` if indicator confirmation is needed |
+| DATA-06 | Use the April 2024 WEO vintage for nominal GDP. | `imf-ra` -> `imf-ra-data`; `imf-ra-catalog` for vintage and indicator resolution |
+| DATA-07 | Given database IMF.RES.WEO:WEO_LIVE and key USA.NGDP_RPCH.A for 2010-2024, download the series once you have the key. | `imf-ra` -> `imf-ra-data` |
+| DATA-08 | Given database IMF.RES.WEO:WEO_LIVE, key USA.NGDP_RPCH.A, and time range 2010-2024, give me the raw wide file. | `imf-ra` -> `imf-ra-data` |
+| DATA-09 | Use EcOS retrieval to get this IMF series. | `imf-ra` -> `imf-ra-data` |
+| DATA-10 | Pull all countries, all indicators, all frequencies from IMF.RES.WEO:WEO_LIVE. | `imf-ra` -> `imf-ra-data` |
+| GROUP-01 | Pull WEO real GDP growth for EMDEs, 2010-2024. | `imf-ra` -> `imf-ra-data` |
+| GROUP-03 | Download WEO nominal GDP for America, 2015-2024. | `imf-ra` -> `imf-ra-data` |
+| DATA-11 | Download confirmed WEO Live real GDP growth for the United States, 2010-2024. What frequency options are available before we choose? | `imf-ra` -> `imf-ra-data` |
+| DATA-12 | Download confirmed WEO Live real GDP growth for the United States and Japan, annual, 2010-2024. | `imf-ra` -> `imf-ra-data` |
+| DATA-13 | Download confirmed WEO Live real GDP growth for USA, 2010-2024, in long CSV format. | `imf-ra` -> `imf-ra-data` |
+| DATA-14 | Give me R code to download WEO real GDP growth for USA. | `imf-ra` -> `imf-ra-data` |
+| DATA-15 | Write a quick Python script to fetch WEO real GDP growth for USA, 2010-2024. | `imf-ra` -> `imf-ra-data` |
+
+### End To End
+
+This case tests the full discovery-to-retrieval handoff, including preserving
+country, time range, and output-format intent.
+
+| ID | Prompt | Skill Set Involved |
+|---|---|---|
+| E2E-01 | Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format. | `imf-ra` -> `imf-ra-catalog` -> `imf-ra-data` |
+
+## Result Outputs
+
+Use YAML as the detailed source of truth for each run, and Markdown as the
+reviewer-facing summary.
+
+| Output | Purpose | Template |
+|---|---|---|
+| `tests/results/auto_test_results_YYYY-MM-DD.yaml` | Full machine-readable run record with observed actions, evidence, and passed/failed assertions. | [results/auto_test_results_template.yaml](results/auto_test_results_template.yaml) |
+| `tests/results/auto_test_report_YYYY-MM-DD.md` | Human-readable summary for reviewers, issue tracking, or PR notes. | [results/auto_test_report_template.md](results/auto_test_report_template.md) |
+
+## Maintenance Notes
+
+- Keep this Markdown file short and readable.
+- Put detailed assertions, fixtures, and guardrails in
+  [auto_test_cases.yaml](auto_test_cases.yaml).
+- Add new cases only when they cover a distinct routing, catalog, data, or
+  handoff behavior.
+- Do not add chart-execution cases until `imf-ra-charts` is implemented.
