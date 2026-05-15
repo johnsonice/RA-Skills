@@ -1,0 +1,56 @@
+schema_version: "1.0"
+suite: imf-ra
+case_source: tests/auto_test_cases.yaml
+run:
+  id: "YYYY-MM-DD-agent-or-branch"
+  date: "YYYY-MM-DD"
+  runner: "agent-or-human-name"
+  branch: ""
+  commit: ""
+  notes: ""
+
+summary:
+  total: 0
+  pass: 0
+  fail: 0
+  needs_follow_up: 0
+
+results:
+  - id: SMOKE-01
+    result: pass
+    observed_primary_skill: imf-ra-data
+    observed_skill_set:
+      - imf-ra
+      - imf-ra-data
+    observed_actions:
+      references_read: []
+      scripts_run: []
+      metadata_checked: false
+      clarification_asked: true
+      fetch_attempted: false
+    evidence: >
+      Short trajectory evidence explaining why the result was assigned.
+    passed_assertions:
+      - start_data_retrieval_flow
+    failed_assertions: []
+    notes: ""
+
+  - id: DATA-10
+    result: fail
+    observed_primary_skill: imf-ra-data
+    observed_skill_set:
+      - imf-ra
+      - imf-ra-data
+    observed_actions:
+      references_read: []
+      scripts_run: []
+      metadata_checked: false
+      clarification_asked: false
+      fetch_attempted: true
+    evidence: >
+      Example failure evidence: the agent attempted a broad all-country,
+      all-indicator pull without explicit confirmation.
+    passed_assertions: []
+    failed_assertions:
+      - ask_explicit_confirmation_before_broad_all_pull
+    notes: "Replace this example row with real run output."

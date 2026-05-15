@@ -1,0 +1,775 @@
+schema_version: "1.0"
+source: tests/auto_test_instructions.md
+
+categories:
+  - routing_smoke
+  - shared_conventions
+  - catalog_discovery
+  - data_workflow
+  - end_to_end
+
+types:
+  - single_turn
+  - fixture_based
+  - multi_step
+
+cases:
+  - id: SMOKE-01
+    category: routing_smoke
+    type: single_turn
+    prompt: "Pull WEO real GDP growth for G20 countries, 2010-present."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Treats this as a direct fetch request, not a broad discovery question.
+    assertions:
+      required:
+        - start_data_retrieval_flow
+        - preserve_direct_fetch_intent
+        - identify_missing_fetch_inputs
+      forbidden:
+        - treat_as_broad_orientation
+        - invent_identifier
+        - fetch_without_output_format
+
+  - id: SMOKE-02
+    category: routing_smoke
+    type: single_turn
+    prompt: "I'm starting a project on emerging market debt - orient me to what's available."
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Provides broad orientation across available sources or workflows instead
+      of jumping straight into a narrow fetch.
+    assertions:
+      required:
+        - provide_orientation
+        - describe_relevant_sources_or_workflows
+      forbidden:
+        - start_narrow_fetch_without_identifier
+        - invent_identifier
+
+  - id: SMOKE-03
+    category: routing_smoke
+    type: single_turn
+    prompt: "Find me a quarterly inflation series for emerging markets."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Treats this as discovery with a frequency constraint and searches for
+      suitable candidates.
+    assertions:
+      required:
+        - start_catalog_discovery
+        - account_for_frequency_constraint
+      forbidden:
+        - immediate_download
+        - invent_identifier
+
+  - id: SMOKE-04
+    category: routing_smoke
+    type: single_turn
+    prompt: "Download IFS exchange rates monthly for ASEAN, 2015-present."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Treats this as a direct retrieval task with country-group and time-range
+      handling.
+    assertions:
+      required:
+        - start_data_retrieval_flow
+        - resolve_or_clarify_exchange_rate_identifier
+        - resolve_or_clarify_country_group_membership
+      forbidden:
+        - invent_identifier
+        - use_groupcode_as_country_selector
+        - fetch_without_output_format
+
+  - id: SMOKE-05
+    category: routing_smoke
+    type: single_turn
+    prompt: "What's the difference between WEO inflation and CPI in IFS?"
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Surfaces both concepts with notes instead of collapsing them into one.
+    assertions:
+      required:
+        - compare_catalog_concepts
+        - distinguish_weo_inflation_from_ifs_cpi
+      forbidden:
+        - collapse_to_single_series
+        - immediate_download
+
+  - id: CONV-01
+    category: shared_conventions
+    type: single_turn
+    area: No unnecessary code
+    prompt: "Which countries are in the WEO advanced economies group?"
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Answers from the WEO group reference or CSV contents instead of writing
+      code if simple inspection is enough.
+    assertions:
+      required:
+        - use_weo_group_reference
+        - answer_with_reference_backed_membership
+      forbidden:
+        - write_new_script
+        - guess_group_membership
+
+  - id: CONV-02
+    category: shared_conventions
+    type: single_turn
+    area: Country-group translation
+    prompt: "For IMF purposes, what does EMDE mean here?"
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Uses the WEO group reference instead of guessing from memory.
+    assertions:
+      required:
+        - use_weo_group_reference
+        - include_groupcode_G200
+      forbidden:
+        - answer_from_memory_only
+        - invent_group_definition
+
+  - id: CONV-03
+    category: shared_conventions
+    type: single_turn
+    area: Uncertainty policy
+    prompt: "Get me the IMF inflation series."
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Does not guess; asks a clarifying question because multiple plausible
+      indicators or databases exist.
+    assertions:
+      required:
+        - ask_clarification
+        - acknowledge_multiple_plausible_series
+      forbidden:
+        - select_single_inflation_series_without_support
+        - invent_identifier
+
+  - id: CAT-01
+    category: catalog_discovery
+    type: single_turn
+    area: WEO-first policy
+    prompt: "Find the IMF indicator for real GDP growth."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Searches WEO Live first for a common annual macro concept.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      dimension_name: INDICATOR
+      code: NGDP_RPCH
+    assertions:
+      required:
+        - start_with_weo_live
+        - include_code_NGDP_RPCH
+        - include_dimension_name
+      forbidden:
+        - search_vintage_first
+        - invent_identifier
+
+  - id: CAT-02
+    category: catalog_discovery
+    type: single_turn
+    area: Frequency mismatch
+    prompt: "Find a quarterly WEO inflation series."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Checks whether WEO supports the requested quarterly inflation concept and
+      flags a frequency mismatch or better-suited source when the catalog does
+      not support it directly.
+    assertions:
+      required:
+        - verify_frequency_support_or_flag_mismatch
+        - ask_clarification_or_surface_better_suited_source
+      forbidden:
+        - pretend_quarterly_weo_is_straightforward
+        - immediate_download
+
+  - id: CAT-03
+    category: catalog_discovery
+    type: single_turn
+    area: Ambiguous candidates
+    prompt: "Find the current account balance series."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Returns multiple plausible candidates with short distinction notes
+      instead of collapsing them into one.
+    assertions:
+      required:
+        - return_multiple_candidates
+        - include_distinction_notes
+        - ask_clarification
+      forbidden:
+        - collapse_to_single_series
+        - invent_identifier
+
+  - id: CAT-04
+    category: catalog_discovery
+    type: single_turn
+    area: Cross-database search only when needed
+    prompt: "Find a financial soundness indicator for bank capital adequacy."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Searches beyond WEO when the concept is outside normal WEO coverage.
+    assertions:
+      required:
+        - expand_beyond_weo
+        - surface_fsi_or_relevant_candidates
+      forbidden:
+        - force_weo_match
+        - invent_identifier
+
+  - id: CAT-05
+    category: catalog_discovery
+    type: single_turn
+    area: Non-vintage default
+    prompt: "Find me the WEO series for nominal GDP in USD."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Uses the non-vintage WEO catalog by default and identifies NGDPD without
+      asking for a vintage.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      dimension_name: INDICATOR
+      code: NGDPD
+    assertions:
+      required:
+        - use_database_IMF.RES.WEO:WEO_LIVE
+        - include_code_NGDPD
+      forbidden:
+        - search_vintage_without_explicit_request
+        - ask_vintage_clarification
+        - invent_identifier
+
+  - id: CAT-06
+    category: catalog_discovery
+    type: single_turn
+    area: No invented identifiers
+    prompt: "Find the exact IMF code for a custom concept that may not exist."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Surfaces the gap and asks for a hint or clarification; does not invent a
+      code.
+    assertions:
+      required:
+        - state_catalog_gap_or_uncertainty
+        - ask_for_hint_or_clarification
+      forbidden:
+        - invent_identifier
+        - claim_exact_code_without_support
+
+  - id: DATA-01
+    category: data_workflow
+    type: single_turn
+    area: Requires confirmed identifier
+    prompt: "Pull the IMF data for inflation."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      If the identifier is not confirmed, routes through catalog logic first
+      rather than inventing an indicator code.
+    assertions:
+      required:
+        - require_identifier_resolution
+        - handoff_to_catalog_or_ask_identifier_clarification
+      forbidden:
+        - invent_identifier
+        - fetch_without_confirmed_identifier
+
+  - id: DATA-02
+    category: data_workflow
+    type: single_turn
+    area: Always confirm time range
+    prompt: "Download IFS CPI for the United States."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Explicitly asks for start and end before fetching.
+    assertions:
+      required:
+        - ask_start_and_end
+        - stop_before_fetch
+      forbidden:
+        - assume_time_range
+        - fetch_without_time_range
+
+  - id: DATA-03
+    category: data_workflow
+    type: fixture_based
+    area: Ask only for unresolved multi-value dimensions
+    prompt: "Download confirmed WEO Live real GDP growth, annual, United States, 2010-2024."
+    fixture:
+      confirmed_database: IMF.RES.WEO:WEO_LIVE
+      confirmed_dimension_name: INDICATOR
+      confirmed_code: NGDP_RPCH
+      frequency: A
+      country: USA
+      start: "2010"
+      end: "2024"
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Uses already supplied dimensions, auto-resolves any single-value
+      dimensions silently, and asks only for unresolved multi-value dimensions.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      dimension_name: INDICATOR
+      code: NGDP_RPCH
+      country: USA
+      frequency: A
+      start: "2010"
+      end: "2024"
+    assertions:
+      required:
+        - preserve_confirmed_inputs
+        - ask_only_unresolved_dimensions
+        - ask_output_format
+      forbidden:
+        - reask_known_inputs
+        - invent_dimension_value
+        - fetch_without_output_format
+
+  - id: DATA-04
+    category: data_workflow
+    type: single_turn
+    area: Dimension options on request
+    prompt: "What frequencies are available for database IMF.RES.WEO:WEO_LIVE?"
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Uses dimension metadata and presents readable frequency options instead
+      of a raw dump when possible.
+    assertions:
+      required:
+        - inspect_dimension_metadata
+        - present_readable_frequency_options
+      forbidden:
+        - raw_unexplained_code_dump
+        - ask_which_database
+
+  - id: DATA-05
+    category: data_workflow
+    type: single_turn
+    area: LIVE vs vintage explicit live
+    prompt: "Use live WEO data for real GDP growth."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Uses the LIVE database directly and does not substitute a vintage.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+    assertions:
+      required:
+        - use_database_IMF.RES.WEO:WEO_LIVE
+        - preserve_explicit_live_intent
+      forbidden:
+        - use_vintage_database
+        - substitute_closest_vintage
+
+  - id: DATA-06
+    category: data_workflow
+    type: single_turn
+    area: Vintage loose date mapping
+    prompt: "Use the April 2024 WEO vintage for nominal GDP."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Maps the request to the nearest matching vintage without asking again if
+      the intent is clear.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+    assertions:
+      required:
+        - resolve_to_april_2024_weo_vintage
+        - map_loose_vintage_date
+      forbidden:
+        - ask_which_vintage_when_clear
+        - use_live_database_instead
+
+  - id: DATA-07
+    category: data_workflow
+    type: fixture_based
+    area: Output format confirmation
+    prompt: "Given database IMF.RES.WEO:WEO_LIVE and key USA.NGDP_RPCH.A for 2010-2024, download the series once you have the key."
+    fixture:
+      confirmed_database: IMF.RES.WEO:WEO_LIVE
+      confirmed_key: USA.NGDP_RPCH.A
+      start: "2010"
+      end: "2024"
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Asks which output format the user wants: Refreshable, Wide, or Long; for
+      Wide or Long also confirms CSV vs Excel.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      key: USA.NGDP_RPCH.A
+      start: "2010"
+      end: "2024"
+    assertions:
+      required:
+        - ask_output_format
+        - include_refreshable_wide_long_options
+      forbidden:
+        - assume_output_format
+        - fetch_without_output_format
+
+  - id: DATA-08
+    category: data_workflow
+    type: fixture_based
+    area: Refreshable distinction
+    prompt: "Given database IMF.RES.WEO:WEO_LIVE, key USA.NGDP_RPCH.A, and time range 2010-2024, give me the raw wide file."
+    fixture:
+      confirmed_database: IMF.RES.WEO:WEO_LIVE
+      confirmed_key: USA.NGDP_RPCH.A
+      start: "2010"
+      end: "2024"
+      requested_output: raw_wide
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Does not substitute refreshable output for raw wide output.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      key: USA.NGDP_RPCH.A
+      start: "2010"
+      end: "2024"
+      output_format: wide
+    assertions:
+      required:
+        - preserve_raw_wide_output_semantics
+        - use_wide_format_not_refreshable
+      forbidden:
+        - substitute_refreshable_for_raw_wide
+
+  - id: DATA-09
+    category: data_workflow
+    type: single_turn
+    area: EcOS retired policy
+    prompt: "Use EcOS retrieval to get this IMF series."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Explains that EcOS retrieval is retired and provides the iData-equivalent
+      path instead.
+    assertions:
+      required:
+        - reject_ecos_retrieval
+        - redirect_to_idata_workflow
+      forbidden:
+        - use_ecos_retrieval
+        - call_get_ecos_sdmx_data
+
+  - id: DATA-10
+    category: data_workflow
+    type: single_turn
+    area: Safe query policy
+    prompt: "Pull all countries, all indicators, all frequencies from IMF.RES.WEO:WEO_LIVE."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Avoids broad ALL pulls unless explicitly confirmed and warns or narrows
+      the request where appropriate.
+    assertions:
+      required:
+        - warn_or_narrow_large_query
+        - ask_explicit_confirmation_before_broad_all_pull
+      forbidden:
+        - launch_huge_pull_immediately
+        - ask_which_database
+
+  - id: GROUP-01
+    category: data_workflow
+    type: single_turn
+    area: Country-group expansion for data pull
+    prompt: "Pull WEO real GDP growth for EMDEs, 2010-2024."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Resolves EMDEs through the WEO country-group references and does not use
+      G200 directly as the iData country selector unless metadata confirms an
+      aggregate code is supported.
+    expected_outputs:
+      groupcode: G200
+      start: "2010"
+      end: "2024"
+    assertions:
+      required:
+        - resolve_group_to_member_countries_or_clarify_aggregate
+        - preserve_time_range_2010_2024
+      forbidden:
+        - use_groupcode_as_country_selector
+        - invent_group_membership
+        - fetch_without_output_format
+
+  - id: GROUP-02
+    category: shared_conventions
+    type: single_turn
+    area: Ambiguous EM/LIC coverage
+    prompt: "Pull real GDP growth for low-income countries, 2010-2024."
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Asks whether the user means WEO low-income developing countries or another
+      institutional coverage such as SPR or PRGT before committing to a group.
+    assertions:
+      required:
+        - ask_group_definition_clarification
+        - mention_possible_weo_vs_spr_or_prgt_coverage
+      forbidden:
+        - assume_low_income_group_definition
+        - invent_group_membership
+
+  - id: GROUP-03
+    category: data_workflow
+    type: single_turn
+    area: Country alias resolution
+    prompt: "Download WEO nominal GDP for America, 2015-2024."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Resolves the supported country alias America to USA through the WEO
+      references, then continues the retrieval workflow without guessing missing
+      fetch inputs.
+    expected_outputs:
+      country: USA
+      start: "2015"
+      end: "2024"
+    assertions:
+      required:
+        - resolve_country_alias_to_USA
+        - preserve_time_range_2015_2024
+        - require_identifier_or_output_confirmation_as_needed
+      forbidden:
+        - ask_country_clarification_for_supported_alias
+        - invent_identifier
+        - fetch_without_output_format
+
+  - id: GROUP-04
+    category: shared_conventions
+    type: single_turn
+    area: Group code versus data selector
+    prompt: "Can I use G110 directly in an iData pull for WEO data?"
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Explains that WEO group codes are for group lookup and membership mapping,
+      and should not be used directly as country selectors unless dataset
+      metadata confirms aggregate-code support.
+    expected_outputs:
+      groupcode: G110
+    assertions:
+      required:
+        - explain_groupcode_lookup_vs_country_selector
+        - recommend_member_country_expansion_or_metadata_check
+      forbidden:
+        - say_groupcode_is_always_valid_country_selector
+        - invent_metadata_support
+
+  - id: VINTAGE-01
+    category: catalog_discovery
+    type: single_turn
+    area: Unspecified WEO vintage
+    prompt: "Use a WEO vintage for real GDP growth."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Recognizes that the user requested a vintage but did not specify which
+      one, and asks for the intended vintage instead of choosing one silently.
+    assertions:
+      required:
+        - ask_which_vintage
+        - preserve_real_gdp_growth_intent
+      forbidden:
+        - choose_latest_vintage_without_confirmation
+        - substitute_live_database
+
+  - id: VINTAGE-02
+    category: catalog_discovery
+    type: single_turn
+    area: Latest live versus latest vintage
+    prompt: "Use the latest WEO data for nominal GDP."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Treats latest WEO data as WEO Live by default or clarifies if the user
+      means latest historical vintage, without silently substituting a dated
+      vintage.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+    assertions:
+      required:
+        - prefer_weo_live_or_clarify_latest_vintage
+        - preserve_nominal_gdp_intent
+      forbidden:
+        - silently_choose_dated_vintage
+        - invent_identifier
+
+  - id: CAT-07
+    category: catalog_discovery
+    type: single_turn
+    area: WDI-specific indicator file
+    prompt: "Find the World Bank WDI indicator for GDP per capita."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Uses the WDI-specific indicator catalog for an explicit World Bank WDI
+      request rather than the general IMF non-vintage variable list.
+    assertions:
+      required:
+        - use_wdi_indicator_catalog
+        - return_wdi_candidates_or_exact_match
+      forbidden:
+        - search_only_general_imf_variable_list
+        - invent_identifier
+
+  - id: CAT-08
+    category: catalog_discovery
+    type: single_turn
+    area: Bloomberg-specific indicator file
+    prompt: "Find the Bloomberg ticker field for 10-year government bond yields."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Uses the Bloomberg-specific indicator catalog for an explicit Bloomberg
+      request rather than WEO or the general IMF indicator catalog.
+    assertions:
+      required:
+        - use_bloomberg_indicator_catalog
+        - return_bloomberg_candidates_or_clarify
+      forbidden:
+        - force_weo_match
+        - invent_identifier
+
+  - id: DATA-11
+    category: data_workflow
+    type: fixture_based
+    area: Metadata options when requested
+    prompt: "Download confirmed WEO Live real GDP growth for the United States, 2010-2024. What frequency options are available before we choose?"
+    fixture:
+      confirmed_database: IMF.RES.WEO:WEO_LIVE
+      confirmed_dimension_name: INDICATOR
+      confirmed_code: NGDP_RPCH
+      country: USA
+      start: "2010"
+      end: "2024"
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Since the user explicitly asks for frequency options, reads dimension
+      metadata and presents readable choices before continuing the fetch.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      dimension_name: INDICATOR
+      code: NGDP_RPCH
+      country: USA
+      start: "2010"
+      end: "2024"
+    assertions:
+      required:
+        - inspect_frequency_dimension_values
+        - present_readable_frequency_options
+      forbidden:
+        - raw_unexplained_code_dump
+        - choose_frequency_without_user_selection
+
+  - id: DATA-12
+    category: data_workflow
+    type: fixture_based
+    area: Multiple values in one dimension
+    prompt: "Download confirmed WEO Live real GDP growth for the United States and Japan, annual, 2010-2024."
+    fixture:
+      confirmed_database: IMF.RES.WEO:WEO_LIVE
+      confirmed_dimension_name: INDICATOR
+      confirmed_code: NGDP_RPCH
+      countries:
+        - USA
+        - JPN
+      frequency: A
+      start: "2010"
+      end: "2024"
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Builds a key using multiple country values in the country dimension while
+      preserving the exact iData dimension order.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      key: USA+JPN.NGDP_RPCH.A
+      start: "2010"
+      end: "2024"
+    assertions:
+      required:
+        - combine_multiple_values_with_plus
+        - preserve_dimension_order
+        - ask_output_format
+      forbidden:
+        - add_or_drop_key_fields
+        - fetch_without_output_format
+
+  - id: DATA-13
+    category: data_workflow
+    type: fixture_based
+    area: User already specified output format
+    prompt: "Download confirmed WEO Live real GDP growth for USA, 2010-2024, in long CSV format."
+    fixture:
+      confirmed_database: IMF.RES.WEO:WEO_LIVE
+      confirmed_dimension_name: INDICATOR
+      confirmed_code: NGDP_RPCH
+      country: USA
+      start: "2010"
+      end: "2024"
+      requested_output: long_csv
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Preserves the already-stated long CSV output format instead of re-asking
+      the full output-format menu.
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      key: USA.NGDP_RPCH.A
+      start: "2010"
+      end: "2024"
+      output_format: long_csv
+    assertions:
+      required:
+        - preserve_output_format_long_csv
+        - confirm_or_use_stated_output_format
+      forbidden:
+        - reask_full_output_format_menu
+        - substitute_refreshable_output
+
+  - id: DATA-14
+    category: data_workflow
+    type: single_turn
+    area: Python-only scope with explicit R request
+    prompt: "Give me R code to download WEO real GDP growth for USA."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Recognizes that the user explicitly requested R, but does not invent an
+      unsupported R iData workflow. It should explain the supported RA path or
+      provide R only with a clear caveat if a supported R path is known.
+    assertions:
+      required:
+        - acknowledge_explicit_r_request
+        - avoid_inventing_unsupported_r_workflow
+      forbidden:
+        - invent_r_idata_api
+        - ignore_user_requested_language
+
+  - id: DATA-15
+    category: data_workflow
+    type: single_turn
+    area: No new fetch script
+    prompt: "Write a quick Python script to fetch WEO real GDP growth for USA, 2010-2024."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Uses or points to the pre-built fetch_idata.py utility instead of creating
+      a new ad hoc Python fetch script.
+    assertions:
+      required:
+        - use_prebuilt_fetch_idata_utility
+        - preserve_requested_series_country_and_time_range
+      forbidden:
+        - create_new_python_fetch_script
+        - return_raw_sdk_output_directly
+
+  - id: E2E-01
+    category: end_to_end
+    type: multi_step
+    area: Discovery to fetch
+    prompt: "Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Resolves the identifier first, then hands off to data flow, asks for any
+      missing dimensions, and confirms the requested long CSV output.
+    assertions:
+      required:
+        - resolve_identifier_before_fetch
+        - handoff_to_data_workflow
+        - preserve_country_Japan
+        - preserve_time_range_2018_2024
+        - preserve_output_format_long_csv
+      forbidden:
+        - fetch_before_identifier_resolution
+        - drop_output_format
+        - invent_identifier
