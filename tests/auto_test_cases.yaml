@@ -21,6 +21,13 @@ cases:
     expected_primary_skill: imf-ra-data
     expected_behavior: >
       Treats this as a direct fetch request, not a broad discovery question.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
     assertions:
       required:
         - start_data_retrieval_flow
@@ -39,6 +46,10 @@ cases:
     expected_behavior: >
       Provides broad orientation across available sources or workflows instead
       of jumping straight into a narrow fetch.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/database_overview.md
     assertions:
       required:
         - provide_orientation
@@ -55,6 +66,13 @@ cases:
     expected_behavior: >
       Treats this as discovery with a frequency constraint and searches for
       suitable candidates.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "quarterly inflation" --all-databases
     assertions:
       required:
         - start_catalog_discovery
@@ -71,6 +89,12 @@ cases:
     expected_behavior: >
       Treats this as a direct retrieval task with country-group and time-range
       handling.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
     assertions:
       required:
         - start_data_retrieval_flow
@@ -88,6 +112,13 @@ cases:
     expected_primary_skill: imf-ra-catalog
     expected_behavior: >
       Surfaces both concepts with notes instead of collapsing them into one.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+        - .claude/skills/imf-ra-catalog/databases/database_overview.md
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "inflation CPI" --all-databases
     assertions:
       required:
         - compare_catalog_concepts
@@ -105,6 +136,13 @@ cases:
     expected_behavior: >
       Answers from the WEO group reference or CSV contents instead of writing
       code if simple inspection is enough.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
+        - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
     assertions:
       required:
         - use_weo_group_reference
@@ -121,6 +159,10 @@ cases:
     expected_primary_skill: imf-ra
     expected_behavior: >
       Uses the WEO group reference instead of guessing from memory.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
     assertions:
       required:
         - use_weo_group_reference
@@ -138,6 +180,13 @@ cases:
     expected_behavior: >
       Does not guess; asks a clarifying question because multiple plausible
       indicators or databases exist.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "inflation CPI" --all-databases
     assertions:
       required:
         - ask_clarification
@@ -154,6 +203,13 @@ cases:
     expected_primary_skill: imf-ra-catalog
     expected_behavior: >
       Searches WEO Live first for a common annual macro concept.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/non_vintage_databases.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
       dimension_name: INDICATOR
@@ -177,6 +233,13 @@ cases:
       Checks whether WEO supports the requested quarterly inflation concept and
       flags a frequency mismatch or better-suited source when the catalog does
       not support it directly.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/non_vintage_databases.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "quarterly inflation" --all-databases
     assertions:
       required:
         - verify_frequency_support_or_flag_mismatch
@@ -194,6 +257,12 @@ cases:
     expected_behavior: >
       Returns multiple plausible candidates with short distinction notes
       instead of collapsing them into one.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "current account balance" --all-databases
     assertions:
       required:
         - return_multiple_candidates
@@ -211,6 +280,13 @@ cases:
     expected_primary_skill: imf-ra-catalog
     expected_behavior: >
       Searches beyond WEO when the concept is outside normal WEO coverage.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/database_overview.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "financial soundness regulatory capital risk weighted assets" --all-databases
     assertions:
       required:
         - expand_beyond_weo
@@ -228,6 +304,13 @@ cases:
     expected_behavior: >
       Uses the non-vintage WEO catalog by default and identifies NGDPD without
       asking for a vintage.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/non_vintage_databases.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
       dimension_name: INDICATOR
@@ -250,6 +333,10 @@ cases:
     expected_behavior: >
       Surfaces the gap and asks for a hint or clarification; does not invent a
       code.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
     assertions:
       required:
         - state_catalog_gap_or_uncertainty
@@ -267,6 +354,11 @@ cases:
     expected_behavior: >
       If the identifier is not confirmed, routes through catalog logic first
       rather than inventing an indicator code.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
     assertions:
       required:
         - require_identifier_resolution
@@ -283,6 +375,10 @@ cases:
     expected_primary_skill: imf-ra-data
     expected_behavior: >
       Explicitly asks for start and end before fetching.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
     assertions:
       required:
         - ask_start_and_end
