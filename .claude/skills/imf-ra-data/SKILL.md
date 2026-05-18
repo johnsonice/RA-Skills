@@ -12,14 +12,14 @@ Fetching IMF data series via the internal Python SDK.
 Load these skills in order as needed:
 
 - **`imf-ra`** (umbrella) — load first for shared conventions: country codes, WEO country groups, frequency handling, uncertainty policy, and SDK environment setup.
-- **`imf-ra-catalog`** — load before this skill when the database or indicator is not yet identified. It translates plain-English descriptions into a confirmed `(database_id, indicator_code)` pair.
+- **`imf-ra-catalog`** — load before this skill when the database or indicator is not yet identified. It translates plain-English descriptions into a confirmed `(database, dimension_name, code, frequency, geo)` tuple.
 - **`imf-ra-data`** (this skill) — takes over once the identifier is confirmed. Resolves remaining dimensions, builds the iData key, and executes the fetch.
 - **`imf-ra-charts`** — load after this skill when the user wants to visualize the tidy output.
 
 ## Default decision logic
 
 1. Prefer `idata_utilities` for new IMF workflows.
-2. Use metadata calls first whenever database/dimension/code values are unclear.
+2. Use metadata calls (`--explore`, `--dimension-values`) only to resolve remaining dimensions after catalog handoff — not to re-discover the database or indicator, which the catalog already owns.
 3. For databases with both a LIVE and a Vintage version (see ## LIVE databases and private access below), prefer the LIVE database unless the user asks for a specific vintage.
 4. If the user asks for EcOS-based retrieval, explain that EcOS is retired and provide the iData equivalent workflow.
 
@@ -62,7 +62,7 @@ This skill is Python-focused. Do not generate R or Stata workflows unless the us
 
 ### Step 1 — Catalog lookup
 
-If the `(database_id, indicator_code)` pair is not yet confirmed, invoke **`imf-ra-catalog`** to resolve it. Do **not** search catalog files directly from this skill — all indicator and database discovery is owned by `imf-ra-catalog`.
+If the `(database, dimension_name, code, frequency, geo)` tuple is not yet confirmed, invoke **`imf-ra-catalog`** to resolve it. Do **not** search catalog files directly from this skill — all indicator and database discovery is owned by `imf-ra-catalog`.
 
 If you are arriving from a catalog handoff with a confirmed identifier, skip directly to Step 2.
 
@@ -74,14 +74,14 @@ Once the database is confirmed, list its dimensions in key order:
 python .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --explore
 ```
 
-This prints the dimension names in the order they appear in the iData key. The `INDICATOR` value comes from the catalog handoff (`indicator_code`) — slot it into its position in this order.
+This prints the dimension names in the order they appear in the iData key. The indicator code (`code` from the catalog handoff) slots into the position matching the catalog's `dimension_name` field.
 
 ### Step 3 — Identify unresolved dimensions and clarify time range
 
 Compare what the user specified against the dimensions returned. Required inputs for a complete iData key:
 
 - **`start` / `end` (time range)** — **always ask if not specified**. Do not proceed without a confirmed time range.
-- One value per dimension (e.g. `COUNTRY`, `INDICATOR`, `DATA_TRANSFORMATION`, `FREQUENCY`) — exact names vary by database.
+- One value per dimension — exact names are shown by `--explore` and vary by database (e.g. WEO uses `COUNTRY`, `INDICATOR`, `FREQUENCY`; WDI uses `REF_AREA`, `SERIES`; BBG uses `TICKER`, `FIELD`).
 
 **Auto-resolve vs. ask-user rules:**
 
@@ -129,18 +129,25 @@ The iData key is a dot-separated string of all dimension values in the exact ord
 - Combine multiple values within one dimension with `+` (e.g. `USA+GBR.NGDP_RPCH.A`).
 - The total number of dot-separated fields must match the total number of dimensions — do not add or drop dots.
 
+**Country group rule:** Do **not** use a WEO group code (e.g. `G110`, `G200`) directly as the country selector in an iData key. Resolve the group to its member `countrycode` values first (via `imf-ra` WEO group helpers), then join them with `+`. Use a group aggregate code only when the database metadata explicitly confirms it is a valid dimension value.
+
 ### Step 6 — Confirm output format
 
 Before executing, always ask the user which output format they want. Do **not** assume a format.
 
 > **Output format** — which would you like?
-> - **Refreshable** — RA structured Excel (`.xlsx`) with standard headers and country metadata enrichment. Compatible with refreshable downstream workflows.
-> - **Wide** — raw API wide format (dates as rows, series as columns).
-> - **Long** — raw API long format (one row per observation).
+> - **Refreshable** — RA enriched Excel (`.xlsx`) with human-readable indicator labels; `CountryName`, `ISO3`, `IFSCODE` added when a country dimension is present. Layout auto-selected by data shape:
+>   - **Multi-sheet card** (triggered when indicators > 1 AND countries > 1 AND time periods > 1): one tab per indicator; each tab is card format (first column = `Label` with metadata + date rows, one column per series/country).
+>   - **Wide** (single indicator cases): single sheet, dates as columns, one row per series.
+>   - **Long** (all other cases): single sheet, card format.
+>
+>   Always `.xlsx`.
+> - **Wide** — raw API output as-is, dates as rows, series as columns.
+> - **Long** — raw API output as-is, one row per observation.
 >
 > For Wide or Long: would you like **CSV** or **Excel**?
 
-**Refreshable is not the same as the raw API wide format** — do not substitute one for the other.
+**Refreshable is not the same as the raw API wide or long format** — it adds RA metadata columns and human-readable indicator labels that raw formats do not have.
 
 If the user has already stated a format preference earlier in the conversation, confirm it rather than re-asking.
 
@@ -149,13 +156,14 @@ If the user has already stated a format preference earlier in the conversation, 
 Once all dimensions, time range, and output format are confirmed, call `fetch_idata.py` with the appropriate `--format` flag:
 
 ```bash
-# Refreshable RA Excel
+# Refreshable RA Excel (layout auto-selected by number of indicators)
 python .claude/skills/imf-ra-data/scripts/fetch_idata.py \
     --db "<database_id>" \
     --key "<dot.separated.key>" \
     --start "<YYYY>" \
     --end "<YYYY>" \
-    --format refreshable
+    --format refreshable \
+    --indicator-dim "<dimension_name>"   # from catalog handoff; omit if INDICATOR
 
 # Wide (omit --excel for CSV, add --excel for Excel)
 python .claude/skills/imf-ra-data/scripts/fetch_idata.py \
@@ -176,21 +184,47 @@ python .claude/skills/imf-ra-data/scripts/fetch_idata.py \
 
 Add `--excel` to save Wide or Long output as `.xlsx` instead of `.csv`. Add `--output <filename>` to specify the output path.
 
+**Be aware that sometimes the idata endpoint is not 100% stable, and a retry may be needed. If you get an 403 error, retry up to 3 times before giving up.**
+
+**`--indicator-dim`** — pass the `dimension_name` value from the catalog handoff. The catalog resolves the correct indicator dimension name for every database (e.g. `INDICATOR` for WEO/IFS, `TICKER` for BBG, `SERIES` for WDI). Always use what the catalog returns — do not guess or hardcode.
+
 **Always use this script — never return raw SDK output directly.**
 
-Refreshable output column layout:
+Refreshable output layout is auto-selected by data shape (indicators × countries × time periods):
 
-| Column | Source |
+**Case 1 — Single indicator → Wide layout** (one row per series, dates as columns):
+
+| Column | Present when | Source |
+|---|---|---|
+| `DATASET` | Always | The `--db` argument |
+| `Series_Code` | Always | All dimension values joined with `.` in key order |
+| `CountryName` | Country dimension detected | Looked up from `imf-ra` `1. countries.csv` |
+| `ISO3` | Country dimension detected | Raw country code from the data |
+| `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `1. countries.csv` (`countrycode_s`) |
+| `<dim_name>` (non-country, non-indicator) | Each additional dimension | Raw dimension code (e.g. `FREQ`, `DATA_TRANSFORMATION`) |
+| `<indicator dim_name>` | When indicator dim detected | Human-readable label from `get_dimension_values()["Name"]` |
+| `2019`, `2019Q1`, `2019M1` … | Always | Pivoted date columns; format matches frequency (A/Q/M/D) |
+
+**Case 2 — Multi-sheet card** (triggered when indicators > 1 AND countries > 1 AND time periods > 1):
+
+One tab per indicator (named by indicator label, max 31 chars). Within each tab:
+
+| Row label | Content |
 |---|---|
-| `CountryName` | Looked up from `imf-ra` `countries.csv` using ISO3 |
-| `ISO3` | COUNTRY dimension value from iData |
-| `IFSCODE` | Looked up from `imf-ra` `countries.csv` (`countrycode_s`) |
-| `DATASET` | The `--db` argument |
-| `Series_Code` | All dimension values joined with `.` in key order |
-| `INDICATOR` | Indicator name/label — the `Name` column from `get_dimension_values(db, 'INDICATOR')` |
-| `2019`, `2019Q1`, `2019M1` … | Pivoted date columns (format matches frequency: A/Q/M/D) |
+| `DATASET` | Database identifier |
+| `Series_Code` | Dot-separated dimension values for that series |
+| `CountryName` | Country name (when country dimension present) |
+| `ISO3` | Country code (when country dimension present) |
+| `IFSCODE` | IFS code (when country dimension present) |
+| `<dim_name>` | Raw code for each non-country, non-indicator dimension |
+| `<indicator dim_name>` | Human-readable label (same for all columns within one tab) |
+| `2019`, `2019Q1`, `2016-02-25` … | Observation value for that series at that date |
 
-> **Note:** In long formats, the `INDICATOR` column contains the raw ticker code (e.g. `NGDP_D`) as returned by the API. Only in refreshable format is it replaced with the human-readable label.
+First column = `Label` (row labels). Each subsequent column = one series (named by `Series_Code`).
+
+**Case 3 — Single card sheet** (indicators > 1, but not all three dimensions plural):
+
+Same card format as Case 2, but a single sheet containing all indicators together. Layout is identical — `Label` column + one column per series across all indicators.
 
 ## Before you fetch
 
@@ -207,15 +241,18 @@ See [references/imf_datatools_agent_api_reference.md](references/imf_datatools_a
 
 ## When you don't know the series identifier
 
-Invoke `imf-ra-catalog` first to translate the user's description into a confirmed `(database_id, indicator_code)`. Return here once the identifier is confirmed and proceed from Step 2.
+Invoke `imf-ra-catalog` first to translate the user's description into a confirmed `(database, dimension_name, code, frequency, geo)`. Return here once the identifier is confirmed and proceed from Step 2.
 
 ## After catalog handoff
 
 When `imf-ra-catalog` returns a confirmed identifier:
 
-- `database_name` is the iData database identifier; use it in Step 2 to fetch dimensions via the API.
-- `indicator_code` is the confirmed indicator dimension value; slot it into its position when building the key.
-- `indicator_name` explains unit, valuation, transformation, and price basis; use it to phrase follow-up questions when candidates differ.
+- `database` is the iData database identifier; use it in Step 2 to fetch dimensions via the API.
+- `dimension_name` is the indicator dimension name for this database (e.g. `INDICATOR`, `TICKER`, `SERIES`). Pass it as `--indicator-dim` when calling `fetch_idata.py --format refreshable`.
+- `code` is the confirmed indicator code; slot it into the position matching `dimension_name` when building the key.
+- `name` explains unit, valuation, transformation, and price basis; use it to phrase follow-up questions when candidates differ.
+- `frequency` — if confirmed by the catalog, use it directly in the key; skip asking the user for frequency in Step 3.
+- `geo` — if confirmed by the catalog, use it directly as the country/region dimension value; skip asking the user for geography in Step 3.
 - For WEO candidates, keep the LIVE database as the priority — do not substitute a vintage unless the user asked for one.
 - Resolve all remaining dimensions and the time range via Steps 2–6 before calling `fetch_idata.py`.
 
@@ -224,4 +261,4 @@ When `imf-ra-catalog` returns a confirmed identifier:
 - Avoid broad `ALL` pulls unless explicitly requested.
 - For large requests, iterate over countries/indicators/frequencies and merge results.
 - Validate dimension names and values with metadata calls before retrieval.
-- For iData dimensions, use canonical labels from metadata (for example `COUNTRY`, `INDICATOR`, `FREQUENCY`).
+- For iData dimensions, always use the exact dimension names returned by `--explore` — do not assume names like `COUNTRY`, `INDICATOR`, or `FREQUENCY`, as they vary by database (e.g. `REF_AREA`, `SERIES`, `FREQ`, `TICKER`).
