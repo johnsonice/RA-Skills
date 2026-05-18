@@ -1,27 +1,40 @@
-# Internal charting tool — usage
+# Internal charting tool - usage
 
-> _Placeholder._ Fill in once the charting tool's identity and API are confirmed.
+The charting tool API is not yet fully specified. Until it is finalized, use this file as the minimum contract between `imf-ra-data` output and chart construction.
 
-## Installation and import
+## Installation and Import
 
-> Document install and import conventions.
+Use the charting environment already available in the active project. Do not install new visualization dependencies unless the user asks for a new charting stack or the existing project clearly requires it.
 
 ## Invocation
 
-> Document the tool's primary entry point, required arguments, and return shape.
+Follow the active charting tool or project convention once identified. If no charting tool is available, produce the cleaned chart-ready data and explain what chart specification should be passed to the charting layer.
 
 ## Input data shape
 
-> Specify the tidy DataFrame shape the tool expects (column names, index, types). This must align with the output of `imf-ra-data`.
+Expect tidy data from `imf-ra-data`: one observation per row with at least `geo`, `time`, and `value`, plus identifying columns such as `database`, `series`, `indicator`, `freq`, `unit`, and `vintage` when available.
+
+Before charting, verify:
+
+- `time` is consistently typed or formatted.
+- `value` is numeric.
+- country/group labels are human-readable.
+- units and scale are known enough to label the axis.
 
 ## Chart-type selection
 
-> Document the chart types the tool supports and the heuristic for picking one from `(data shape, user intent)`.
+Use the user's requested chart type when provided. Otherwise choose a simple default:
+
+- single time series: line chart
+- multiple time series across countries/groups: multi-line chart or small multiples
+- latest-period country/group comparison: bar chart
+- two numeric measures by country/group: scatter plot
+- composition over time: stacked bar or stacked area chart when additive units are valid
 
 ## Captions, sources, footnotes
 
-> Document the IMF source-line conventions the tool needs (e.g., "Source: IMF, World Economic Outlook").
+Include a source line when known, for example `Source: IMF, World Economic Outlook`. Add footnotes for WEO vintage, forecast periods, unit transformations, or non-obvious country-group definitions.
 
 ## Output
 
-> Document where the tool writes its output (file path, in-memory object) and how to surface it back to the RA.
+Save or return the chart according to the active project convention. If no convention exists, prefer a clearly named output file and provide the path plus any remaining caveats.
