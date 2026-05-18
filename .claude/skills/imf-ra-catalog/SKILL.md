@@ -1,84 +1,127 @@
 ---
 name: imf-ra-catalog
-description: Use when the user describes data they want in plain English ("current account balance for advanced economies, quarterly") and needs the right dataset and indicator code. Returns top candidates with clear notes when requests are ambiguous.
+description: Use when the user describes data they want in plain English, such as "current account balance for advanced economies, quarterly", and needs the right dataset, dimension, and variable code. Returns top candidates with clear notes when requests are ambiguous.
 ---
 
-# IMF RA — Catalog
+# IMF RA Catalog
 
-Translate plain-English requests into a stable identifier tuple: `(database, series, frequency, geo)`.
+Use this skill to translate a research request into a stable catalog identifier tuple:
 
-## Before Search
+```text
+(database, dimension_name, code)
+```
 
-See the umbrella `imf-ra` for shared conventions (country and country-group codes especially).
+The catalog identifies datasets, dataflows, dimensions, and indicator codes. It does not fetch data. After an identifier is confirmed, hand off to `imf-ra-data` for execution.
 
-## Catalog Structure
+## Scope
 
-The catalog has three complementary layers:
+Use this skill when the user needs to:
 
-- **`databases/idata_full_datasets_list.csv`** — iData dataset/dataflow catalog. Schema notes: [databases/templates/idata_template.md](databases/templates/idata_template.md).
-- **`indicators/idata_full_indicators_list.csv`** — iData indicator catalog. Schema notes: [indicators/templates/idata_template.md](indicators/templates/idata_template.md).
-- **`overlays/<topic>.md`** — optional curated guidance that augments or overrides CSV-only lookup.
+- Select the most appropriate IMF, World Bank, WTO, Bloomberg, or related dataset.
+- Map a plain-English concept to a dataset-specific variable or indicator code.
+- Resolve ambiguity between similar indicators, transformations, units, dimensions, or database families.
+- Identify the latest non-vintage dataset or an explicitly requested vintage dataset.
 
-See [references/catalog-conventions.md](references/catalog-conventions.md) for the schemas and how the layers interact.
+Do not use this skill to fetch data, transform time series, or build charts. Those tasks belong to downstream skills.
+
+## Required Context
+
+Before lookup, load shared RA conventions from the umbrella `imf-ra` skill when the request involves country codes, WEO country groups, frequency conventions, dates, units, or downstream fetch behavior.
+
+For WEO regions, country groups, aggregates, and informal country names, normalize geography through the umbrella WEO country-group references before selecting variables or handing off to `imf-ra-data`.
 
 ## Reference Files
 
-Use these files as the source of truth:
+The CSV files are the source of truth for identifiers. Markdown files provide curated interpretation and selection guidance.
 
-- `databases/idata_full_datasets_list.csv`: `name`, `Agency ID`, `Resource ID`, `Latest Version`, `Unique ID`
-- `indicators/idata_full_indicators_list.csv`: `database_name`, `indicator_code`, `indicator_name`
+### Dataset Catalogs
 
-## When To Run Code
+| File | Purpose |
+|---|---|
+| `databases/non_vintage_databases.csv` | Default dataset and dataflow catalog for non-vintage lookup. |
+| `databases/vintage_databased.csv` | Vintage-only dataset and dataflow catalog. Use only for explicit vintage or historical-release requests. |
+| `databases/database_overview.md` | High-level summaries of major database families, coverage, and common use cases. |
 
-For easy and straightforward requests, inspect the available CSV, Markdown, and optional overlay files and answer directly from those sources. Do not write or run code when inspection is enough.
+### Indicator Catalogs
 
-Write or run code only for complex tasks: broad keyword search across many rows, repeated filtering, ranking candidates, joining dataset and indicator references, computing latest vintages, or other logic that is impractical to do reliably by manual review.
+| File | Purpose |
+|---|---|
+| `indicators/1. non_vintage_variable_list.csv` | General non-vintage variable catalog. Use for ordinary variable and code discovery. |
+| `indicators/2. bbg_variable_list.csv` | Bloomberg variable catalog. Use when the user requests Bloomberg or `IMF.CSF:BBGDL`. |
+| `indicators/3. wdi_variable_list.csv` | World Bank WDI variable catalog. Use when the user requests WDI or `WB:WDI`. |
+| `indicators/4. wto_variable_List.csv` | WTO variable catalog. Use when the user requests WTO goods, tariff, or commodity codes. |
 
-Use `scripts/catalog_search.py` as a convenience helper for complex tasks, not as the default path for simple lookups.
+## Default Selection Policy
 
-Helper commands:
+1. Default to non-vintage datasets.
+2. Use vintage datasets only when the user explicitly asks for a vintage, historical publication, dated snapshot, or versioned release.
+3. For WEO-style macroeconomic concepts, begin with non-vintage `IMF.RES.WEO:WEO_LIVE` unless the user asks for another source or the concept is clearly outside WEO coverage.
+4. Do not silently replace non-vintage `WEO_LIVE` with a dated WEO vintage. If the user asks for a WEO vintage but does not specify one, ask whether they want the latest available WEO Live vintage or a specific historical vintage.
+5. Search all databases only when WEO Live, GAS live and other highlighted database in database_overview.mdlack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
+6. Use database-specific indicator files for Bloomberg, WDI, and WTO requests rather than the general non-vintage variable list.
+
+## Lookup Workflow
+
+1. **Parse the request.** Identify the concept, preferred database, unit, transformation, frequency, geography, and vintage requirement when available.
+2. **Select a dataset.** Use `non_vintage_databases.csv` by default, `vintage_databased.csv` only for explicit vintage requests, and `database_overview.md` for high-level source selection.
+3. **Select the indicator file.** Choose the general non-vintage indicator list or the specific Bloomberg, WDI, or WTO list based on the dataset family.
+4. **Find candidate codes.** Search within the selected indicator file for exact names, close wording, aliases, and source-specific terminology.
+5. **Preserve dimensions.** Always carry through `dimension_name`; do not assume the code dimension is `INDICATOR`.
+6. **Resolve ambiguity.** Compare candidates by unit, transformation, valuation, frequency, price basis, and database coverage.
+7. **Return the result.** Commit to a single identifier only when the match is exact and unambiguous. Otherwise, return a short candidate list and ask for confirmation.
+
+## Use of Helper Scripts
+
+Inspect CSV and Markdown files directly for straightforward requests. Use code only when manual review is unreliable, such as broad search across many rows, repeated filtering, ranking, joins, or explicit vintage comparisons.
+
+Before using `scripts/catalog_search.py`, first map the user's wording to terminology that appears in the catalog. The helper should accelerate a source-aligned lookup, not invent indicator logic.
+
+Common helper commands:
 
 ```bash
 python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py latest-weo
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO_LIVE
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
 python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
 python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "current account balance" --all-databases
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO_LIVE
 ```
 
-## Priority Policy
+## Ambiguity and Uncertainty
 
-- For WEO-like macroeconomic concepts, use the `WEO_LIVE` dataflow family as the first priority unless the user asks for a different database family.
-- Do not silently collapse `WEO_LIVE` to the latest vintage. If a fetch requires one concrete vintage and the user has not specified it, ask whether they want the current/latest available WEO Live vintage or a specific historical vintage.
-- The latest standard WEO Live remains discoverable with `catalog_search.py latest-weo`, but that command is for vintage discovery, not the default source policy.
-- Prefer WEO Live for common annual macro concepts such as GDP, real GDP growth, inflation, current account, fiscal balance, unemployment, population, exchange rates, PPP, imports, and exports.
-- Search all databases only when WEO Live lacks a plausible match, the user explicitly asks for a non-WEO database, or the concept is clearly outside WEO coverage.
+Do not guess identifiers. Ask for clarification when:
 
-## Uncertainty Policy
+- Several variables match the same concept but differ by unit, transformation, valuation, or price basis.
+- Multiple databases plausibly cover the request and WEO Live is not clearly preferred.
+- Frequency is required but unclear or incompatible with the selected dataset.
+- The request implies a WEO group, panel, or region whose membership is unclear.
+- The user asks for a vintage but does not specify which vintage.
 
-If there is material uncertainty, do not guess. Ask the user for confirmation before committing to one interpretation, dataset, or indicator choice.
+When presenting alternatives, include:
 
-When search returns several plausible best matches, list the candidates with short distinction notes and ask for user preference/confirmation. Ask the smallest useful question, usually among 2-5 candidates.
+- `database_name`
+- `dimension_name`
+- `Code`
+- `Name`
+- A short distinction note
 
-Clarify when:
+Ask the smallest useful clarification question, usually among two to five candidates.
 
-- Multiple indicators share the same concept but differ by unit, transformation, or valuation, such as current prices vs constant prices, national currency vs U.S. dollars, percent of GDP, per capita, period average vs end of period, level vs percent change.
-- Multiple databases match and WEO Live is not obviously the right source.
-- The requested frequency is incompatible or unclear. WEO Live is generally annual; use other databases for quarterly/monthly needs unless metadata says otherwise.
-- The user asks for a WEO Live pull but does not specify whether they want the current/latest available vintage or a historical vintage.
-- The country coverage implies a WEO group, region, or panel but the group/country set is unclear.
+## Output Format
 
-When presenting candidates, include `database_name`, `indicator_code`, and `indicator_name`, plus a short distinction note. Do not invent codes.
+For an unambiguous match, return:
 
-## Workflow
+```text
+database: <Agency ID:Resource ID>
+dimension_name: <dimension>
+code: <code>
+name: <human-readable name>
+notes: <brief reason this is the best match>
+```
 
-1. **Understand the request:** identify concept, desired unit/transformation, frequency, vintage, database preference, and country/group coverage when available.
-2. **Inspect first:** for straightforward requests, answer directly from the CSV/Markdown references.
-3. **Complex search path:** use `catalog_search.py search "<query>"` (and `--all-databases` only when needed) for heavy lookup tasks.
-4. **Use curated guidance:** check `databases/`, `indicators/`, and optional `overlays/` notes when raw catalog rows are ambiguous. If overlay guidance exists and conflicts with raw rows, follow the overlay guidance.
-5. **Discuss uncertainty:** if multiple plausible indicators remain, ask the RA to choose or clarify. Do not collapse distinct candidates into one.
-6. **Output:** return top-N candidates with confidence notes. Commit to a single identifier only when the match is exact and unambiguous.
-7. **Fallback:** if CSV and Markdown references do not yield a useful match, surface the gap and ask for a hint. Do **not** invent a series identifier.
+For ambiguous results, return a ranked candidate list with distinction notes and ask the user to confirm the intended choice.
+
+If no useful match exists in the reference files, state the gap clearly and ask for one additional hint. Do not invent a dataset, dimension, or code.
 
 ## Handoff
 
-Once the RA confirms an identifier, hand off to `imf-ra-data` for fetch execution.
+Once the user confirms the identifier, hand off to `imf-ra-data` with the selected `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints.
