@@ -38,8 +38,8 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 
 | File | Purpose |
 |---|---|
-| `databases/non_vintage_datasets.csv` | Default dataset and dataflow catalog for non-vintage lookup. |
-| `databases/vintage_datasets.csv` | Vintage-only dataset and dataflow catalog. Use only for explicit vintage or historical-release requests. |
+| `databases/non_vintage_databases.csv` | Default dataset and dataflow catalog for non-vintage lookup. |
+| `databases/vintage_databased.csv` | Vintage-only dataset and dataflow catalog. Use only for explicit vintage or historical-release requests. |
 | `databases/database_overview.md` | High-level summaries of major database families, coverage, and common use cases. |
 
 ### Indicator Catalogs
@@ -63,7 +63,7 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 ## Lookup Workflow
 
 1. **Parse the request.** Identify the concept, preferred database, unit, transformation, frequency, geography, and vintage requirement when available.
-2. **Select a dataset.** Use `non_vintaged_datasets.csv` by default, `vintaged_datasets.csv` only for explicit vintage requests, and `database_overview.md` for high-level source selection.
+2. **Select a dataset.** Use `non_vintage_databases.csv` by default, `vintage_databased.csv` only for explicit vintage requests, and `database_overview.md` for high-level source selection.
 3. **Select the indicator file.** Choose the general non-vintage indicator list or the specific Bloomberg, WDI, or WTO list based on the dataset family.
 4. **Find candidate codes.** Search within the selected indicator file for exact names, close wording, aliases, and source-specific terminology.
 5. **Preserve dimensions.** Always carry through `dimension_name`; do not assume the code dimension is `INDICATOR`.

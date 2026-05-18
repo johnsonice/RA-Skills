@@ -1,6 +1,6 @@
 # Database Overview
 
-This file summarizes commonly used non-vintaged datasets. Metadata fields are aligned with `non_vintaged_datasets.csv`.
+This file summarizes commonly used non-vintage datasets. Metadata fields are aligned with `non_vintage_databases.csv`.
 
 ## World Economic Outlook (WEO) Live
 - **Database:** `IMF.RES.WEO:WEO_LIVE`
