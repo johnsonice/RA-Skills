@@ -65,7 +65,7 @@ Examples:
 
   # Multi-indicator → refreshable produces long layout (one row per observation)
   python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "IMF.RES.WEO:WEO_LIVE" --key "USA.NGDP_RPCH+NGDP_D..A" \\
+      --db "IMF.RES.WEO:WEO_LIVE" --key "USA.NGDP_RPCH+NGDP_D.A" \\
       --start 2000 --end 2026 --format refreshable
 
   python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
@@ -207,7 +207,8 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
 def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
                       indicator_col, ind_map, freq_code, date_col, val_col):
     """Build one wide DataFrame (dates as columns) for a single-indicator group."""
-    out = pd.DataFrame()
+    grp = grp.reset_index(drop=True).copy()
+    out = pd.DataFrame(index=grp.index)
     out["DATASET"] = db
 
     if id_cols:
@@ -232,7 +233,6 @@ def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
         else:
             out[col] = grp[col].values
 
-    grp = grp.copy()
     grp["_label"] = grp[date_col].apply(lambda t: format_date_label(t, freq_code))
     label_to_date = (
         grp[["_label", date_col]].drop_duplicates()
@@ -527,7 +527,7 @@ def main():
         print(f"Dimensions for {args.db} (in key order):")
         print("-" * 60)
         for _, row in dims.iterrows():
-            dim_name = row.get("Dimension", row.iloc[0])
+            dim_name = row.get("Dimension", row.iloc[0]).upper() ## get_dimension_values only take upper case dimension names
             print(f"  {dim_name}")
         print("\nUse --dimension-values <DIM> to see valid codes for a specific dimension.")
         return
@@ -545,7 +545,8 @@ def main():
         print(f"{args.dim_values} values for {args.db}:")
         print("-" * 60)
         for _, row in vals.iterrows():
-            print(f"  {row['Name']} ({row['Code']})")
+            #print(f"  {row['Name']} ({row['Code']})")
+            print(f" {row})")
         return
 
     # ── Fetch mode ────────────────────────────────────────────────────────────

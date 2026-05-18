@@ -184,6 +184,8 @@ python .claude/skills/imf-ra-data/scripts/fetch_idata.py \
 
 Add `--excel` to save Wide or Long output as `.xlsx` instead of `.csv`. Add `--output <filename>` to specify the output path.
 
+**Be aware that sometimes the idata endpoint is not 100% stable, and a retry may be needed. If you get an 403 error, retry up to 3 times before giving up.**
+
 **`--indicator-dim`** — pass the `dimension_name` value from the catalog handoff. The catalog resolves the correct indicator dimension name for every database (e.g. `INDICATOR` for WEO/IFS, `TICKER` for BBG, `SERIES` for WDI). Always use what the catalog returns — do not guess or hardcode.
 
 **Always use this script — never return raw SDK output directly.**
