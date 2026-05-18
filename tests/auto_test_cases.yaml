@@ -404,6 +404,12 @@ cases:
     expected_behavior: >
       Uses already supplied dimensions, auto-resolves any single-value
       dimensions silently, and asks only for unresolved multi-value dimensions.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
+      optional_commands:
+        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
       dimension_name: INDICATOR
@@ -431,6 +437,12 @@ cases:
     expected_behavior: >
       Uses dimension metadata and presents readable frequency options instead
       of a raw dump when possible.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
+      optional_commands:
+        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values FREQUENCY
     assertions:
       required:
         - inspect_dimension_metadata
@@ -447,6 +459,13 @@ cases:
     expected_primary_skill: imf-ra-data
     expected_behavior: >
       Uses the LIVE database directly and does not substitute a vintage.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/non_vintage_databases.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
     assertions:
@@ -466,6 +485,14 @@ cases:
     expected_behavior: >
       Maps the request to the nearest matching vintage without asking again if
       the intent is clear.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/vintage_databased.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
     assertions:
@@ -490,6 +517,10 @@ cases:
     expected_behavior: >
       Asks which output format the user wants: Refreshable, Wide, or Long; for
       Wide or Long also confirms CSV vs Excel.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
       key: USA.NGDP_RPCH.A
@@ -517,6 +548,10 @@ cases:
     expected_primary_skill: imf-ra-data
     expected_behavior: >
       Does not substitute refreshable output for raw wide output.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
       key: USA.NGDP_RPCH.A
@@ -539,6 +574,10 @@ cases:
     expected_behavior: >
       Explains that EcOS retrieval is retired and provides the iData-equivalent
       path instead.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - docs/data_tools_docs/imf_datatools_agent_api_reference.md
     assertions:
       required:
         - reject_ecos_retrieval
@@ -556,6 +595,10 @@ cases:
     expected_behavior: >
       Avoids broad ALL pulls unless explicitly confirmed and warns or narrows
       the request where appropriate.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
     assertions:
       required:
         - warn_or_narrow_large_query
@@ -574,6 +617,14 @@ cases:
       Resolves EMDEs through the WEO country-group references and does not use
       G200 directly as the iData country selector unless metadata confirms an
       aggregate code is supported.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G200
     expected_outputs:
       groupcode: G200
       start: "2010"
@@ -596,6 +647,11 @@ cases:
     expected_behavior: >
       Asks whether the user means WEO low-income developing countries or another
       institutional coverage such as SPR or PRGT before committing to a group.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
     assertions:
       required:
         - ask_group_definition_clarification
@@ -614,6 +670,14 @@ cases:
       Resolves the supported country alias America to USA through the WEO
       references, then continues the retrieval workflow without guessing missing
       fetch inputs.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py countries USA
     expected_outputs:
       country: USA
       start: "2015"
@@ -638,6 +702,11 @@ cases:
       Explains that WEO group codes are for group lookup and membership mapping,
       and should not be used directly as country selectors unless dataset
       metadata confirms aggregate-code support.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
     expected_outputs:
       groupcode: G110
     assertions:
@@ -657,6 +726,13 @@ cases:
     expected_behavior: >
       Recognizes that the user requested a vintage but did not specify which
       one, and asks for the intended vintage instead of choosing one silently.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/vintage_databased.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
     assertions:
       required:
         - ask_which_vintage
@@ -675,6 +751,14 @@ cases:
       Treats latest WEO data as WEO Live by default or clarifies if the user
       means latest historical vintage, without silently substituting a dated
       vintage.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/non_vintage_databases.csv
+        - .claude/skills/imf-ra-catalog/databases/vintage_databased.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
     assertions:
@@ -694,6 +778,10 @@ cases:
     expected_behavior: >
       Uses the WDI-specific indicator catalog for an explicit World Bank WDI
       request rather than the general IMF non-vintage variable list.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/3. wdi_variable_list.csv
     assertions:
       required:
         - use_wdi_indicator_catalog
@@ -711,6 +799,10 @@ cases:
     expected_behavior: >
       Uses the Bloomberg-specific indicator catalog for an explicit Bloomberg
       request rather than WEO or the general IMF indicator catalog.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/2. bbg_variable_list.csv
     assertions:
       required:
         - use_bloomberg_indicator_catalog
@@ -735,6 +827,12 @@ cases:
     expected_behavior: >
       Since the user explicitly asks for frequency options, reads dimension
       metadata and presents readable choices before continuing the fetch.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
+      optional_commands:
+        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values FREQUENCY
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
       dimension_name: INDICATOR
@@ -769,6 +867,12 @@ cases:
     expected_behavior: >
       Builds a key using multiple country values in the country dimension while
       preserving the exact iData dimension order.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
+      optional_commands:
+        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
       key: USA+JPN.NGDP_RPCH.A
@@ -800,6 +904,10 @@ cases:
     expected_behavior: >
       Preserves the already-stated long CSV output format instead of re-asking
       the full output-format menu.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
       key: USA.NGDP_RPCH.A
@@ -824,6 +932,10 @@ cases:
       Recognizes that the user explicitly requested R, but does not invent an
       unsupported R iData workflow. It should explain the supported RA path or
       provide R only with a clear caveat if a supported R path is known.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/references/imf_datatools_agent_api_reference.md
     assertions:
       required:
         - acknowledge_explicit_r_request
@@ -841,6 +953,10 @@ cases:
     expected_behavior: >
       Uses or points to the pre-built fetch_idata.py utility instead of creating
       a new ad hoc Python fetch script.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
     assertions:
       required:
         - use_prebuilt_fetch_idata_utility
@@ -858,6 +974,15 @@ cases:
     expected_behavior: >
       Resolves the identifier first, then hands off to data flow, asks for any
       missing dimensions, and confirms the requested long CSV output.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan" --all-databases
     assertions:
       required:
         - resolve_identifier_before_fetch
