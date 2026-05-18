@@ -28,6 +28,29 @@ For each case, use the prompt listed here or in
 [auto_test_cases.yaml](auto_test_cases.yaml). Start from a fresh session when
 possible unless the YAML case is marked `fixture_based` or `multi_step`.
 
+### Pre-Test Checks
+
+Before running behavioral prompts, run the pre-test checks in
+[auto_test_cases.yaml](auto_test_cases.yaml). At minimum:
+
+```bash
+bash .claude/skills/imf-ra/scripts/check_references.sh
+python3 tests/check_referenced_files.py
+```
+
+Expected result:
+
+- The reference checker prints `OK: all skills found, all references resolve.`
+- The referenced-file scanner prints an `OK: checked ... file reference(s)`
+  summary.
+
+The referenced-file scanner reads active Markdown, YAML, shell, and Python
+files, extracts file-looking references, and verifies that each target exists.
+If a target is missing, it reports the source file/line and any likely nearby
+filename matches. Stop before behavioral testing and ask the user whether to
+create/restore the missing target, rename the file, update the reference, or
+retire the stale test/doc.
+
 Record whether the agent:
 
 - activated the expected skill set,
@@ -38,6 +61,9 @@ Record whether the agent:
   and output-format details across handoffs.
 
 Use the YAML assertions to decide `Pass`, `Fail`, or `Needs follow-up`.
+For `command_contract` cases, record stdout/stderr and pass only when the command
+contract and expected content match exactly enough to prove the helper still
+supports the behavioral tests.
 For each full run, save a detailed YAML result file and a short Markdown report:
 
 - YAML detail: copy [results/auto_test_results_template.yaml](results/auto_test_results_template.yaml) to `tests/results/auto_test_results_YYYY-MM-DD.yaml`.
@@ -87,8 +113,12 @@ identifiers.
 | CAT-06 | Find the exact IMF code for a custom concept that may not exist. | `imf-ra` -> `imf-ra-catalog` |
 | VINTAGE-01 | Use a WEO vintage for real GDP growth. | `imf-ra` -> `imf-ra-catalog` |
 | VINTAGE-02 | Use the latest WEO data for nominal GDP. | `imf-ra` -> `imf-ra-catalog` |
+| VINTAGE-03 | Is IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE a live database or a WEO vintage? | `imf-ra` -> `imf-ra-catalog` |
+| VINTAGE-04 | Use the latest WEO vintage for nominal GDP. | `imf-ra` -> `imf-ra-catalog` |
+| VINTAGE-05 | Use WEO data for nominal GDP. | `imf-ra` -> `imf-ra-catalog` |
 | CAT-07 | Find the World Bank WDI indicator for GDP per capita. | `imf-ra` -> `imf-ra-catalog` |
 | CAT-08 | Find the Bloomberg ticker field for 10-year government bond yields. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-09 | Find the WTO-IMF Tariff Tracker commodity code for wheat. | `imf-ra` -> `imf-ra-catalog` |
 
 ### Data Workflow
 
@@ -116,6 +146,26 @@ LIVE-vs-vintage routing.
 | DATA-13 | Download confirmed WEO Live real GDP growth for USA, 2010-2024, in long CSV format. | `imf-ra` -> `imf-ra-data` |
 | DATA-14 | Give me R code to download WEO real GDP growth for USA. | `imf-ra` -> `imf-ra-data` |
 | DATA-15 | Write a quick Python script to fetch WEO real GDP growth for USA, 2010-2024. | `imf-ra` -> `imf-ra-data` |
+| DATA-16 | Download confirmed WEO Live real GDP growth for the United States and Japan, annual, 2010-2024, as refreshable Excel. | `imf-ra` -> `imf-ra-data` |
+| DATA-17 | Download confirmed WEO Live real GDP growth and nominal GDP in USD for the United States and Japan, annual, 2010-2024, as refreshable Excel. | `imf-ra` -> `imf-ra-data` |
+| DATA-18 | Download confirmed WEO Live real GDP growth and nominal GDP in USD for USA, annual, 2010-2024, as refreshable Excel. | `imf-ra` -> `imf-ra-data` |
+| DATA-19 | Download confirmed WDI GDP per capita for China, 2000-2023, as refreshable Excel. | `imf-ra` -> `imf-ra-data` |
+| DATA-20 | Download confirmed WEO Live real GDP growth for USA, annual, 2010-2024, as long CSV. If the endpoint returns 403, retry safely. | `imf-ra` -> `imf-ra-data` |
+
+### Helper Contracts
+
+These cases are deterministic command checks. Run them before or alongside
+behavioral tests to make sure helper scripts and canonical filenames still
+support the prompt-level cases.
+
+| ID | Command | Purpose |
+|---|---|---|
+| CONTRACT-01 | `bash .claude/skills/imf-ra/scripts/check_references.sh` | Active skill references resolve. |
+| CONTRACT-02 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py latest-weo` | Latest WEO resolves to WEO Live. |
+| CONTRACT-03 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"` | WEO Live real GDP growth search returns `NGDP_RPCH`. |
+| CONTRACT-04 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only` | Vintage search returns only vintage-style WEO resources. |
+| CONTRACT-05 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110` | WEO group helper expands advanced economies to member countries. |
+| CONTRACT-06 | `python3 tests/check_referenced_files.py` | Active file references resolve; missing targets include source lines and likely filename suggestions. |
 
 ### End To End
 

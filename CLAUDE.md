@@ -38,9 +38,9 @@ Run logs and issues: `tests/issue_tracking/`.
 
 ```
 .claude/skills/<skill>/SKILL.md   # frontmatter + body — discovered by Claude Code
-.claude/skills/imf-ra-catalog/databases/templates/non_vintaged_datasets.csv  # default dataset truth
-.claude/skills/imf-ra-catalog/databases/templates/vintaged_datasets.csv      # explicit-vintage dataset truth
-.claude/skills/imf-ra-catalog/indicators/non_vintage_Full_Variable_List.csv  # non-vintage variable truth
+.claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv   # default dataset truth
+.claude/skills/imf-ra-catalog/databases/vintage_datasets.csv       # explicit-vintage dataset truth
+.claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv  # non-vintage variable truth
 .claude/skills/imf-ra/references/Country Group/csv/                      # WEO group truth
 docs/specs/   # design docs
 docs/plans/   # implementation history
