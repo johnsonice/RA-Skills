@@ -10,8 +10,8 @@ The catalog is organized into dataset-level references and indicator-level refer
 
 | File | Contents |
 |---|---|
-| `../databases/non_vintaged_datasets.csv` | Default non-vintage dataset/dataflow catalog. |
-| `../databases/vintaged_datasets.csv` | Vintage-only dataset/dataflow catalog. |
+| `../databases/non_vintage_databases.csv` | Default non-vintage dataset/dataflow catalog. |
+| `../databases/vintage_databased.csv` | Vintage-only dataset/dataflow catalog. |
 | `../databases/database_overview.md` | Curated high-level summaries for major database families. |
 
 Dataset CSV columns:
