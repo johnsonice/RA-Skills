@@ -970,6 +970,69 @@ cases:
         - force_weo_match
         - invent_identifier
 
+  - id: CAT-10
+    category: catalog_discovery
+    type: single_turn
+    area: Legacy IFS migration
+    prompt: "Find the IFS CPI series for the United States."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Treats IFS as a retired legacy source hint, explains that IFS is no
+      longer a single iData dataset, and searches the replacement CPI topic
+      database for the exact indicator instead of returning an IFS database.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/database_overview.md
+        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "CPI consumer price index" --all-databases
+    expected_outputs:
+      replacement_database: IMF.STA:CPI
+    assertions:
+      required:
+        - explain_ifs_retired_as_single_idata_dataset
+        - treat_ifs_as_legacy_source_hint
+        - search_replacement_cpi_database
+        - include_replacement_database_IMF.STA_CPI
+      forbidden:
+        - return_single_IFS_database
+        - use_ecos_retrieval
+        - invent_identifier
+
+  - id: CAT-11
+    category: catalog_discovery
+    type: single_turn
+    area: Explicit legacy WEO override
+    prompt: "Find nominal GDP in IMF.RES:WEO, not WEO Live."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Honors the explicitly named legacy WEO database instead of applying the
+      default WEO Live preference, while still resolving the matching nominal
+      GDP indicator from catalog evidence.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets IMF.RES:WEO
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP" --database IMF.RES:WEO
+    expected_outputs:
+      database: IMF.RES:WEO
+      dimension_name: INDICATOR
+      code: NGDPD
+    assertions:
+      required:
+        - honor_explicit_database_IMF.RES_WEO
+        - do_not_apply_weo_live_default_when_user_overrides
+        - include_nominal_gdp_candidate_from_legacy_weo
+      forbidden:
+        - substitute_IMF.RES.WEO_WEO_LIVE
+        - ignore_explicit_not_weo_live
+        - invent_identifier
+
   - id: DATA-11
     category: data_workflow
     type: fixture_based
@@ -1322,6 +1385,101 @@ cases:
         - change_database_after_403
         - retry_indefinitely
 
+  - id: DATA-21
+    category: data_workflow
+    type: single_turn
+    area: Python-only scope with explicit Stata request
+    prompt: "Give me Stata code to download WEO real GDP growth for USA."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Recognizes that the user explicitly requested Stata, but explains that
+      the RA skillset only validates the Python/iData fetch workflow. It should
+      provide the confirmed identifier tuple and supported fetch_idata.py route
+      instead of presenting Stata as a supported retrieval path.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-data/references/imf_datatools_agent_api_reference.md
+    assertions:
+      required:
+        - acknowledge_explicit_stata_request
+        - avoid_inventing_unsupported_stata_workflow
+        - explain_python_only_supported_fetch_path
+      forbidden:
+        - invent_stata_idata_api
+        - present_stata_as_supported_ra_fetch_path
+        - ignore_user_requested_language
+
+  - id: DATA-22
+    category: data_workflow
+    type: fixture_based
+    area: Invalid supplied dimension value
+    prompt: "Download confirmed WEO Live real GDP growth for Atlantis, annual, 2010-2024."
+    fixture:
+      confirmed_database: IMF.RES.WEO:WEO_LIVE
+      confirmed_dimension_name: INDICATOR
+      confirmed_code: NGDP_RPCH
+      country: Atlantis
+      frequency: A
+      start: "2010"
+      end: "2024"
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Validates the supplied geography against WEO country metadata or
+      reference files, reports that Atlantis is not a supported WEO country or
+      group, and stops for a valid replacement instead of building a key.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
+    assertions:
+      required:
+        - validate_supplied_country_value
+        - report_invalid_country_or_group
+        - ask_for_valid_replacement_geography
+      forbidden:
+        - build_key_with_invalid_country
+        - invent_country_code_for_atlantis
+        - fetch_with_unvalidated_dimension_value
+
+  - id: GROUP-05
+    category: data_workflow
+    type: single_turn
+    area: Ambiguous country name
+    prompt: "Download WEO nominal GDP for Congo, 2015-2024."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Recognizes that Congo maps to multiple WEO countries, lists the supported
+      candidates with codes, and asks the user to choose before building a
+      fetch key.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
+      optional_commands:
+        - rg -n -i "Congo" ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    expected_outputs:
+      candidates:
+        - COG
+        - COD
+      start: "2015"
+      end: "2024"
+    assertions:
+      required:
+        - detect_ambiguous_country_name
+        - list_COG_and_COD_candidates
+        - ask_country_clarification_before_fetch
+        - preserve_time_range_2015_2024
+      forbidden:
+        - choose_one_congo_without_confirmation
+        - invent_country_code
+        - fetch_without_country_disambiguation
+
   - id: E2E-01
     category: end_to_end
     type: multi_step
@@ -1350,6 +1508,40 @@ cases:
       forbidden:
         - fetch_before_identifier_resolution
         - drop_output_format
+        - invent_identifier
+
+  - id: E2E-02
+    category: end_to_end
+    type: multi_step
+    area: Catalog boundary before fetch
+    prompt: "Find the code for real GDP growth and download it immediately."
+    expected_primary_skill: imf-ra-catalog
+    expected_behavior: >
+      Resolves the real GDP growth identifier first, then hands off to the data
+      workflow and stops for missing fetch inputs such as geography, time range,
+      frequency, and output format instead of fetching from catalog context.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-catalog/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
+    expected_outputs:
+      database: IMF.RES.WEO:WEO_LIVE
+      dimension_name: INDICATOR
+      code: NGDP_RPCH
+    assertions:
+      required:
+        - resolve_identifier_before_fetch
+        - handoff_to_data_workflow
+        - ask_missing_fetch_inputs
+        - preserve_real_gdp_growth_identifier
+      forbidden:
+        - fetch_from_catalog_context
+        - skip_time_range_confirmation
+        - skip_output_format_confirmation
         - invent_identifier
 
   - id: CONTRACT-01

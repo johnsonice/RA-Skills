@@ -119,6 +119,8 @@ identifiers.
 | CAT-07 | Find the World Bank WDI indicator for GDP per capita. | `imf-ra` -> `imf-ra-catalog` |
 | CAT-08 | Find the Bloomberg ticker field for 10-year government bond yields. | `imf-ra` -> `imf-ra-catalog` |
 | CAT-09 | Find the WTO-IMF Tariff Tracker commodity code for wheat. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-10 | Find the IFS CPI series for the United States. | `imf-ra` -> `imf-ra-catalog` |
+| CAT-11 | Find nominal GDP in IMF.RES:WEO, not WEO Live. | `imf-ra` -> `imf-ra-catalog` |
 
 ### Data Workflow
 
@@ -151,6 +153,9 @@ LIVE-vs-vintage routing.
 | DATA-18 | Download confirmed WEO Live real GDP growth and nominal GDP in USD for USA, annual, 2010-2024, as refreshable Excel. | `imf-ra` -> `imf-ra-data` |
 | DATA-19 | Download confirmed WDI GDP per capita for China, 2000-2023, as refreshable Excel. | `imf-ra` -> `imf-ra-data` |
 | DATA-20 | Download confirmed WEO Live real GDP growth for USA, annual, 2010-2024, as long CSV. If the endpoint returns 403, retry safely. | `imf-ra` -> `imf-ra-data` |
+| DATA-21 | Give me Stata code to download WEO real GDP growth for USA. | `imf-ra` -> `imf-ra-data` |
+| DATA-22 | Download confirmed WEO Live real GDP growth for Atlantis, annual, 2010-2024. | `imf-ra` -> `imf-ra-data` |
+| GROUP-05 | Download WEO nominal GDP for Congo, 2015-2024. | `imf-ra` -> `imf-ra-data` |
 
 ### Helper Contracts
 
@@ -175,6 +180,7 @@ country, time range, and output-format intent.
 | ID | Prompt | Skill Set Involved |
 |---|---|---|
 | E2E-01 | Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format. | `imf-ra` -> `imf-ra-catalog` -> `imf-ra-data` |
+| E2E-02 | Find the code for real GDP growth and download it immediately. | `imf-ra` -> `imf-ra-catalog` -> `imf-ra-data` |
 
 ## Result Outputs
 
