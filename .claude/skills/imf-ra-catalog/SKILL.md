@@ -38,8 +38,8 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 
 | File | Purpose |
 |---|---|
-| `databases/non_vintage_databases.csv` | Default dataset and dataflow catalog for non-vintage lookup. |
-| `databases/vintage_databased.csv` | Vintage-only dataset and dataflow catalog. Use only for explicit vintage or historical-release requests. |
+| `databases/non_vintage_datasets.csv` | Default dataset and dataflow catalog for non-vintage lookup. |
+| `databases/vintage_datasets.csv` | Vintage-only dataset and dataflow catalog. Use only for explicit vintage or historical-release requests. |
 | `databases/database_overview.md` | High-level summaries of major database families, coverage, and common use cases. |
 
 ### Indicator Catalogs
@@ -57,13 +57,54 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 2. Use vintage datasets only when the user explicitly asks for a vintage, historical publication, dated snapshot, or versioned release.
 3. For WEO-style macroeconomic concepts, begin with non-vintage `IMF.RES.WEO:WEO_LIVE` unless the user asks for another source or the concept is clearly outside WEO coverage.
 4. Do not silently replace non-vintage `WEO_LIVE` with a dated WEO vintage. If the user asks for a WEO vintage but does not specify one, ask whether they want the latest available WEO Live vintage or a specific historical vintage.
-5. Search all databases only when WEO Live, GAS live and other highlighted database in database_overview.mdlack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
+5. Search all databases only when WEO Live, GAS live and other highlighted databases in `database_overview.md` lack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
 6. Use database-specific indicator files for Bloomberg, WDI, and WTO requests rather than the general non-vintage variable list.
+
+## Legacy IFS Requests
+
+`IFS` no longer exists as a single iData dataset. It was the legacy International Financial Statistics dataset in the old EcOS data system. After migration from EcOS to iData, its coverage was split into smaller topic datasets.
+
+When a user asks for "IFS" data:
+
+1. Tell the user that `IFS` no longer exists as a single iData dataset.
+2. Treat `IFS` as a legacy source hint, not as the target database.
+3. Use `database_overview.md`, `non_vintage_datasets.csv`, and `indicators/1. non_vintage_variable_list.csv` to find the replacement iData topic dataset and exact indicator.
+4. In the result, explicitly name the replacement database where the required indicator was found.
+
+Common replacement routing:
+
+| Legacy IFS topic requested | Search/target replacement database |
+|---|---|
+| CPI, consumer prices, inflation index | `IMF.STA:CPI` |
+| Exchange rates | `IMF.STA:ER` |
+| Effective exchange rates, REER, NEER | `IMF.STA:EER` |
+| Interest rates, money, monetary aggregates, financial corporations | `IMF.STA:MFS_IR`, `IMF.STA:MFS_MA`, `IMF.STA:MFS_CBS`, `IMF.STA:MFS_DC`, `IMF.STA:MFS_ODC`, `IMF.STA:MFS_OFC`, or `IMF.STA:MFS_FC` |
+| National accounts, GDP, expenditure components | `IMF.STA:ANEA` or `IMF.STA:QNEA` |
+| Balance of payments, current account | `IMF.STA:BOP` |
+| International investment position | `IMF.STA:IIP` or `IMF.STA:IIPCC` |
+| International liquidity, reserves | `IMF.STA:IL` |
+| Goods trade | `IMF.STA:ITG` or `IMF.STA:IMTS` |
+| Producer prices | `IMF.STA:PPI` |
+| Production indexes / former IPI | `IMF.STA:PI` |
+| Government finance, quarterly fiscal data | `IMF.STA:QGFS` |
+| Labor force statistics | `IMF.STA:LS` |
+| Fund accounts | `IMF.STA:FA` |
+| Special purpose entities | `IMF.STA:SPE` |
+
+For IFS requests, include an IFS migration note in the final answer. Example:
+
+```text
+Note: IFS no longer exists as a single iData dataset. For this legacy IFS CPI request, the matching indicator is in the replacement iData topic database:
+database: IMF.STA:CPI
+dimension_name: <dimension>
+code: <code>
+name: <name>
+```
 
 ## Lookup Workflow
 
 1. **Parse the request.** Identify the concept, preferred database, unit, transformation, frequency, geography, and vintage requirement when available.
-2. **Select a dataset.** Use `non_vintage_databases.csv` by default, `vintage_databased.csv` only for explicit vintage requests, and `database_overview.md` for high-level source selection.
+2. **Select a dataset.** Use `non_vintage_datasets.csv` by default, `vintage_datasets.csv` only for explicit vintage requests, and `database_overview.md` for high-level source selection.
 3. **Select the indicator file.** Choose the general non-vintage indicator list or the specific Bloomberg, WDI, or WTO list based on the dataset family.
 4. **Find candidate codes.** Search within the selected indicator file for exact names, close wording, aliases, and source-specific terminology.
 5. **Preserve dimensions.** Always carry through `dimension_name`; do not assume the code dimension is `INDICATOR`.

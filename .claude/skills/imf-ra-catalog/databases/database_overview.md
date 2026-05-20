@@ -1,6 +1,6 @@
 # Database Overview
 
-This file summarizes commonly used non-vintage datasets. Metadata fields are aligned with `non_vintage_databases.csv`.
+This file summarizes commonly used non-vintage datasets. Metadata fields are aligned with `non_vintage_datasets.csv`.
 
 ## World Economic Outlook (WEO) Live
 - **Database:** `IMF.RES.WEO:WEO_LIVE`
@@ -56,6 +56,36 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 3. **Financial account:** Direct investment, portfolio investment, other investment, reserve assets, and financial derivatives.
 4. **Sector and maturity detail:** Breakdowns by institutional sector, such as central bank, deposit-taking corporations, and general government, and by short-term or long-term maturity where available.
 5. **Analytical balances:** Aggregate balances and financing items used in external-sector analysis.
+
+## International Financial Statistics (IFS) Migration Note
+- **Legacy source:** IFS in the old EcOS data system.
+- **iData status:** Discontinued as a single iData dataset; data by topic remains.
+
+**Overview:** After migration from EcOS to iData, IFS should not be treated as one database/dataflow. When a user asks for "IFS" data, route the request to the relevant iData topic dataset instead of searching for a single IFS dataset. Use the catalog indicator files to confirm the exact database, dimension, and code.
+
+**Topic datasets replacing legacy IFS coverage:**
+
+1. **Labor Force Statistics (LS)**
+2. **Consumer Price Index (CPI)**
+3. **Fund Accounts (FA)**
+4. **Effective Exchange Rate (EER)**
+5. **Exchange Rate (ER)**
+6. **National Economic Accounts (NEA), Quarterly Data**
+7. **National Economic Accounts (NEA), Annual Data**
+8. **Special Purpose Entities (SPE)**
+9. **Balance of Payments (BOP)**
+10. **International Investment Position (IIP)**
+11. **Currency Composition of the International Investment Position (IIP)**
+12. **Production Indexes (formerly IPI)**
+13. **Producer Price Indexes (PPI)**
+14. **International Liquidity (IL)**
+15. **International Trade in Goods (ITG)**
+16. **Quarterly Government Finance Statistics (GFS)**
+17. **Monetary and Financial Statistics (MFS): Central Bank Data**
+18. **Monetary and Financial Statistics (MFS): Depository Corporations**
+19. **Monetary and Financial Statistics (MFS): Financial Corporations**
+20. **Monetary and Financial Statistics (MFS): Other Financial Corporations**
+21. **Monetary and Financial Statistics (MFS): Other Depository Corporations**
 
 ## Bloomberg Data License
 - **Database:** `IMF.CSF:BBGDL`

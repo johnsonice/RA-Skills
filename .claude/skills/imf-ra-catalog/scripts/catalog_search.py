@@ -15,10 +15,18 @@ REFERENCES_DIR = SKILL_DIR / "references"
 DATABASES_DIR = SKILL_DIR / "databases"
 VARIABLES_DIR = SKILL_DIR / "indicators"
 VARIABLES_CSV = VARIABLES_DIR / "1. non_vintage_variable_list.csv"
-NON_VINTAGE_DATASETS_CSV = DATABASES_DIR / "non_vintage_datasets.csv"
-VINTAGE_DATASETS_CSV = DATABASES_DIR / "vintage_datasets.csv"
+BBG_VARIABLES_CSV = VARIABLES_DIR / "2. bbg_variable_list.csv"
+WDI_VARIABLES_CSV = VARIABLES_DIR / "3. wdi_variable_list.csv"
+WTO_VARIABLES_CSV = VARIABLES_DIR / "4. wto_variable_List.csv"
+NON_VINTAGE_DATABASES_CSV = DATABASES_DIR / "non_vintage_datasets.csv"
+VINTAGE_DATABASES_CSV = DATABASES_DIR / "vintage_datasets.csv"
 WEO_LIVE_DB = "IMF.RES.WEO:WEO_LIVE"
 LEGACY_WEO_DB = "IMF.RES:WEO"
+SPECIALIZED_INDICATOR_CSVS = {
+    "IMF.CSF:BBGDL": BBG_VARIABLES_CSV,
+    "WB:WDI": WDI_VARIABLES_CSV,
+    "WTO:WTOIMFTT": WTO_VARIABLES_CSV,
+}
 MONTHS = {
     "JAN": 1,
     "FEB": 2,
@@ -90,9 +98,9 @@ def database_sort_key(database_name: str, latest_weo_db: str | None = None) -> t
 
 
 def load_datasets(include_vintage: bool = False, vintage_only: bool = False) -> list[dict[str, str]]:
-    paths = [VINTAGE_DATASETS_CSV] if vintage_only else [NON_VINTAGE_DATASETS_CSV]
+    paths = [VINTAGE_DATABASES_CSV] if vintage_only else [NON_VINTAGE_DATABASES_CSV]
     if include_vintage and not vintage_only:
-        paths.append(VINTAGE_DATASETS_CSV)
+        paths.append(VINTAGE_DATABASES_CSV)
     rows: list[dict[str, str]] = []
     for path in paths:
         with path.open(newline="", encoding="utf-8-sig") as f:
@@ -105,8 +113,56 @@ def load_variables() -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
+def load_variable_file(path: Path) -> list[dict[str, str]]:
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        return list(csv.DictReader(f))
+
+
 def load_catalog_variables() -> list[dict[str, str]]:
-    return load_variables()
+    rows = load_variables()
+    for path in SPECIALIZED_INDICATOR_CSVS.values():
+        rows.extend(load_variable_file(path))
+    return rows
+
+
+def preferred_database_for_query(query: str) -> str | None:
+    query_norm = norm(query)
+    query_tokens = set(query_norm.split())
+    if "world bank" in query_norm or "wdi" in query_tokens:
+        return "WB:WDI"
+    if "bloomberg" in query_tokens or "bbg" in query_tokens or "ticker" in query_tokens:
+        return "IMF.CSF:BBGDL"
+    if (
+        "wto" in query_tokens
+        or "tariff" in query_tokens
+        or "commodity" in query_tokens
+        or "hs" in query_tokens
+    ):
+        return "WTO:WTOIMFTT"
+    return None
+
+
+def variables_for_database(database_name: str) -> list[dict[str, str]]:
+    path = SPECIALIZED_INDICATOR_CSVS.get(database_name)
+    rows = load_variable_file(path) if path else load_catalog_variables()
+    return [row for row in rows if row.get("database_name") == database_name]
+
+
+def candidate_variables(args: argparse.Namespace, variables: list[dict[str, str]]) -> list[dict[str, str]]:
+    if args.database:
+        return variables_for_database(args.database)
+    preferred_db = preferred_database_for_query(args.query)
+    if preferred_db:
+        return variables_for_database(preferred_db)
+    if args.all_databases:
+        return [row for row in variables if include_variable_row(row)]
+    return [row for row in variables if is_weo_live_database(row.get("database_name", ""))]
+
+
+def fallback_variables(args: argparse.Namespace, variables: list[dict[str, str]]) -> list[dict[str, str]]:
+    if args.database or args.all_databases or preferred_database_for_query(args.query):
+        return []
+    return [row for row in variables if include_variable_row(row)]
 
 
 def latest_weo_dataset() -> dict[str, str]:
@@ -226,13 +282,7 @@ def cmd_datasets(args: argparse.Namespace) -> None:
 
 def cmd_search(args: argparse.Namespace) -> None:
     variables = load_catalog_variables()
-
-    if args.database:
-        candidates = [row for row in variables if row.get("database_name") == args.database]
-    elif args.all_databases:
-        candidates = [row for row in variables if include_variable_row(row)]
-    else:
-        candidates = [row for row in variables if is_weo_live_database(row.get("database_name", ""))]
+    candidates = candidate_variables(args, variables)
 
     scored = [(score_variable(row, args.query), row) for row in candidates]
     scored = [(score, row) for score, row in scored if score > 0]
@@ -246,8 +296,9 @@ def cmd_search(args: argparse.Namespace) -> None:
         )
     )
 
-    if (not scored or scored[0][0] < 25) and not args.all_databases and not args.database:
-        fallback = [(score_variable(row, args.query), row) for row in variables if include_variable_row(row)]
+    fallback_candidates = fallback_variables(args, variables)
+    if (not scored or scored[0][0] < 25) and fallback_candidates:
+        fallback = [(score_variable(row, args.query), row) for row in fallback_candidates]
         scored = [(score, row) for score, row in fallback if score > 0]
         scored.sort(
             key=lambda item: (
