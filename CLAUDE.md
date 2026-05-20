@@ -30,9 +30,16 @@ Run the verify script after editing any `SKILL.md` or reference path.
 
 ## Auto-tests
 
-Behavioral test pack: `tests/auto_test_instructions.md` — agent reads it and runs full routing/guardrail tests across `imf-ra`, `imf-ra-catalog`, `imf-ra-data`. Chart cases excluded.
+Behavioral test pack: `tests/auto_test_cases.yaml` is the machine-readable source of truth. It defines prompts, fixtures, expected skills, evidence files, assertions, pre-test checks, and command contracts across `imf-ra`, `imf-ra-catalog`, and `imf-ra-data`. `tests/auto_test_instructions.md` mirrors the same cases as the human-readable catalog. Chart execution cases are excluded.
 
-Run logs and issues: `tests/issue_tracking/`.
+Before behavioral runs, execute:
+
+```bash
+bash .claude/skills/imf-ra/scripts/check_references.sh
+python3 tests/check_referenced_files.py
+```
+
+Run records and templates: `tests/results/`. Issues and audit notes: `tests/issue_tracking/`.
 
 ## Layout
 
@@ -44,7 +51,7 @@ Run logs and issues: `tests/issue_tracking/`.
 .claude/skills/imf-ra/references/Country Group/csv/                      # WEO group truth
 docs/specs/   # design docs
 docs/plans/   # implementation history
-tests/        # auto-test instructions + issue tracking
+tests/        # YAML auto-test cases, reviewer catalog, results, issue tracking
 ```
 
 ## Conventions Claude must follow
@@ -72,7 +79,7 @@ Observed in remote: `<author>_<MMDD>_<topic>`, e.g. `bella_0504_add_skills`, `fe
 4. **Give context and test instructions in the description.** Why the change exists, dependencies it needs, and exact steps to reproduce/test.
 5. **Link issues with `Closes #N` / `Fixes #N`** so they auto-close on merge and cross-link.
 6. **Use graphics and GitHub markdown** — screenshots/recordings for visual changes, fenced code blocks with language, tables, collapsible sections, mermaid diagrams.
-7. **Add tests when the codebase supports them** — especially for bug fixes (red on `main`, green on the branch). For this repo, that means updating or extending `tests/auto_test_instructions.md` and `tests/issue_tracking/` when behavior changes.
+7. **Add tests when the codebase supports them** — especially for bug fixes (red on `main`, green on the branch). For this repo, that means updating or extending `tests/auto_test_cases.yaml`, mirroring reviewer-facing changes in `tests/auto_test_instructions.md`, and recording run evidence under `tests/results/` or issue notes under `tests/issue_tracking/` when behavior changes.
 8. **Self-review before assigning a reviewer.** Run `bash .claude/skills/imf-ra/scripts/check_references.sh`, click "Viewed" on every file in the GitHub diff, remove debug output, and leave inline comments for non-obvious choices.
 
 ## Gotchas
