@@ -54,7 +54,14 @@ Disallowed retrieval paths include (non-exhaustive):
 
 ## Python-only scope
 
-This skill is Python-focused. Do not generate R or Stata workflows unless the user explicitly asks.
+This skill's supported and tested fetch workflow is Python-only through the pre-built `fetch_idata.py` utility. Do not present R or Stata as a supported RA-skill retrieval path.
+
+If the user explicitly asks for R or Stata code:
+
+1. Acknowledge the requested language.
+2. Explain that this RA skillset only validates the Python/iData workflow.
+3. Provide the confirmed identifier tuple and supported `fetch_idata.py` command when possible.
+4. Only provide R or Stata as an external, unvalidated sketch when the user explicitly asks to proceed outside the supported RA workflow, and label it clearly as unvalidated.
 
 ## CLI Fetch Protocol
 

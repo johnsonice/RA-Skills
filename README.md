@@ -49,7 +49,9 @@ Drop any of these into Claude Code from inside the repo:
 - *"Download IFS exchange rates monthly for ASEAN, 2015–present."*
 - *"Use the April 2024 WEO vintage for nominal GDP."*
 
-More patterns in [`tests/auto_test_instructions.md`](tests/auto_test_instructions.md).
+More patterns live in the YAML-first auto-test pack:
+[`tests/auto_test_cases.yaml`](tests/auto_test_cases.yaml) is the machine-readable source of truth, and
+[`tests/auto_test_instructions.md`](tests/auto_test_instructions.md) is the reviewer-facing catalog.
 
 ## Quick start
 
@@ -66,9 +68,12 @@ Skills live under `.claude/skills/` and are **project-local** — Claude Code au
 ```bash
 bash .claude/skills/imf-ra/scripts/check_references.sh
 # Expected: OK: all skills found, all references resolve.
+
+python3 tests/check_referenced_files.py
+# Expected: OK: checked ... file reference(s) across ... active file(s).
 ```
 
-Behavioral test pack: [`tests/auto_test_instructions.md`](tests/auto_test_instructions.md). Run logs: [`tests/issue_tracking/`](tests/issue_tracking/).
+Behavioral test pack: [`tests/auto_test_cases.yaml`](tests/auto_test_cases.yaml) defines prompts, fixtures, evidence files, and assertions for routing, catalog, data workflow, helper-contract, and end-to-end checks. [`tests/auto_test_instructions.md`](tests/auto_test_instructions.md) mirrors the same cases for human review. Run records and templates live under [`tests/results/`](tests/results/); issue notes live under [`tests/issue_tracking/`](tests/issue_tracking/).
 
 > **Windows:** run the verify script from **Git Bash** or **WSL** — the shebang is LF-pinned and PowerShell/`cmd` won't execute it.
 
@@ -83,6 +88,6 @@ RA-Skills/
 │   └── imf-ra-charts/      # chart handoff (scaffold)
 ├── docs/specs/             # design docs
 ├── docs/plans/             # implementation history
-├── tests/                  # auto-test instructions + issue tracking
+├── tests/                  # YAML auto-test cases, reviewer catalog, results, issue tracking
 └── CLAUDE.md               # agent conventions for this repo
 ```
