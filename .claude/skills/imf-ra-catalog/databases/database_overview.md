@@ -29,6 +29,21 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 2. **Commodity prices:** Unit prices and price indices for energy, metals, food, beverages, agricultural raw materials, and other commodities.
 3. **Forecast-oriented series:** Historical and projected values for major macroeconomic variables used in WEO analysis.
 
+## Global Assumptions (GAS) Live
+- **Database:** `IMF.RES.GAS:GAS_LIVE`
+
+**Overview:** GAS Live is a broad macroeconomic, financial, external-sector, exchange-rate, and commodity statistics dataset used for global monitoring and analytical assumptions. Entries are indicator-level series under the `INDICATOR` dimension.
+
+**Key content:**
+
+1. **Macroeconomic activity:** GDP, real GDP growth, GDP deflators, and domestic demand indicators, including `NGDP_R`, `NGDP_USD`, `NGDP_D`, and `NTDD_R`.
+2. **Prices and inflation:** Consumer price and price-level measures, including `PCPI`, `PCPI_PCH`, `NGDP_D`, and `NGDP_D_PCH`.
+3. **External sector and trade:** Export, import, trade-volume, and trade-price indicators, including `TXG`, `TXG_D`, `TXGM_D`, `TM_R`, and `TOTXM_R`.
+4. **Financial conditions:** Policy rates, SDR rates, risk-free rates, bond yields, and LIBOR-style indicators, including `FISDR`, `FPOLM`, `FIRF`, `FIST`, `FIGB`, `FIPIBOR`, and `FILIBOR`.
+5. **Exchange rates and competitiveness:** Bilateral, SDR, end-of-period, nominal effective, and real effective exchange rates, including `ENDA`, `EDNA`, `ESDA`, `EDSA`, `ENDE`, `EDNE`, `ENEER_ULC`, and `EREER_ULC`.
+6. **Commodity price aggregates:** Broad energy, non-fuel, agriculture, metals, and food commodity indexes, including `PZPIW`, `PZPINFW`, `PZPINRGW`, `PZPIAGRW`, `PZPIMETW`, and `PZPIFW`.
+7. **Detailed commodity prices:** Energy, metals and minerals, agricultural and food products, and industrial inputs such as oil, natural gas, coal, copper, gold, wheat, coffee, sugar, fertilizers, rubber, wool, and timber.
+
 ## Global Economic Environment (GEE) Live
 - **Database:** `IMF.RES.GEE:GEE_LIVE`
 
@@ -61,7 +76,7 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 - **Legacy source:** IFS in the old EcOS data system.
 - **iData status:** Discontinued as a single iData dataset; data by topic remains.
 
-**Overview:** After migration from EcOS to iData, IFS should not be treated as one database/dataflow. When a user asks for "IFS" data, route the request to the relevant iData topic dataset instead of searching for a single IFS dataset. Use the catalog indicator files to confirm the exact database, dimension, and code.
+**Overview:** After migration from EcOS to iData, IFS should be treated as a legacy source family rather than a single iData database. Current iData coverage is split across topic datasets; use `SKILL.md` for the operational routing policy.
 
 **Topic datasets replacing legacy IFS coverage:**
 

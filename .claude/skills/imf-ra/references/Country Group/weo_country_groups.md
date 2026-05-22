@@ -38,6 +38,18 @@ Important pull rule: do not use `groupcode` or `groupcode_s` as the country valu
 - To list groups that include a country, use `csv/3. country_group_composition.csv`.
 - To answer exact membership questions, prefer `csv/3. country_group_composition.csv` over inferred logic.
 
+## Lookup Execution Policy
+
+For WEO country and group questions, follow this policy:
+
+1. Classify the task shape: exact lookup, fuzzy lookup, membership expansion, comparison, handoff preparation, validation, or data-pull setup.
+2. Answer directly from the reference CSV/Markdown only for exact, small lookups.
+3. For fuzzy, repeated, comparative, expansion, validation, or handoff tasks, check the helper command map before writing code.
+4. Resolve ambiguous terms before running a helper. If multiple plausible matches exist, list candidates with codes and ask for confirmation before committing.
+5. Use the most specific existing helper command for the task.
+6. Write temporary code only when no helper command covers the task.
+7. If a temporary-code pattern appears repeatedly, promote it into a helper command later.
+
 ## Group Types
 
 `csv/2. country_groups.csv` contains these group categories:
@@ -53,7 +65,7 @@ Important pull rule: do not use `groupcode` or `groupcode_s` as the country valu
 
 ## Common Aliases
 
-Normalize common RA shorthand before searching or using the helper script.
+Use exact codes when available. Otherwise use documented or helper-supported aliases, and return candidates when a phrase is ambiguous.
 
 | User wording | Preferred WEO query |
 |---|---|
@@ -80,24 +92,41 @@ WEO and SPR do not always use the same EM/LIC grouping definitions:
 | Concept | WEO group | SPR/PRGT group |
 |---|---|---|
 | Advanced Economies | `G110` | `G110` |
-| Developing Economies / EM | `G1201` in some WEO group contexts; `G200` is commonly used for EMDEs | `G-PRGT-EM` |
-| Low-Income Countries / LIC | `G201` | `GPRGT_LIC` |
+| Developing Economies / EM | `G1201` | `G-PRGT-EM` |
+| Low-Income Countries / LIC | `G201` | `G-PRGT-LIC` |
+| EMDE | `G200` | `G-PRGT-EM` + `G-PRGT-LIC` |
 
-If the user asks for EM, LIC, LIDC, PRGT, or developing-economy coverage without specifying WEO vs SPR, ask for clarification before committing to a group. This distinction is important because the membership can differ by framework.
+Emerging Market and Developing Economies (EMDE) = EM + LIC.  
+World = AE + EM + LIC.  
+Syria is covered in the SPR/PRGT framework but excluded in the WEO framework.
+
+If the user asks for EM, LIC, LIDC, PRGT, or developing-economy coverage without specifying WEO vs SPR/PRGT, ask which framework they mean before committing to a group. This distinction is important because membership can differ by framework.
 
 ## Helper Script Usage
 
-Use `scripts/weo_country_groups.py` only as a convenience helper for ambiguous, repeated, or processing-heavy lookups. The CSV files remain the source of truth.
+Use `scripts/weo_country_groups.py` as a convenience helper for ambiguous, repeated, or processing-heavy lookups. When the helper has a command matching the task shape, prefer it over writing temporary Python. The CSV files remain the source of truth.
 
 Before running the helper, normalize the user's wording to a canonical WEO code or exact English label when possible. Do not pass raw non-English text, empty text, or highly informal wording directly to the helper.
+
+| User task | Preferred command |
+|---|---|
+| Find country or group candidates for an ambiguous term | `resolve <query>` |
+| Explain RA shorthand such as EM, LIC, EMDE, AE | `explain <term>` |
+| List countries in a group | `members <group>` |
+| Compare two group definitions | `compare <group_a> <group_b>` |
+| Expand a group to iData country selectors | `expand-for-idata <group> --codes-only` |
+| List groups containing a country | `memberships <country>` |
+| Search group metadata | `groups <query>` |
+| Search country metadata | `countries <query>` |
 
 Examples:
 
 ```bash
-python3 .claude/skills/imf-ra/scripts/weo_country_groups.py groups "advanced economies"
-python3 .claude/skills/imf-ra/scripts/weo_country_groups.py countries CHN
+python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
+python3 .claude/skills/imf-ra/scripts/weo_country_groups.py explain EM
 python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
-python3 .claude/skills/imf-ra/scripts/weo_country_groups.py memberships USA
+python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC
+python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
 ```
 
 ## Output Guidance
@@ -105,5 +134,3 @@ python3 .claude/skills/imf-ra/scripts/weo_country_groups.py memberships USA
 For country matches, return `countrycode`, `countryname`, and any relevant distinction note.
 
 For group matches, return `groupcode`, `groupname`, `groupcode_s` when useful, and a note explaining whether the group is WEO, SPR/PRGT, regional, or analytical.
-
-For data-pull handoff, pass selected `countrycode` values or a confirmed dataset-supported aggregate code. Do not hand off `groupcode` as the country selector for iData pulls.

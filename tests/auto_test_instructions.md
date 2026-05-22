@@ -170,7 +170,8 @@ support the prompt-level cases.
 | CONTRACT-03 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"` | WEO Live real GDP growth search returns `NGDP_RPCH`. |
 | CONTRACT-04 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only` | Vintage search returns only vintage-style WEO resources. |
 | CONTRACT-05 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110` | WEO group helper expands advanced economies to member countries. |
-| CONTRACT-06 | `python3 tests/check_referenced_files.py` | Active file references resolve; missing targets include source lines and likely filename suggestions. |
+| CONTRACT-06 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC` | WEO/SPR-PRGT group comparison returns counts and only-in-each-group rows. |
+| CONTRACT-07 | `python3 tests/check_referenced_files.py` | Active file references resolve; missing targets include source lines and likely filename suggestions. |
 
 ### End To End
 

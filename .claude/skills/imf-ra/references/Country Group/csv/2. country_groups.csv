@@ -48,5 +48,5 @@ WEO Analytical Groups,G089,EMDEs by Source of Export Earnings: Primary Products 
 WEO Analytical Groups,G084,"EMDEs by Source of Export Earnings: Services (including Income, Transfers)",84,"Emerging Market and Developing Economies by Source of Export Earnings: Services (including Income, Transfers)"
 WEO Analytical Groups,GX88,Emerging Market and Developing Economies by External Financing: Net Debtors without Arrears and/or Rescheduling During 2019-23,88,Emerging Market and Developing Economies by External Financing: Net Debtors without Arrears and/or Rescheduling During 2019-23
 WEO Analytical Groups,GX93,Emerging Market and Developing Economies by Source of Export Earnings: Nonfuel (excl. China),93,Emerging Market and Developing Economies by Source of Export Earnings: Nonfuel (excl. China)
-SPR,GPRGT_LIC,Low income country under PRGT,PRGT_LIC,Low income country under PRGT
-SPR,GPRGT_EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT_EM,Emerging Market and Middle-Income Economies under PRGT classification
+SPR,G-PRGT-LIC,Low income country under PRGT,PRGT-LIC,Low income country under PRGT
+SPR,G-PRGT_EM,Emerging Market and Middle-Income Economies under PRGT classification,PRGT_EM,Emerging Market and Middle-Income Economies under PRGT classification
