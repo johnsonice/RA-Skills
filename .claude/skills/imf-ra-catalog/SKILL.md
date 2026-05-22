@@ -51,13 +51,19 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 | `indicators/3. wdi_variable_list.csv` | World Bank WDI variable catalog. Use when the user requests WDI or `WB:WDI`. |
 | `indicators/4. wto_variable_List.csv` | WTO variable catalog. Use when the user requests WTO goods, tariff, or commodity codes. |
 
+### Maintenance Reference
+
+| File | Purpose |
+|---|---|
+| `references/catalog_schema_and_maintenance.md` | CSV column schemas and catalog maintenance conventions. Not needed for ordinary lookup unless schema details are unclear. |
+
 ## Default Selection Policy
 
 1. Default to non-vintage datasets.
 2. Use vintage datasets only when the user explicitly asks for a vintage, historical publication, dated snapshot, or versioned release.
 3. For WEO-style macroeconomic concepts, begin with non-vintage `IMF.RES.WEO:WEO_LIVE` unless the user asks for another source or the concept is clearly outside WEO coverage.
 4. Do not silently replace non-vintage `WEO_LIVE` with a dated WEO vintage. If the user asks for a WEO vintage but does not specify one, ask whether they want the latest available WEO Live vintage or a specific historical vintage.
-5. Search all databases only when WEO Live, GAS live and other highlighted databases in `database_overview.md` lack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
+5. Search all databases only when WEO Live, GAS Live, and other highlighted databases in `database_overview.md` lack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
 6. Use database-specific indicator files for Bloomberg, WDI, and WTO requests rather than the general non-vintage variable list.
 
 ## Legacy IFS Requests

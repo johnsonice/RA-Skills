@@ -1643,10 +1643,32 @@ cases:
       required:
         - group_helper_expands_G110_members
         - group_helper_uses_country_group_composition
+
+  - id: CONTRACT-06
+    category: helper_contract
+    type: command_contract
+    area: WEO vs SPR/PRGT group comparison
+    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Compares WEO low-income developing countries against SPR/PRGT low-income
+      countries and returns answer-ready counts plus only-in-each-group rows.
+    expected_stdout_contains:
+      - "group_a: G201"
+      - "group_b: G-PRGT-LIC"
+      - "only_in_group_a: 1"
+      - "NGA"
+      - "only_in_group_b: 13"
+      - "SYR"
+    assertions:
+      required:
+        - group_helper_compares_membership_sets
+        - group_helper_reports_only_in_each_group
       forbidden:
         - group_helper_returns_only_groupcode_without_members
 
-  - id: CONTRACT-06
+  - id: CONTRACT-07
     category: helper_contract
     type: command_contract
     area: Active referenced-file consistency
