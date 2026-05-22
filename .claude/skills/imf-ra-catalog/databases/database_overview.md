@@ -1,9 +1,36 @@
 # Database Overview
 
-This file summarizes commonly used non-vintage datasets. Metadata fields are aligned with `non_vintage_datasets.csv`.
+## Purpose
+
+This file is a source-selection guide for commonly used catalog database families. It helps agents understand broad coverage and plausible source choices before looking up exact identifiers.
+
+This is not an operational routing policy. Use `../SKILL.md` and `../scripts/catalog_search.py` for routing decisions, helper commands, ambiguity handling, and handoff rules.
+
+CSV catalogs remain the source of truth for identifiers. Metadata fields here are aligned with `non_vintage_datasets.csv`.
+
+## How to Use
+
+1. Use this overview to identify plausible database families.
+2. Use `../scripts/catalog_search.py explain-source`, `search`, or `resolve` for operational lookup.
+3. Use the dataset and indicator CSVs to confirm exact `database`, `dimension_name`, and `code` values.
+
+## At a Glance
+
+| Database | Status | Best for |
+|---|---|---|
+| `IMF.RES.WEO:WEO_LIVE` | Default non-vintage WEO source | WEO-style macro concepts, national accounts, prices, fiscal, external, and higher-frequency WEO variants. |
+| `IMF.RES:WEO` | Legacy/explicit-use WEO source | Compact legacy WEO requests or explicit `IMF.RES:WEO` references. |
+| `IMF.RES.GAS:GAS_LIVE` | Non-vintage source | Global assumptions, macro-financial variables, exchange rates, commodity assumptions, and financial conditions. |
+| `IMF.RES.GEE:GEE_LIVE` | Non-vintage source | Trade-weighted partner demand, output, prices, costs, and competitiveness measures. |
+| `IMF.STA:BOP` | Non-vintage source | BPM6 balance of payments indicators, current account, capital account, financial account, and reserve assets. |
+| IFS legacy family | Legacy source hint | Old EcOS IFS requests that must be routed to replacement iData topic databases. |
+| `IMF.CSF:BBGDL` | Specialized catalog | Bloomberg tickers and market-data fields. |
+| `WB:WDI` | Specialized catalog | World Bank development indicators. |
+| `WTO:WTOIMFTT` | Specialized catalog | WTO-IMF Tariff Tracker HS commodity codes and tariff/goods-trade classifications. |
 
 ## World Economic Outlook (WEO) Live
 - **Database:** `IMF.RES.WEO:WEO_LIVE`
+- **Status:** Default non-vintage WEO source.
 
 **Overview:** WEO Live is the more granular World Economic Outlook dataset. It contains more than 350 indicators across national accounts, prices, labor markets, monetary variables, fiscal accounts, trade, balance of payments, international investment position, and external debt. It includes annual and higher-frequency series, with quarterly, seasonally adjusted, quarter-over-quarter annualized, and year-over-year percent-change variants where available.
 
@@ -20,6 +47,7 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 
 ## World Economic Outlook (WEO)
 - **Database:** `IMF.RES:WEO`
+- **Status:** Legacy/explicit-use WEO resource. Do not use as the default WEO source; prefer `IMF.RES.WEO:WEO_LIVE` unless the user explicitly requests `IMF.RES:WEO`.
 
 **Overview:** WEO provides a compact set of core macroeconomic indicators, typically at annual frequency, alongside extensive commodity price data. It is useful for country-level macro analysis, projections, and cross-country comparison.
 
@@ -31,6 +59,7 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 
 ## Global Assumptions (GAS) Live
 - **Database:** `IMF.RES.GAS:GAS_LIVE`
+- **Status:** Non-vintage source.
 
 **Overview:** GAS Live is a broad macroeconomic, financial, external-sector, exchange-rate, and commodity statistics dataset used for global monitoring and analytical assumptions. Entries are indicator-level series under the `INDICATOR` dimension.
 
@@ -46,6 +75,7 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 
 ## Global Economic Environment (GEE) Live
 - **Database:** `IMF.RES.GEE:GEE_LIVE`
+- **Status:** Non-vintage source.
 
 **Overview:** GEE Live provides trade-weighted foreign output, demand, trade volume, price, cost, and commodity-price indicators. The composites are calculated for each country as weighted averages of trading-partner data, using bilateral trade shares as weights.
 
@@ -61,6 +91,7 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 
 ## Balance of Payments (BOP)
 - **Database:** `IMF.STA:BOP`
+- **Status:** Non-vintage source.
 
 **Overview:** BOP is the IMF Balance of Payments Statistics database. It follows the BPM6 framework and provides a comprehensive catalog of balance of payments indicators covering the current account, capital account, financial account, aggregate balances, and exceptional financing items.
 
@@ -104,6 +135,7 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 
 ## Bloomberg Data License
 - **Database:** `IMF.CSF:BBGDL`
+- **Status:** Specialized catalog.
 
 **Overview:** Bloomberg Data License is an internal Bloomberg market-data feed covering tickers across major asset classes and geographies. Entries are identified by Bloomberg ticker codes and descriptive names, with standard Bloomberg suffixes such as `_EQUITY`, `_GOVT`, `_CORP`, `_CURNCY`, `_INDEX`, and `_COMDTY`.
 
@@ -119,6 +151,7 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 
 ## World Development Indicators
 - **Database:** `WB:WDI`
+- **Status:** Specialized catalog.
 
 **Overview:** World Development Indicators is the World Bank's broad development statistics database. It covers countries worldwide and includes hundreds of indicators on economic conditions, public finance, finance, environment, health, education, labor markets, poverty, governance, and demographics.
 
@@ -135,6 +168,7 @@ This file summarizes commonly used non-vintage datasets. Metadata fields are ali
 
 ## WTO-IMF Tariff Tracker
 - **Database:** `WTO:WTOIMFTT`
+- **Status:** Specialized catalog.
 
 **Overview:** WTO-IMF Tariff Tracker contains detailed internationally traded goods classifications based on 6-digit Harmonized System commodity codes. It supports analysis of tariffs and goods trade across broad product groups.
 

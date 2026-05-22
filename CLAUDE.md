@@ -24,6 +24,17 @@ bash .claude/skills/imf-ra/scripts/check_references.sh
 python3 .claude/skills/imf-ra/scripts/weo_country_groups.py groups "advanced economies"
 python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
 python3 .claude/skills/imf-ra/scripts/weo_country_groups.py memberships USA
+
+# Catalog indicator/code discovery (use before writing temporary lookup code)
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth"
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States"
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "GDP per capita" --database WB:WDI
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
 ```
 
 Run the verify script after editing any `SKILL.md` or reference path.
@@ -56,8 +67,8 @@ tests/        # YAML auto-test cases, reviewer catalog, results, issue tracking
 
 ## Conventions Claude must follow
 
-- **CSVs are source of truth.** For dataset, variable/code, dimension, and WEO country-group questions, read the CSVs directly — don't recall from memory.
-- **No code for simple lookups.** If a reference CSV answers it, answer from the CSV. Use Python only for aggregation, joins, ambiguous resolution, or repeated filtering.
+- **CSVs are source of truth.** For dataset, variable/code, dimension, and WEO country-group questions, use the repo references and helper commands — don't recall from memory.
+- **Prefer existing helpers.** For catalog indicator/code discovery, routing, exact code lookup, dimension discovery, database classification, and code comparison, run the relevant `catalog_search.py` command before writing temporary Python. Use direct CSV reads for exact confirmation; use new code only when no helper command covers the task.
 - **Don't guess identifiers.** Database codes, variable codes, country groups, dimensions — never invent. If multiple plausible matches exist, list candidates and ask for confirmation.
 - **LIVE vs vintage data must be honored explicitly** — see `imf-ra-data/SKILL.md`.
 - **Skill family is project-local.** Edits to `.claude/skills/` only affect work in this repo. No global install.

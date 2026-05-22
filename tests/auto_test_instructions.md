@@ -169,6 +169,30 @@ These cases are deterministic command checks. Run them before or alongside
 behavioral tests to make sure helper scripts and canonical filenames still
 support the prompt-level cases.
 
+Catalog helper coverage is designed around query shape, not only one known
+indicator. The helper should support:
+
+| Query type | Example command | What the test verifies |
+|---|---|---|
+| Exact dataset lookup | `catalog_search.py latest-weo` | Quick lookup returns WEO Live from the non-vintage catalog. |
+| Vintage dataset listing | `catalog_search.py datasets WEO --vintage-only` | Explicit vintage searches use the vintage catalog and exclude plain WEO Live. |
+| Default fuzzy macro search | `catalog_search.py search "real GDP growth"` | WEO Live is searched first and `NGDP_RPCH` is ranked as the answer-ready candidate. |
+| Broad fuzzy search | `catalog_search.py search "current account balance" --all-databases` | Cross-database ambiguity is preserved across WEO, BOP, WDI, and related sources. |
+| Source routing | `catalog_search.py explain-source "IFS CPI for the United States" --json` | Legacy/source-family wording is classified before indicator search. |
+| Routed topic search | `catalog_search.py search "IFS CPI for the United States"` | The designed route is executed against the replacement CPI database. |
+| Common topic search | `catalog_search.py search "monthly exchange rate Japan"` | Exchange-rate wording routes to `IMF.STA:ER` without temporary code. |
+| Strict resolution | `catalog_search.py resolve "real GDP growth" --json` | A single `handoff` tuple is returned only when the ranked result is safe. |
+| Ambiguity preservation | `catalog_search.py resolve "GDP per capita" --database WB:WDI --json` | Plausible WDI variants and a `clarification` prompt are returned instead of silently selecting one. |
+| WEO vintage handoff | `catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json` | WEO vintage requests preserve the vintage database while using WEO Live indicator metadata. |
+| Specialized WDI search | `catalog_search.py search "GDP per capita" --database WB:WDI` | WDI-specific `SERIES` rows are used. |
+| Specialized Bloomberg search | `catalog_search.py search "10-year government bond yield" --database IMF.CSF:BBGDL` | Bloomberg `TICKER` rows are used. |
+| Specialized WTO search | `catalog_search.py search "wheat" --database WTO:WTOIMFTT` | WTO `COMMODITY` rows are used. |
+| Machine-readable handoff | `catalog_search.py resolve "real GDP growth" --json` | JSON includes route metadata, ranked candidates, and a handoff object when resolved. |
+| Exact code lookup | `catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE` | Exact code metadata is returned without fuzzy inference. |
+| Dimension discovery | `catalog_search.py dimensions IMF.STA:CPI` | Non-`INDICATOR` dimensions are exposed with counts and examples. |
+| Database classification | `catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE` | LIVE/vintage classification is explicit. |
+| Code comparison | `catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE` | Known-code variants are compared with answer-ready distinctions. |
+
 | ID | Command | Purpose |
 |---|---|---|
 | CONTRACT-01 | `bash .claude/skills/imf-ra/scripts/check_references.sh` | Active skill references resolve. |
@@ -181,6 +205,23 @@ support the prompt-level cases.
 | CONTRACT-08 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py explain EM` | Framework-sensitive shorthand explanation returns WEO and SPR/PRGT codes. |
 | CONTRACT-09 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only` | Group expansion returns iData-ready member country codes. |
 | CONTRACT-10 | `python3 tests/check_referenced_files.py` | Active file references resolve; missing targets include source lines and likely filename suggestions. |
+| CONTRACT-11 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json` | Legacy IFS CPI routes to `IMF.STA:CPI`. |
+| CONTRACT-12 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "IFS CPI for the United States"` | Routed CPI search returns `IMF.STA:CPI` candidates. |
+| CONTRACT-13 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan"` | Exchange-rate wording routes to `IMF.STA:ER`. |
+| CONTRACT-14 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "current account balance" --all-databases` | Broad fuzzy search preserves cross-database candidates. |
+| CONTRACT-15 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json` | Strict resolve returns WEO Live `NGDP_RPCH`. |
+| CONTRACT-16 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json` | Strict resolve preserves WDI variant ambiguity. |
+| CONTRACT-17 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "GDP per capita" --database WB:WDI` | WDI-specific search returns `SERIES` rows. |
+| CONTRACT-18 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "10-year government bond yield" --database IMF.CSF:BBGDL` | Bloomberg-specific search returns `TICKER` rows. |
+| CONTRACT-19 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "wheat" --database WTO:WTOIMFTT` | WTO-specific search returns `COMMODITY` rows. |
+| CONTRACT-20 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "financial soundness regulatory capital risk weighted assets" --all-databases` | Fuzzy FSI search returns capital-adequacy candidates. |
+| CONTRACT-21 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json` | Resolve emits machine-readable route, candidates, and handoff records. |
+| CONTRACT-22 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE` | Exact code lookup returns the WEO Live handoff tuple. |
+| CONTRACT-23 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI` | Dimension discovery returns `INDEX_TYPE` examples. |
+| CONTRACT-24 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE` | Database classification identifies a WEO vintage. |
+| CONTRACT-25 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE` | Code comparison distinguishes period-average vs end-of-period CPI inflation. |
+| CONTRACT-26 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json` | WEO vintage resolution returns the vintage database, the matched WEO Live indicator source, and `NGDPD`. |
+| CONTRACT-27 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json` | Ambiguous WDI resolution returns candidate variants plus a clarification prompt. |
 
 ### End To End
 

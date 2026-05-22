@@ -68,34 +68,14 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 
 ## Legacy IFS Requests
 
-`IFS` no longer exists as a single iData dataset. It was the legacy International Financial Statistics dataset in the old EcOS data system. After migration from EcOS to iData, its coverage was split into smaller topic datasets.
+For background on IFS migration and replacement topic coverage, see `databases/database_overview.md`.
 
 When a user asks for "IFS" data:
 
-1. Tell the user that `IFS` no longer exists as a single iData dataset.
-2. Treat `IFS` as a legacy source hint, not as the target database.
-3. Use `database_overview.md`, `non_vintage_datasets.csv`, and `indicators/1. non_vintage_variable_list.csv` to find the replacement iData topic dataset and exact indicator.
+1. Treat `IFS` as a legacy source hint, not as the target database.
+2. Run `scripts/catalog_search.py explain-source "<request>"` to identify the replacement topic database.
+3. Search the routed replacement database for the exact `dimension_name` and `code`.
 4. In the result, explicitly name the replacement database where the required indicator was found.
-
-Common replacement routing:
-
-| Legacy IFS topic requested | Search/target replacement database |
-|---|---|
-| CPI, consumer prices, inflation index | `IMF.STA:CPI` |
-| Exchange rates | `IMF.STA:ER` |
-| Effective exchange rates, REER, NEER | `IMF.STA:EER` |
-| Interest rates, money, monetary aggregates, financial corporations | `IMF.STA:MFS_IR`, `IMF.STA:MFS_MA`, `IMF.STA:MFS_CBS`, `IMF.STA:MFS_DC`, `IMF.STA:MFS_ODC`, `IMF.STA:MFS_OFC`, or `IMF.STA:MFS_FC` |
-| National accounts, GDP, expenditure components | `IMF.STA:ANEA` or `IMF.STA:QNEA` |
-| Balance of payments, current account | `IMF.STA:BOP` |
-| International investment position | `IMF.STA:IIP` or `IMF.STA:IIPCC` |
-| International liquidity, reserves | `IMF.STA:IL` |
-| Goods trade | `IMF.STA:ITG` or `IMF.STA:IMTS` |
-| Producer prices | `IMF.STA:PPI` |
-| Production indexes / former IPI | `IMF.STA:PI` |
-| Government finance, quarterly fiscal data | `IMF.STA:QGFS` |
-| Labor force statistics | `IMF.STA:LS` |
-| Fund accounts | `IMF.STA:FA` |
-| Special purpose entities | `IMF.STA:SPE` |
 
 For IFS requests, include an IFS migration note in the final answer. Example:
 
@@ -107,21 +87,57 @@ code: <code>
 name: <name>
 ```
 
+## Task Shape Routing
+
+Before choosing files, helper commands, or temporary code, classify the catalog task shape:
+
+| Task shape | Examples | Preferred action |
+|---|---|---|
+| Exact small lookup | "What is `NGDP_RPCH`?", "What database is `IMF.RES.WEO:WEO_LIVE`?" | Use `catalog_search.py code` or `classify-database`, or answer directly from the relevant CSV/Markdown row. |
+| Fuzzy indicator lookup | "real GDP growth", "nominal GDP in USD", "bank capital adequacy" | Use `catalog_search.py search` or `resolve` before writing code. |
+| Source routing | "IFS CPI", "World Bank GDP per capita", "Bloomberg 10-year yield" | Use `catalog_search.py resolve` when an indicator is needed, or `explain-source` when only the source route is needed. |
+| Dimension discovery | "What dimension does CPI use?", "Is WDI `SERIES` or `INDICATOR`?" | Use `catalog_search.py dimensions` and preserve the returned `dimension_name`. |
+| Variant comparison | "WEO inflation vs CPI", "PCPI_PCH vs PCPIE_PCH" | Use `catalog_search.py compare-codes`, compare unit/transformation/basis, and ask if the intended variant is unclear. |
+| Vintage classification | "latest WEO data", "April 2024 WEO vintage", "`*_VINTAGE`" | Use `resolve` for vintage indicator requests, `datasets --vintage-only` for listing vintages, and `classify-database` for exact database checks. |
+| Handoff preparation | "find the code and download it", "use this for iData" | Use `resolve`; hand off only when it returns `status=resolved` and a `handoff` object. |
+| Validation | "does this code exist?", "is this database live or vintage?" | Validate against the source CSVs or the most specific helper command. |
+
+Decision rules:
+
+1. Answer directly from reference CSV/Markdown only for exact, small lookups.
+2. For fuzzy, repeated, comparative, source-routing, validation, vintage, or handoff tasks, use the most specific `scripts/catalog_search.py` command before writing code.
+3. Resolve ambiguous terms before committing to a result. If multiple plausible matches exist, list candidates with codes and ask for confirmation.
+4. Write temporary code only when no helper command covers the task.
+5. If a temporary-code pattern appears repeatedly, promote it into `scripts/catalog_search.py`.
+
 ## Lookup Workflow
 
-1. **Parse the request.** Identify the concept, preferred database, unit, transformation, frequency, geography, and vintage requirement when available.
-2. **Select a dataset.** Use `non_vintage_datasets.csv` by default, `vintage_datasets.csv` only for explicit vintage requests, and `database_overview.md` for high-level source selection.
-3. **Select the indicator file.** Choose the general non-vintage indicator list or the specific Bloomberg, WDI, or WTO list based on the dataset family.
-4. **Find candidate codes.** Search within the selected indicator file for exact names, close wording, aliases, and source-specific terminology.
-5. **Preserve dimensions.** Always carry through `dimension_name`; do not assume the code dimension is `INDICATOR`.
-6. **Resolve ambiguity.** Compare candidates by unit, transformation, valuation, frequency, price basis, and database coverage.
-7. **Return the result.** Commit to a single identifier only when the match is exact and unambiguous. Otherwise, return a short candidate list and ask for confirmation.
+1. **Classify the task shape.** Decide whether the request is an exact lookup, fuzzy indicator lookup, source-routing question, variant comparison, vintage classification, validation, or handoff preparation.
+2. **Parse the request.** Identify the concept, preferred database, unit, transformation, frequency, geography, and vintage requirement when available.
+3. **Select a dataset.** Use `non_vintage_datasets.csv` by default, `vintage_datasets.csv` only for explicit vintage requests, and `database_overview.md` for high-level source selection.
+4. **Select the indicator file.** Choose the general non-vintage indicator list or the specific Bloomberg, WDI, or WTO list based on the dataset family.
+5. **Find candidate codes.** Search within the selected indicator file for exact names, close wording, aliases, and source-specific terminology.
+6. **Preserve dimensions.** Always carry through `dimension_name`; do not assume the code dimension is `INDICATOR`.
+7. **Resolve ambiguity.** Compare candidates by unit, transformation, valuation, frequency, price basis, and database coverage.
+8. **Return the result.** Commit to a single identifier only when the match is exact and unambiguous. Otherwise, return a short candidate list and ask for confirmation.
 
-## Use of Helper Scripts
+## Helper Responsibility
 
-Inspect CSV and Markdown files directly for straightforward requests. Use code only when manual review is unreliable, such as broad search across many rows, repeated filtering, ranking, joins, or explicit vintage comparisons.
+Use `scripts/catalog_search.py` as the operational lookup engine for catalog work. The helper owns mechanical lookup tasks that are easy to get wrong by hand:
 
-Before using `scripts/catalog_search.py`, first map the user's wording to terminology that appears in the catalog. The helper should accelerate a source-aligned lookup, not invent indicator logic.
+- Route plain-English requests to the right source family: WEO Live, WEO vintage, legacy IFS replacement topic databases, WDI, Bloomberg, WTO, or broad all-database search.
+- Select the right indicator catalog file for the routed database.
+- Reuse WEO Live indicator metadata for WEO vintage databases while preserving the requested vintage database in output.
+- Rank fuzzy candidates across large CSVs using catalog terminology and synonym expansion.
+- Preserve `dimension_name`; never assume all databases use `INDICATOR`.
+- Stop on ambiguity and return candidate records plus a clarification prompt.
+- Assemble a handoff-ready payload with `database`, `dimension_name`, `code`, `name`, and notes when `resolve` can safely commit.
+
+The helper does not fetch data, expand country groups, choose date ranges, transform series, or build charts. Those responsibilities belong to `imf-ra-data`, the umbrella WEO country-group helper, or `imf-ra-charts`.
+
+Inspect CSV and Markdown files directly only for exact one-row confirmation, schema questions, or curated database guidance. Use helper commands for broad search, fuzzy ranking, source routing, validation, explicit vintage handling, or any lookup over large indicator catalogs.
+
+Before using `scripts/catalog_search.py`, map the user's wording to terminology that appears in the catalog. The helper should accelerate a source-aligned lookup, not invent indicator logic.
 
 Common helper commands:
 
@@ -131,7 +147,32 @@ python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO_LIV
 python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
 python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
 python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "current account balance" --all-databases
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States"
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP" --database IMF.RES.WEO:WEO_LIVE
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "GDP per capita" --database WB:WDI
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "10-year government bond yield" --database IMF.CSF:BBGDL
+python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "wheat" --database WTO:WTOIMFTT
 ```
+
+Command contracts:
+
+| Command | Use when | Output guarantee |
+|---|---|---|
+| `search` | Ranked candidates are needed for inspection. | Ranked candidates with `database_name`, `dimension_name`, `code`, and `name`; JSON includes route and summary metadata. |
+| `resolve` | A single handoff identifier is needed. | `status` is `resolved`, `ambiguous`, or `no_match`; JSON includes `handoff` only when safe to commit and `clarification` when ambiguous. |
+| `explain-source` | Source family or legacy routing is unclear. | Returns `routed`, `default`, or `needs_more_context` plus the next search step. |
+| `code` | The user already has a code. | Returns exact code matches without fuzzy inference. |
+| `dimensions` | The required code dimension is unclear. | Returns dimension names, counts, and example codes for a database. |
+| `classify-database` | LIVE/vintage/legacy status is unclear. | Classifies the database and explains whether it is default live, vintage, legacy, or non-vintage. |
+| `compare-codes` | Two or more known codes need distinction. | Returns same/different database and dimension labels plus each code name. |
+
+Use `resolve --json` as the default command when a user asks to find the identifier, prepare for iData, or find-and-download. If `status=resolved`, pass the `handoff` object to `imf-ra-data`. If `status=ambiguous`, present the candidates or the `clarification` question and wait for confirmation. Use `search` when you want ranked candidates without commitment, and `explain-source` when the user only asks where a source family routes. Use `code`, `dimensions`, `classify-database`, and `compare-codes` for exact lookup, validation, and variant-comparison workflows. If these commands cover the workflow, do not write temporary Python. If no command covers the task shape, then temporary code is acceptable.
 
 ## Ambiguity and Uncertainty
 
