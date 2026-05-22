@@ -658,9 +658,10 @@ cases:
     prompt: "Pull WEO real GDP growth for EMDEs, 2010-2024."
     expected_primary_skill: imf-ra-data
     expected_behavior: >
-      Resolves EMDEs through the WEO country-group references and does not use
-      G200 directly as the iData country selector unless metadata confirms an
-      aggregate code is supported.
+      Resolves EMDEs through the WEO country-group reference and helper command
+      map, expands G200 to member country codes for iData handoff, and does not
+      use G200 directly as the iData country selector unless metadata confirms
+      an aggregate code is supported.
     evidence_sources:
       required_files:
         - .claude/skills/imf-ra/SKILL.md
@@ -668,7 +669,7 @@ cases:
         - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
         - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
       optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G200
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
     expected_outputs:
       groupcode: G200
       start: "2010"
@@ -676,6 +677,7 @@ cases:
     assertions:
       required:
         - resolve_group_to_member_countries_or_clarify_aggregate
+        - use_or_mirror_weo_helper_expand_for_idata
         - preserve_time_range_2010_2024
       forbidden:
         - use_groupcode_as_country_selector
@@ -721,7 +723,7 @@ cases:
         - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
         - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
       optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py countries USA
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve America
     expected_outputs:
       country: USA
       start: "2015"
@@ -760,6 +762,165 @@ cases:
       forbidden:
         - say_groupcode_is_always_valid_country_selector
         - invent_metadata_support
+
+  - id: PIPE-01
+    category: shared_conventions
+    type: single_turn
+    area: Query execution pipeline - direct lookup
+    prompt: "What does EMDE mean in the WEO country group reference?"
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Classifies this as an exact small lookup and answers directly from the
+      WEO reference/CSV without running helper commands or writing temporary
+      code.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
+    expected_outputs:
+      groupcode: G200
+      meaning: Emerging Market and Developing Economies
+    assertions:
+      required:
+        - classify_exact_small_lookup
+        - answer_from_reference_without_code
+        - include_groupcode_G200
+      forbidden:
+        - run_helper_for_simple_exact_lookup
+        - write_new_script
+        - invent_group_definition
+
+  - id: PIPE-02
+    category: shared_conventions
+    type: single_turn
+    area: Query execution pipeline - ambiguous resolution
+    prompt: "Resolve Congo in the WEO country reference before a data pull."
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Classifies Congo as an ambiguous country term, checks the WEO helper
+      command map, uses or mirrors `resolve Congo`, and asks the user to choose
+      between Republic of Congo and Democratic Republic of the Congo before any
+      downstream data-pull setup.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
+    expected_outputs:
+      candidates:
+        - COG
+        - COD
+    assertions:
+      required:
+        - classify_fuzzy_ambiguous_lookup
+        - use_or_mirror_weo_helper_resolve
+        - present_country_candidates_with_codes
+        - ask_country_clarification_before_fetch
+      forbidden:
+        - assume_one_congo
+        - write_new_script
+        - fetch_without_country_confirmation
+
+  - id: PIPE-03
+    category: shared_conventions
+    type: single_turn
+    area: Query execution pipeline - framework comparison
+    prompt: "What is the difference between WEO and SPR/PRGT coverage in LIC?"
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Classifies this as a comparative group-membership task, checks the WEO
+      helper command map, uses or mirrors `compare G201 G-PRGT-LIC`, and reports
+      counts plus only-in-each-framework countries.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC
+    expected_outputs:
+      weo_groupcode: G201
+      spr_prgt_groupcode: G-PRGT-LIC
+      only_in_weo:
+        - NGA
+      only_in_spr_prgt:
+        - SYR
+    assertions:
+      required:
+        - classify_comparative_group_task
+        - use_or_mirror_weo_helper_compare
+        - report_group_counts
+        - report_only_in_each_group
+      forbidden:
+        - write_temp_set_diff_code
+        - answer_from_memory_only
+        - omit_framework_difference
+
+  - id: PIPE-04
+    category: data_workflow
+    type: single_turn
+    area: Query execution pipeline - iData handoff expansion
+    prompt: "Prepare WEO real GDP growth for EMDEs, 2010-2024, for an iData pull."
+    expected_primary_skill: imf-ra-data
+    expected_behavior: >
+      Classifies this as handoff preparation, checks the WEO helper command map,
+      expands G200 to member countrycode values using or mirroring
+      `expand-for-idata G200 --codes-only`, and does not pass G200 as the
+      country selector unless dataset metadata confirms aggregate support.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra-data/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
+    expected_outputs:
+      groupcode: G200
+      start: "2010"
+      end: "2024"
+    assertions:
+      required:
+        - classify_handoff_expansion_task
+        - use_or_mirror_weo_helper_expand_for_idata
+        - resolve_group_to_member_countrycodes
+        - preserve_time_range_2010_2024
+      forbidden:
+        - use_groupcode_as_country_selector
+        - write_new_script
+        - fetch_without_output_format
+
+  - id: PIPE-05
+    category: shared_conventions
+    type: single_turn
+    area: Query execution pipeline - helper-supported alias
+    prompt: "What is the WEO country code for South Korea?"
+    expected_primary_skill: imf-ra
+    expected_behavior: >
+      Classifies this as a supported country alias lookup, uses direct reference
+      matching or the helper alias layer, and returns KOR without asking for
+      country clarification.
+    evidence_sources:
+      required_files:
+        - .claude/skills/imf-ra/SKILL.md
+        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
+        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
+      optional_commands:
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve "South Korea"
+    expected_outputs:
+      countrycode: KOR
+    assertions:
+      required:
+        - classify_supported_alias_lookup
+        - resolve_country_alias_to_KOR
+        - answer_with_countrycode_and_countryname
+      forbidden:
+        - ask_country_clarification_for_supported_alias
+        - write_new_script
+        - return_unofficial_country_code
 
   - id: VINTAGE-01
     category: catalog_discovery
@@ -1462,7 +1623,7 @@ cases:
         - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
         - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
       optional_commands:
-        - rg -n -i "Congo" ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
     expected_outputs:
       candidates:
         - COG
@@ -1472,6 +1633,7 @@ cases:
     assertions:
       required:
         - detect_ambiguous_country_name
+        - use_or_mirror_weo_helper_resolve
         - list_COG_and_COD_candidates
         - ask_country_clarification_before_fetch
         - preserve_time_range_2015_2024
@@ -1669,6 +1831,71 @@ cases:
         - group_helper_returns_only_groupcode_without_members
 
   - id: CONTRACT-07
+    category: helper_contract
+    type: command_contract
+    area: WEO ambiguous term resolution
+    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Resolves an ambiguous country term into multiple candidate country rows
+      instead of choosing one silently.
+    expected_stdout_contains:
+      - "COG"
+      - "Congo, Republic of"
+      - "COD"
+      - "Congo, Democratic Republic of the"
+    assertions:
+      required:
+        - group_helper_resolves_ambiguous_country_candidates
+        - group_helper_preserves_ambiguity
+      forbidden:
+        - group_helper_silently_picks_one_candidate
+
+  - id: CONTRACT-08
+    category: helper_contract
+    type: command_contract
+    area: WEO shorthand explanation
+    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py explain EM
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Explains EM as framework-sensitive shorthand and returns both WEO and
+      SPR/PRGT group codes.
+    expected_stdout_contains:
+      - "meaning: Emerging Market / Middle-Income Economies"
+      - "WEO: G1201"
+      - "SPR/PRGT: G-PRGT-EM"
+    assertions:
+      required:
+        - group_helper_explains_framework_sensitive_shorthand
+        - group_helper_includes_weo_and_spr_prgt_codes
+      forbidden:
+        - group_helper_collapses_em_to_single_framework
+
+  - id: CONTRACT-09
+    category: helper_contract
+    type: command_contract
+    area: WEO iData handoff expansion
+    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Expands EMDE to comma-separated WEO member countrycode values suitable for
+      iData country selection, rather than returning the group code alone.
+    expected_stdout_contains:
+      - "AFG"
+      - "CHN"
+      - "NGA"
+      - "ZWE"
+    assertions:
+      required:
+        - group_helper_expands_group_to_countrycodes
+        - group_helper_outputs_idata_ready_countrycodes
+      forbidden:
+        - group_helper_returns_only_groupcode_without_members
+
+  - id: CONTRACT-10
     category: helper_contract
     type: command_contract
     area: Active referenced-file consistency

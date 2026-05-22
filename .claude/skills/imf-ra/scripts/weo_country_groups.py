@@ -404,6 +404,20 @@ def cmd_memberships(tables: CsvTables, args: argparse.Namespace) -> None:
 
 def cmd_resolve(tables: CsvTables, args: argparse.Namespace) -> None:
     rows: list[dict[str, str]] = []
+    if country_alias_code(args.query):
+        for row in resolve_country_rows(tables, args.query, exact_only=True):
+            rows.append(
+                {
+                    "kind": "country",
+                    "code": row.get("countrycode", ""),
+                    "name": row.get("countryname", ""),
+                    "code_s": row.get("countrycode_s", ""),
+                    "name_s": row.get("countryname_s", ""),
+                    "note": row.get("department", ""),
+                }
+            )
+        write_rows(rows, ["kind", "code", "name", "code_s", "name_s", "note"])
+        return
     for row in resolve_group_rows(tables, args.query):
         rows.append(
             {
