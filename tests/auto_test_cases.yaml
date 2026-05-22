@@ -520,28 +520,31 @@ cases:
         - substitute_closest_vintage
 
   - id: DATA-06
-    category: data_workflow
+    category: catalog_discovery
     type: single_turn
     area: Vintage loose date mapping
     prompt: "Use the April 2024 WEO vintage for nominal GDP."
-    expected_primary_skill: imf-ra-data
+    expected_primary_skill: imf-ra-catalog
     expected_behavior: >
-      Maps the request to the nearest matching vintage without asking again if
-      the intent is clear.
+      Maps the request to the April 2024 WEO vintage without asking again about
+      the vintage, then preserves candidate-level ambiguity if nominal GDP unit
+      or variant is not specified.
     evidence_sources:
       required_files:
         - .claude/skills/imf-ra-data/SKILL.md
         - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
         - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
       optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP" --json
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
     assertions:
       required:
         - resolve_to_april_2024_weo_vintage
         - map_loose_vintage_date
+        - preserve_nominal_gdp_variant_ambiguity
+        - preserve_vintage_database_in_candidates_or_handoff
+        - use_weo_live_indicator_metadata_for_vintage
       forbidden:
         - ask_which_vintage_when_clear
         - use_live_database_instead
@@ -963,7 +966,7 @@ cases:
         - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
         - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
       optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO data nominal GDP" --json
     expected_outputs:
       database: IMF.RES.WEO:WEO_LIVE
     assertions:
@@ -1009,19 +1012,22 @@ cases:
     expected_primary_skill: imf-ra-catalog
     expected_behavior: >
       Treats "latest WEO vintage" as an explicit historical-vintage request,
-      searches vintage databases, and does not silently substitute WEO Live.
+      resolves the latest vintage database, preserves WEO Live indicator
+      metadata as the source for indicator rows, and asks for the GDP unit or
+      variant if the nominal GDP indicator is ambiguous.
     evidence_sources:
       required_files:
         - .claude/skills/imf-ra-catalog/SKILL.md
         - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
         - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
       optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
+        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO vintage nominal GDP" --json
     assertions:
       required:
         - recognize_explicit_latest_vintage_request
-        - search_vintage_databases
+        - resolve_latest_vintage_database
+        - use_weo_live_indicator_metadata_for_vintage
+        - preserve_nominal_gdp_variant_ambiguity
         - preserve_nominal_gdp_intent
       forbidden:
         - substitute_live_database
@@ -1916,3 +1922,387 @@ cases:
         - missing_targets_report_source_and_suggestions
       forbidden:
         - unresolved_file_reference_found
+
+  - id: CONTRACT-11
+    category: helper_contract
+    type: command_contract
+    area: Catalog source routing - legacy IFS
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Classifies a legacy IFS request as a source-routing task and maps CPI to
+      the replacement iData CPI database before indicator search.
+    expected_stdout_contains:
+      - '"status": "routed"'
+      - '"database": "IMF.STA:CPI"'
+      - "IFS is a legacy EcOS source"
+    assertions:
+      required:
+        - catalog_helper_routes_legacy_ifs_topic
+        - catalog_helper_explains_replacement_database
+      forbidden:
+        - catalog_helper_treats_ifs_as_single_idata_database
+
+  - id: CONTRACT-12
+    category: helper_contract
+    type: command_contract
+    area: Catalog routed topic search - legacy IFS CPI
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "IFS CPI for the United States"
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Uses the source-routing layer to search the replacement CPI database
+      instead of writing temporary code or searching only WEO Live.
+    expected_stdout_contains:
+      - "IMF.STA:CPI"
+      - "INDEX_TYPE"
+      - "Consumer price index (CPI)"
+    assertions:
+      required:
+        - catalog_helper_runs_routed_cpi_search
+        - catalog_helper_preserves_dimension_name
+      forbidden:
+        - catalog_helper_returns_legacy_ifs_database
+
+  - id: CONTRACT-13
+    category: helper_contract
+    type: command_contract
+    area: Catalog routed topic search - exchange rates
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan"
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Recognizes exchange-rate wording as a common hard query and searches the
+      replacement Exchange Rate database without requiring ad hoc filtering.
+    expected_stdout_contains:
+      - "IMF.STA:ER"
+      - "INDICATOR"
+      - "XDC_USD"
+      - "Domestic currency per US Dollar"
+    assertions:
+      required:
+        - catalog_helper_routes_exchange_rate_topic
+        - catalog_helper_returns_exchange_rate_indicators
+      forbidden:
+        - catalog_helper_searches_only_weo_for_exchange_rates
+
+  - id: CONTRACT-14
+    category: helper_contract
+    type: command_contract
+    area: Catalog broad fuzzy search
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "current account balance" --all-databases
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Performs a broad ranked search when requested, preserving cross-database
+      ambiguity instead of collapsing the request to one source.
+    expected_stdout_contains:
+      - "IMF.RES.WEO:WEO_LIVE"
+      - "IMF.STA:BOP"
+      - "WB:WDI"
+      - "Current account balance"
+    assertions:
+      required:
+        - catalog_helper_runs_all_database_search
+        - catalog_helper_preserves_cross_database_ambiguity
+      forbidden:
+        - catalog_helper_silently_commits_to_one_current_account_source
+
+  - id: CONTRACT-15
+    category: helper_contract
+    type: command_contract
+    area: Catalog strict resolve - unambiguous WEO concept
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Runs the fuzzy ranking pipeline and returns one handoff-ready identifier
+      only because the top WEO Live real GDP growth candidate is sufficiently
+      clear.
+    expected_stdout_contains:
+      - '"status": "resolved"'
+      - '"handoff"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE"'
+      - '"database_name": "IMF.RES.WEO:WEO_LIVE"'
+      - '"dimension_name": "INDICATOR"'
+      - '"code": "NGDP_RPCH"'
+    assertions:
+      required:
+        - catalog_helper_resolves_unambiguous_identifier
+        - catalog_helper_outputs_handoff_tuple
+      forbidden:
+        - catalog_helper_fetches_data
+        - catalog_helper_returns_vintage_for_live_default
+
+  - id: CONTRACT-16
+    category: helper_contract
+    type: command_contract
+    area: Catalog strict resolve - ambiguity preserved
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Runs a source-specific WDI lookup but refuses to commit because current
+      US dollars, constant US dollars, local currency, PPP, and growth variants
+      are all plausible.
+    expected_stdout_contains:
+      - '"status": "ambiguous"'
+      - '"handoff": null'
+      - '"clarification"'
+      - '"database_name": "WB:WDI"'
+      - '"code": "NY_GDP_PCAP_CD"'
+      - '"code": "NY_GDP_PCAP_KD"'
+    assertions:
+      required:
+        - catalog_helper_preserves_wdi_gdp_per_capita_ambiguity
+        - catalog_helper_lists_candidate_variants
+      forbidden:
+        - catalog_helper_silently_picks_wdi_variant
+
+  - id: CONTRACT-17
+    category: helper_contract
+    type: command_contract
+    area: Catalog specialized search - WDI
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "GDP per capita" --database WB:WDI
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Searches the WDI-specific indicator catalog and preserves the `SERIES`
+      dimension for World Bank handoff.
+    expected_stdout_contains:
+      - "WB:WDI"
+      - "SERIES"
+      - "NY_GDP_PCAP_CD"
+      - "GDP per capita"
+    assertions:
+      required:
+        - catalog_helper_uses_wdi_indicator_file
+        - catalog_helper_preserves_wdi_series_dimension
+      forbidden:
+        - catalog_helper_searches_only_general_imf_variable_list
+
+  - id: CONTRACT-18
+    category: helper_contract
+    type: command_contract
+    area: Catalog specialized search - Bloomberg
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "10-year government bond yield" --database IMF.CSF:BBGDL
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Searches the Bloomberg-specific catalog and returns ticker candidates with
+      the `TICKER` dimension instead of using the general IMF indicator list.
+    expected_stdout_contains:
+      - "IMF.CSF:BBGDL"
+      - "TICKER"
+      - "10 Year"
+      - "Yield"
+    assertions:
+      required:
+        - catalog_helper_uses_bloomberg_indicator_file
+        - catalog_helper_preserves_ticker_dimension
+      forbidden:
+        - catalog_helper_searches_only_general_imf_variable_list
+
+  - id: CONTRACT-19
+    category: helper_contract
+    type: command_contract
+    area: Catalog specialized search - WTO commodity
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "wheat" --database WTO:WTOIMFTT
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Searches the WTO-specific commodity catalog and returns HS commodity-code
+      candidates with the `COMMODITY` dimension.
+    expected_stdout_contains:
+      - "WTO:WTOIMFTT"
+      - "COMMODITY"
+      - "100111"
+      - "wheat"
+    assertions:
+      required:
+        - catalog_helper_uses_wto_indicator_file
+        - catalog_helper_preserves_commodity_dimension
+      forbidden:
+        - catalog_helper_searches_only_general_imf_variable_list
+
+  - id: CONTRACT-20
+    category: helper_contract
+    type: command_contract
+    area: Catalog common topic search - financial soundness
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "financial soundness regulatory capital risk weighted assets" --all-databases
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Handles a hard fuzzy search for a financial soundness concept and returns
+      capital-adequacy candidates without temporary parsing code.
+    expected_stdout_contains:
+      - "IMF.STA:FSIC"
+      - "FSI688_CFSI_PT"
+      - "Regulatory capital to risk-weighted assets"
+    assertions:
+      required:
+        - catalog_helper_finds_fsi_capital_adequacy
+        - catalog_helper_handles_multi_token_fuzzy_reasoning
+      forbidden:
+        - catalog_helper_returns_empty_for_fsi_query
+
+  - id: CONTRACT-21
+    category: helper_contract
+    type: command_contract
+    area: Catalog machine-readable handoff output
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Emits JSON for downstream handoff, including route metadata, ranked
+      candidates, and a handoff object when the identifier is resolved.
+    expected_stdout_contains:
+      - '"query": "real GDP growth"'
+      - '"route"'
+      - '"handoff"'
+      - '"candidates"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE"'
+      - '"code": "NGDP_RPCH"'
+    assertions:
+      required:
+        - catalog_helper_outputs_machine_readable_handoff_json
+        - catalog_helper_includes_route_candidates_and_handoff
+      forbidden:
+        - catalog_helper_outputs_unparseable_json
+
+  - id: CONTRACT-22
+    category: helper_contract
+    type: command_contract
+    area: Catalog exact code lookup
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Looks up an exact known code in the requested database and returns the
+      answer-ready tuple without fuzzy inference or temporary code.
+    expected_stdout_contains:
+      - "IMF.RES.WEO:WEO_LIVE"
+      - "INDICATOR"
+      - "NGDP_RPCH"
+      - "Gross domestic product (GDP), Constant prices, Percent change"
+    assertions:
+      required:
+        - catalog_helper_supports_exact_code_lookup
+        - catalog_helper_preserves_exact_code_dimension
+      forbidden:
+        - catalog_helper_uses_fuzzy_search_for_exact_code
+
+  - id: CONTRACT-23
+    category: helper_contract
+    type: command_contract
+    area: Catalog dimension discovery
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Returns dimension names, row counts, and example codes for the selected
+      database so the agent does not infer that every database uses INDICATOR.
+    expected_stdout_contains:
+      - "IMF.STA:CPI"
+      - "INDEX_TYPE"
+      - "CPI;HICP"
+    assertions:
+      required:
+        - catalog_helper_supports_dimension_discovery
+        - catalog_helper_prevents_indicator_dimension_assumption
+      forbidden:
+        - catalog_helper_assumes_indicator_for_cpi
+
+  - id: CONTRACT-24
+    category: helper_contract
+    type: command_contract
+    area: Catalog database classification
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Classifies a dated WEO Live resource as a vintage database, not the
+      default WEO Live database.
+    expected_stdout_contains:
+      - "status: found"
+      - "classification: vintage"
+      - "dated WEO Live vintage"
+    assertions:
+      required:
+        - catalog_helper_classifies_weo_vintage_database
+        - catalog_helper_distinguishes_live_from_vintage
+      forbidden:
+        - catalog_helper_treats_vintage_as_live_default
+
+  - id: CONTRACT-25
+    category: helper_contract
+    type: command_contract
+    area: Catalog code comparison
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Compares two known WEO inflation codes and returns answer-ready
+      distinctions in timing basis rather than raw rows only.
+    expected_stdout_contains:
+      - "same_database: True"
+      - "same_dimension: True"
+      - "Period average, percent change"
+      - "End-of-period (EoP), percent change"
+    assertions:
+      required:
+        - catalog_helper_supports_code_comparison
+        - catalog_helper_returns_answer_ready_variant_distinctions
+      forbidden:
+        - catalog_helper_requires_temp_code_for_known_code_comparison
+
+  - id: CONTRACT-26
+    category: helper_contract
+    type: command_contract
+    area: Catalog WEO vintage handoff assembly
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Resolves a dated WEO vintage request into a handoff-ready tuple, using
+      WEO Live indicator metadata while preserving the requested vintage
+      database in the result and handoff object.
+    expected_stdout_contains:
+      - '"status": "resolved"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
+      - '"database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
+      - '"indicator_source_database": "IMF.RES.WEO:WEO_LIVE"'
+      - '"code": "NGDPD"'
+      - '"handoff"'
+    assertions:
+      required:
+        - catalog_helper_preserves_requested_weo_vintage_database
+        - catalog_helper_reuses_weo_live_indicator_metadata
+        - catalog_helper_outputs_vintage_handoff_tuple
+      forbidden:
+        - catalog_helper_returns_live_database_for_vintage_request
+        - catalog_helper_returns_no_match_for_weo_vintage_indicator
+
+  - id: CONTRACT-27
+    category: helper_contract
+    type: command_contract
+    area: Catalog ambiguity clarification output
+    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
+    expected_exit_codes:
+      - 0
+    expected_behavior: >
+      Emits a structured clarification prompt and candidate options when the
+      helper cannot safely choose among WDI GDP-per-capita variants.
+    expected_stdout_contains:
+      - '"status": "ambiguous"'
+      - '"clarification"'
+      - '"question"'
+      - '"options"'
+      - '"handoff": null'
+    assertions:
+      required:
+        - catalog_helper_returns_clarification_for_ambiguous_resolve
+        - catalog_helper_does_not_emit_handoff_when_ambiguous
+      forbidden:
+        - catalog_helper_silently_picks_wdi_variant

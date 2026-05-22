@@ -30,7 +30,7 @@ Reference truth lives in CSVs (`imf-ra-catalog/databases/`, `imf-ra-catalog/indi
 
 Key guardrails:
 
-- The agent should inspect CSV/Markdown references directly for simple questions and use helper scripts only when lookup becomes ambiguous, repetitive, or processing-heavy.
+- For catalog indicator/code discovery, source routing, exact code lookup, dimension discovery, database classification, and code comparison, the agent should use the relevant `imf-ra-catalog/scripts/catalog_search.py` command before writing temporary code. Direct CSV/Markdown inspection is still appropriate for exact one-row confirmation and curated guidance.
 - WEO country groups are resolved through `imf-ra/references/Country Group/weo_country_groups.md` and the three WEO group CSVs.
 - WEO `groupcode` values such as `G110` are for group lookup and membership mapping. They should not be used directly as iData country selectors; resolve groups to member `countrycode` values first unless dataset metadata confirms a supported aggregate code.
 - For EM/LIC/PRGT requests, the agent should clarify WEO vs SPR/PRGT coverage because the group definitions can differ.
