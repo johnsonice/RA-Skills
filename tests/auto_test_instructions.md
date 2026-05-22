@@ -87,7 +87,8 @@ pipeline.
 ### Shared Conventions
 
 These cases test shared RA rules: reference-backed country/group lookup,
-uncertainty handling, and avoiding unnecessary code.
+uncertainty handling, avoiding unnecessary code, and helper-first behavior for
+fuzzy, comparative, expansion, validation, and handoff tasks.
 
 | ID | Prompt | Skill Set Involved |
 |---|---|---|
@@ -96,6 +97,11 @@ uncertainty handling, and avoiding unnecessary code.
 | CONV-03 | Get me the IMF inflation series. | `imf-ra` -> `imf-ra-catalog` |
 | GROUP-02 | Pull real GDP growth for low-income countries, 2010-2024. | `imf-ra` |
 | GROUP-04 | Can I use G110 directly in an iData pull for WEO data? | `imf-ra` |
+| PIPE-01 | What does EMDE mean in the WEO country group reference? | `imf-ra` |
+| PIPE-02 | Resolve Congo in the WEO country reference before a data pull. | `imf-ra` |
+| PIPE-03 | What is the difference between WEO and SPR/PRGT coverage in LIC? | `imf-ra` |
+| PIPE-04 | Prepare WEO real GDP growth for EMDEs, 2010-2024, for an iData pull. | `imf-ra` -> `imf-ra-data` |
+| PIPE-05 | What is the WEO country code for South Korea? | `imf-ra` |
 
 ### Catalog Discovery
 
@@ -171,7 +177,10 @@ support the prompt-level cases.
 | CONTRACT-04 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only` | Vintage search returns only vintage-style WEO resources. |
 | CONTRACT-05 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110` | WEO group helper expands advanced economies to member countries. |
 | CONTRACT-06 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC` | WEO/SPR-PRGT group comparison returns counts and only-in-each-group rows. |
-| CONTRACT-07 | `python3 tests/check_referenced_files.py` | Active file references resolve; missing targets include source lines and likely filename suggestions. |
+| CONTRACT-07 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo` | Ambiguous country resolution returns both Congo candidates. |
+| CONTRACT-08 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py explain EM` | Framework-sensitive shorthand explanation returns WEO and SPR/PRGT codes. |
+| CONTRACT-09 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only` | Group expansion returns iData-ready member country codes. |
+| CONTRACT-10 | `python3 tests/check_referenced_files.py` | Active file references resolve; missing targets include source lines and likely filename suggestions. |
 
 ### End To End
 
