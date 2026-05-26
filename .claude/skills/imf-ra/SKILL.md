@@ -34,25 +34,16 @@ The umbrella does not execute the full workflow by itself. Worker skills chain b
 
 ## Integrated Lookup Execution Policy
 
-1. `Classify the Task Shap`
-Analyze the input query and classify its shape: exact lookup, fuzzy lookup, membership expansion, comparison, handoff preparation, validation, or data-pull setup.
-2. `Micro-Lookup Shortcut (Exact Matches)`
-Answer directly from the reference CSV/Markdown only for exact, single-record, small lookups that require zero processing or computation.
-3. `Enforce Search-First Architecture (Mandatory Check)`
-For fuzzy, repeated, comparative, expansion, validation, or data-pull tasks, you are strictly prohibited from writing code immediately. You MUST first inspect the available helper command map / tool list.Rule of Thumb: Treat existing helper commands as your preferred actions. Improvised code is a last-resort liability.
-4. `Resolve Ambiguities`
- Prior to ExecutionResolve ambiguous terms before running any helper. If multiple plausible matches exist within the reference data, list candidates with their official codes and ask the user for confirmation before committing.
-5. `Prioritize Specific Helpers Over Custom Logic`
-Use the most specific existing helper command for the task. If a helper handles $90\%$ of the requirement, call the helper first, catch its structured output, and then perform minor downstream formatting. Never rewrite a function from scratch just to alter a minor output style.
-6. `Strict Gatekeeping for Temporary Code (Expand Privately)`
-You are permitted to write temporary, single-use code ONLY under the following strict conditions:
--No existing helper command (or combination of helper commands) covers the core data-retrieval task.
--The task requires highly customized data visualization (e.g., specialized matplotlib/seaborn plots) or ad-hoc data cleansing unique to this specific query.
--The temporary code must be executing within its isolated sandbox session and will be destroyed immediately after fulfilling the current query.
-7. `Enforce Output Determinism & Validation`
-Ensure that any executed helper or temporary pattern returns structured data (e.g., CSV formats, JSON strings, or typed dataframes). Validate that column names and index structures match the downstream expectations exactly.
-8. `Continuous Skill Evolution (Promotion Rule)`
-If a temporary-code pattern or workflow appears repeatedly across different sessions, do not let it clutter the environment. Document the pattern and flag it to be promoted into a permanent, parameterized helper command later.
+This policy applies across `imf-ra-catalog`, WEO country/group helpers, `imf-ra-data`, and chart handoffs.
+
+1. **Classify before acting.** Decide whether the request is exact lookup, fuzzy lookup, source routing, membership expansion, comparison, validation, handoff preparation, data pull, or charting.
+2. **Use direct references only for small exact checks.** Answer from CSV/Markdown directly only when the request is a single-record lookup that needs no ranking, expansion, API call, or computation.
+3. **Check helper maps before writing code.** For fuzzy, repeated, comparative, expansion, validation, handoff, or data-pull tasks, inspect the relevant helper command map first. Existing helper commands are the preferred action.
+4. **Use the most specific helper.** If a helper covers the core task, run it and adapt its structured output. Do not rewrite helper logic for output styling or minor formatting differences.
+5. **Resolve ambiguity before execution.** If reference data produces multiple plausible official codes, groups, databases, dimensions, or variants, show candidates and ask for confirmation before committing.
+6. **Gate temporary code strictly.** Write temporary code only when no helper command or helper combination covers the core task, or when the task requires one-off transformation, analysis, or visualization beyond the helper scope.
+7. **Validate structured outputs.** Preserve and check returned fields such as `database`, `dimension_name`, `code`, `countrycode`, date/frequency fields, and DataFrame columns before handing off downstream.
+8. **Promote repeated patterns.** If the same temporary-code pattern appears repeatedly, document it and promote it into a permanent helper command later.
 
 ## WEO Country And Group Conventions
 
