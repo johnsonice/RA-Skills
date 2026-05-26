@@ -1,0 +1,2179 @@
+---
+schema_version: '1.0'
+suite: imf-ra
+case_source: tests/auto_test_cases.yaml
+run:
+  id: 2026-05-26_local_no_idata
+  date: '2026-05-26'
+  runner: Codex local command runner
+  branch: bella_0521_catalog_patch
+  commit: faee2f6
+  notes: Ran local command and machine-check evidence only. iData pull/data commands
+    were skipped because iData is unavailable locally. Prompt-level final response
+    checks require separate fresh-session agent transcripts.
+summary:
+  total: 45
+  pass: 11
+  fail: 0
+  needs_follow_up: 34
+  pre_test_passed: true
+  command_contracts_passed: 11
+  machine_checked_cases: 23
+  idata_skipped_cases: 2
+pre_test:
+  checks_run:
+  - id: PRE-01
+    result: pass
+    commands_run:
+    - bash .claude/skills/imf-ra/scripts/check_references.sh
+    - python3 tests/check_referenced_files.py
+    evidence:
+    - command: bash .claude/skills/imf-ra/scripts/check_references.sh
+      exit_code: 0
+      stdout: 'OK: all skills found, all references resolve.
+
+'
+      stderr: ''
+    - command: python3 tests/check_referenced_files.py
+      exit_code: 0
+      stdout: 'OK: checked 276 file reference(s) across 23 active file(s).
+
+'
+      stderr: ''
+results:
+- id: SMOKE-01
+  category: core_behavior_pipeline
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: SMOKE-02
+  category: core_behavior_pipeline
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/database_overview.md"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CONV-01
+  category: weo_group_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    - ".claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CONV-02
+  category: weo_group_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CONV-03
+  category: core_behavior_pipeline
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: HPIPE-01
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_lookup.py"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real
+      GDP growth" --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve
+        "real GDP growth" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "resolved",
+          "query": "real GDP growth",
+          "route": {
+            "status": "default",
+            "query": "real GDP growth",
+            "database": "IMF.RES.WEO:WEO_LIVE",
+            "reason": "No specialized source or topic route matched; WEO Live remains the default for common macro concepts.",
+            "next_step": "Run search \"real GDP growth\" first; use --all-databases only if WEO Live is not plausible."
+          },
+          "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+          "summary": {
+            "result_count": 5,
+            "database_counts": {
+              "IMF.RES.WEO:WEO_LIVE": 5
+            },
+            "dimension_counts": {
+              "INDICATOR": 5
+            },
+            "status": "resolved",
+            "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+            "recommended_next_step": "Use result.database_name, result.dimension_name, and result.code for handoff; do not run a data fetch from catalog context."
+          },
+          "result": {
+            "score": 124,
+            "database_name": "IMF.RES.WEO:WEO_LIVE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDP_RPCH",
+            "name": "Gross domestic product (GDP), Constant prices, Percent change"
+          },
+          "handoff": {
+            "database": "IMF.RES.WEO:WEO_LIVE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDP_RPCH",
+            "name": "Gross domestic product (GDP), Constant prices, Percent change",
+            "notes": "Top candidate is a high-scoring base concept and outranks close variants."
+          },
+          "candidates": [
+            {
+              "score": 124,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_RPCH",
+              "name": "Gross domestic product (GDP), Constant prices, Percent change"
+            },
+            {
+              "score": 123,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_RPCH_M",
+              "name": "Gross domestic product (GDP), Constant prices, Median, Percent change"
+            },
+            {
+              "score": 122,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDPRPC_PCH",
+              "name": "Gross domestic product (GDP), Constant prices, Per capita, Percent change"
+            }
+          ]
+        }
+      stderr: ''
+      duration_seconds: 0.554
+      stdout_contains_passed:
+      - '"status": "resolved"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE"'
+      - '"dimension_name": "INDICATOR"'
+      - '"code": "NGDP_RPCH"'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - IMF.RES.WEO:WEO_LIVE
+    - INDICATOR
+    - NGDP_RPCH
+    final_response_must_not_include_not_evaluated:
+    - downloaded
+    - fetched
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: HPIPE-02
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_routing.py"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source
+      "IFS CPI for the United States" --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source
+        "IFS CPI for the United States" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "routed",
+          "query": "IFS CPI for the United States",
+          "database": "IMF.STA:CPI",
+          "reason": "IFS is a legacy EcOS source, not a single iData dataset; route by topic to the replacement iData database.",
+          "next_step": "Run search with --database after the topic route is identified."
+        }
+      stderr: ''
+      duration_seconds: 0.026
+      stdout_contains_passed:
+      - '"status": "routed"'
+      - '"database": "IMF.STA:CPI"'
+      - IFS is a legacy EcOS source
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - IMF.STA:CPI
+    - IFS
+    final_response_must_not_include_not_evaluated:
+    - IMF.RES.WEO:WEO_LIVE
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: HPIPE-03
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_lookup.py"
+    - ".claude/skills/imf-ra-catalog/indicators/3. wdi_variable_list.csv"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP
+      per capita" --database WB:WDI --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve
+        "GDP per capita" --database WB:WDI --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "ambiguous",
+          "query": "GDP per capita",
+          "route": {
+            "status": "explicit_database",
+            "query": "GDP per capita",
+            "database": "WB:WDI",
+            "reason": "The database was supplied explicitly by the caller.",
+            "next_step": "Run search \"GDP per capita\" --database WB:WDI."
+          },
+          "note": "Several close variants differ by transformation, unit, basis, or frequency.",
+          "summary": {
+            "result_count": 5,
+            "database_counts": {
+              "WB:WDI": 5
+            },
+            "dimension_counts": {
+              "SERIES": 5
+            },
+            "status": "ambiguous",
+            "note": "Several close variants differ by transformation, unit, basis, or frequency.",
+            "recommended_next_step": "Inspect the top candidates; use resolve when a single handoff identifier is needed."
+          },
+          "result": null,
+          "handoff": null,
+          "candidates": [
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_CD",
+              "name": "GDP per capita (current US$)"
+            },
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_CN",
+              "name": "GDP per capita (current LCU)"
+            },
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_KD",
+              "name": "GDP per capita (constant 2015 US$)"
+            },
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_KD_ZG",
+              "name": "GDP per capita (annual % growth)"
+            },
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_KN",
+              "name": "GDP per capita (constant LCU)"
+            }
+          ],
+          "clarification": {
+            "question": "Which catalog candidate should I use: NY_GDP_PCAP_CD (GDP per capita (current US$)); NY_GDP_PCAP_CN (GDP per capita (current LCU)); NY_GDP_PCAP_KD (GDP per capita (constant 2015 US$)); NY_GDP_PCAP_KD_ZG (GDP per capita (annual % growth)); NY_GDP_PCAP_KN (GDP per capita (constant LCU))?",
+            "options": [
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_CD",
+                "name": "GDP per capita (current US$)",
+                "distinction": "GDP per capita (current US$)"
+              },
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_CN",
+                "name": "GDP per capita (current LCU)",
+                "distinction": "GDP per capita (current LCU)"
+              },
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_KD",
+                "name": "GDP per capita (constant 2015 US$)",
+                "distinction": "GDP per capita (constant 2015 US$)"
+              },
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_KD_ZG",
+                "name": "GDP per capita (annual % growth)",
+                "distinction": "GDP per capita (annual % growth)"
+              },
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_KN",
+                "name": "GDP per capita (constant LCU)",
+                "distinction": "GDP per capita (constant LCU)"
+              }
+            ]
+          }
+        }
+      stderr: ''
+      duration_seconds: 0.039
+      stdout_contains_passed:
+      - '"status": "ambiguous"'
+      - '"handoff": null'
+      - '"database_name": "WB:WDI"'
+      - '"code": "NY_GDP_PCAP_CD"'
+      - '"code": "NY_GDP_PCAP_KD"'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - WB:WDI
+    - GDP per capita
+    - clarify
+    final_response_must_not_include_not_evaluated:
+    - handoff-ready
+    - final code is NY_GDP_PCAP_CD
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: HPIPE-04
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions
+        IMF.STA:CPI
+      exit_code: 0
+      stdout: "database_name,dimension_name,count,example_codes\r\nIMF.STA:CPI,INDEX_TYPE,2,CPI;HICP\r\n"
+      stderr: ''
+      duration_seconds: 0.043
+      stdout_contains_passed:
+      - IMF.STA:CPI
+      - INDEX_TYPE
+      - CPI;HICP
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - INDEX_TYPE
+    final_response_must_not_include_not_evaluated:
+    - INDICATOR dimension
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: HPIPE-05
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes
+      PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes
+        PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+      exit_code: 0
+      stdout: |
+        status: complete
+        same_database: True
+        same_dimension: True
+        note: Compare the names for unit, timing, basis, and transformation differences before committing.
+        PCPI_PCH: IMF.RES.WEO:WEO_LIVE | INDICATOR | All Items, Consumer price index (CPI), Period average, percent change
+        PCPIE_PCH: IMF.RES.WEO:WEO_LIVE | INDICATOR | All Items, Consumer price index (CPI), End-of-period (EoP), percent change
+      stderr: ''
+      duration_seconds: 0.061
+      stdout_contains_passed:
+      - 'same_database: True'
+      - Period average, percent change
+      - End-of-period (EoP), percent change
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - PCPI_PCH
+    - PCPIE_PCH
+    - period average
+    - end-of-period
+    final_response_must_not_include_not_evaluated:
+    - chosen code
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: HPIPE-06
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_routing.py"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_lookup.py"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April
+      2024 WEO vintage nominal GDP in US dollars" --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve
+        "April 2024 WEO vintage nominal GDP in US dollars" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "resolved",
+          "query": "April 2024 WEO vintage nominal GDP in US dollars",
+          "route": {
+            "status": "routed",
+            "query": "April 2024 WEO vintage nominal GDP in US dollars",
+            "database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+            "reason": "The request targets a dated WEO Live vintage; indicator metadata are resolved from WEO Live and returned with the vintage database.",
+            "next_step": "Run resolve \"April 2024 WEO vintage nominal GDP in US dollars\" --database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE."
+          },
+          "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+          "summary": {
+            "result_count": 5,
+            "database_counts": {
+              "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE": 5
+            },
+            "dimension_counts": {
+              "INDICATOR": 5
+            },
+            "status": "resolved",
+            "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+            "recommended_next_step": "Use result.database_name, result.dimension_name, and result.code for handoff; do not run a data fetch from catalog context."
+          },
+          "result": {
+            "score": 179,
+            "database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDPD",
+            "name": "Gross domestic product (GDP), Current prices, US dollar",
+            "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+          },
+          "handoff": {
+            "database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDPD",
+            "name": "Gross domestic product (GDP), Current prices, US dollar",
+            "notes": "Top candidate is a high-scoring base concept and outranks close variants. Indicator metadata were matched from IMF.RES.WEO:WEO_LIVE and the requested database remains IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE.",
+            "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+          },
+          "candidates": [
+            {
+              "score": 179,
+              "database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDPD",
+              "name": "Gross domestic product (GDP), Current prices, US dollar",
+              "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+            },
+            {
+              "score": 177,
+              "database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDPDPC",
+              "name": "Gross domestic product (GDP), Current prices, Per capita, US dollar",
+              "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+            },
+            {
+              "score": 177,
+              "database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_FY_USD",
+              "name": "Gross domestic product (GDP), Current prices, Fiscal year, US dollar",
+              "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+            }
+          ]
+        }
+      stderr: ''
+      duration_seconds: 0.05
+      stdout_contains_passed:
+      - '"status": "resolved"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
+      - '"indicator_source_database": "IMF.RES.WEO:WEO_LIVE"'
+      - '"code": "NGDPD"'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+    - NGDPD
+    - IMF.RES.WEO:WEO_LIVE
+    final_response_must_not_include_not_evaluated:
+    - IMF.RES.WEO:WEO_LIVE as the requested database
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: HPIPE-07
+  category: weo_group_helper_behavior
+  type: multi_step
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real
+      GDP growth" --json
+    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata
+      G200 --codes-only
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve
+        "real GDP growth" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "resolved",
+          "query": "real GDP growth",
+          "route": {
+            "status": "default",
+            "query": "real GDP growth",
+            "database": "IMF.RES.WEO:WEO_LIVE",
+            "reason": "No specialized source or topic route matched; WEO Live remains the default for common macro concepts.",
+            "next_step": "Run search \"real GDP growth\" first; use --all-databases only if WEO Live is not plausible."
+          },
+          "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+          "summary": {
+            "result_count": 5,
+            "database_counts": {
+              "IMF.RES.WEO:WEO_LIVE": 5
+            },
+            "dimension_counts": {
+              "INDICATOR": 5
+            },
+            "status": "resolved",
+            "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+            "recommended_next_step": "Use result.database_name, result.dimension_name, and result.code for handoff; do not run a data fetch from catalog context."
+          },
+          "result": {
+            "score": 124,
+            "database_name": "IMF.RES.WEO:WEO_LIVE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDP_RPCH",
+            "name": "Gross domestic product (GDP), Constant prices, Percent change"
+          },
+          "handoff": {
+            "database": "IMF.RES.WEO:WEO_LIVE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDP_RPCH",
+            "name": "Gross domestic product (GDP), Constant prices, Percent change",
+            "notes": "Top candidate is a high-scoring base concept and outranks close variants."
+          },
+          "candidates": [
+            {
+              "score": 124,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_RPCH",
+              "name": "Gross domestic product (GDP), Constant prices, Percent change"
+            },
+            {
+              "score": 123,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_RPCH_M",
+              "name": "Gross domestic product (GDP), Constant prices, Median, Percent change"
+            },
+            {
+              "score": 122,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDPRPC_PCH",
+              "name": "Gross domestic product (GDP), Constant prices, Per capita, Percent change"
+            }
+          ]
+        }
+      stderr: ''
+      duration_seconds: 0.564
+      stdout_contains_passed:
+      - '"code": "NGDP_RPCH"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE"'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    - command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata
+        G200 --codes-only
+      exit_code: 0
+      stdout: 'AFG,ALB,DZA,AGO,ATG,ARG,ARM,ABW,AZE,BHS,BHR,BGD,BRB,BLR,BLZ,BEN,BTN,BOL,BIH,BWA,BRA,BRN,BFA,BDI,CPV,KHM,CMR,CAF,TCD,CHL,CHN,COL,COM,COD,COG,CRI,CIV,DJI,DMA,DOM,ECU,EGY,SLV,GNQ,ERI,SWZ,ETH,FJI,GAB,GMB,GEO,GHA,GRD,GTM,GIN,GNB,GUY,HTI,HND,HUN,IND,IDN,IRN,IRQ,JAM,JOR,KAZ,KEN,KIR,KOS,KWT,KGZ,LAO,LBN,LSO,LBR,LBY,MDG,MWI,MYS,MDV,MLI,MHL,MRT,MUS,MEX,FSM,MDA,MNG,MNE,MAR,MOZ,MMR,NAM,NRU,NPL,NIC,NER,NGA,MKD,OMN,PAK,PLW,PAN,PNG,PRY,PER,PHL,POL,QAT,ROU,RUS,RWA,WSM,SAU,SEN,SRB,SYC,SLE,SLB,SOM,ZAF,SSD,LKA,KNA,LCA,VCT,SDN,SUR,SYR,STP,TJK,TZA,THA,TLS,TGO,TON,TTO,TUN,TKM,TUV,TUR,UGA,UKR,ARE,URY,UZB,VUT,VEN,VNM,WBG,YEM,ZMB,ZWE
+
+'
+      stderr: ''
+      duration_seconds: 0.03
+      stdout_contains_passed:
+      - AFG
+      - CHN
+      - NGA
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - NGDP_RPCH
+    - 2010
+    - 2024
+    final_response_must_not_include_not_evaluated:
+    - use G200 as the country selector
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CAT-02
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CAT-04
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/database_overview.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CAT-05
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal
+      GDP USD"
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search
+        "nominal GDP USD"
+      exit_code: 0
+      stdout: "score,database_name,dimension_name,code,name\r\n175,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDPD,\"Gross
+        domestic product (GDP), Current prices, US dollar\"\r\n173,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDPDPC,\"Gross
+        domestic product (GDP), Current prices, Per capita, US dollar\"\r\n173,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDP_FY_USD,\"Gross
+        domestic product (GDP), Current prices, Fiscal year, US dollar\"\r\n168,IMF.RES.WEO:WEO_LIVE,INDICATOR,GDPWGT,\"Gross
+        domestic product (GDP), Current prices, Aggregation weight based on market
+        exchange rates, US dollar\"\r\n121,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDP_SA,\"Gross
+        domestic product (GDP), Current prices, Seasonally adjusted (SA), Domestic
+        currency\"\r\n120,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDP_SA_AR,\"Gross domestic
+        product (GDP), Current prices, Seasonally adjusted (SA), Annualized, Domestic
+        currency\"\r\n118,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDP,\"Gross domestic product
+        (GDP), Current prices, Domestic currency\"\r\n116,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDPPC,\"Gross
+        domestic product (GDP), Current prices, Per capita, Domestic currency\"\r\n116,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDPPCH,\"Gross
+        domestic product (GDP), Current prices, Per capita, Percent change\"\r\n116,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDP_FY,\"Gross
+        domestic product (GDP), Current prices, Fiscal year, Domestic currency\"\r\n115,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDPO,\"Gross
+        domestic product (GDP): oil related transactions, Current prices, Domestic
+        currency\"\r\n114,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGDPXO,\"Gross domestic product
+        (GDP): excluding oil related transactions, Current prices, Domestic currency\"\r\n111,IMF.RES.WEO:WEO_LIVE,INDICATOR,PPPWGT,\"Gross
+        domestic product (GDP), Current prices, Purchasing power parity (PPP) weight,
+        ICP benchmarks 2017-2021\"\r\n108,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGSD_GDP,\"Gross
+        national savings, Current prices, Percent of GDP in US dollars\"\r\n105,IMF.RES.WEO:WEO_LIVE,INDICATOR,NID_GDP,\"Gross
+        capital formation, Current prices in US Dollar, Percent of GDP in US dollars\"\r\n99,IMF.RES.WEO:WEO_LIVE,INDICATOR,NFI_USD,\"Gross
+        fixed capital formation, Current prices, US dollar\"\r\n99,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGSD,\"Gross
+        national savings, Current prices, US dollar\"\r\n99,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGSGD,\"Gross
+        savings, Public sector, Current prices, US dollar\"\r\n99,IMF.RES.WEO:WEO_LIVE,INDICATOR,NGSPD,\"Gross
+        savings, Private sector, Current prices, US dollar\"\r\n99,IMF.RES.WEO:WEO_LIVE,INDICATOR,NID,\"Gross
+        capital formation, Current prices, US dollar\"\r\n"
+      stderr: ''
+      duration_seconds: 0.557
+      stdout_contains_passed:
+      - NGDPD
+      - IMF.RES.WEO:WEO_LIVE
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - NGDPD
+    - IMF.RES.WEO:WEO_LIVE
+    final_response_must_not_include_not_evaluated:
+    - vintage
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CAT-06
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - cannot confirm an exact code
+    - clarification
+    final_response_must_not_include_not_evaluated:
+    - handoff-ready
+    - exact code is
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: DATA-01
+  category: data_workflow_guardrails
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: DATA-03
+  category: data_workflow_guardrails
+  type: fixture_based
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: true
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE"
+        --explore
+      skipped: true
+      reason: iData is unavailable on local machine
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - IMF.RES.WEO:WEO_LIVE
+    - NGDP_RPCH
+    - USA
+    - output format
+    final_response_must_not_include_not_evaluated:
+    - re-confirm United States
+    - re-confirm 2010-2024
+  passed_assertions: []
+  failed_assertions: []
+  notes: iData-dependent command skipped because iData is unavailable locally. Prompt-level
+    final response checks require a separate agent transcript; not marked pass from
+    command evidence alone.
+- id: DATA-07
+  category: data_workflow_guardrails
+  type: fixture_based
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - Refreshable
+    - Wide
+    - Long
+    final_response_must_not_include_not_evaluated:
+    - assuming CSV
+    - assuming Excel
+    - downloaded
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: DATA-09
+  category: data_workflow_guardrails
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - docs/data_tools_docs/imf_datatools_agent_api_reference.md
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: DATA-10
+  category: data_workflow_guardrails
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: GROUP-02
+  category: weo_group_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: GROUP-04
+  category: weo_group_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: PIPE-02
+  category: weo_group_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: PIPE-03
+  category: weo_group_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: VINTAGE-01
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: VINTAGE-02
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: VINTAGE-04
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CAT-11
+  category: catalog_helper_behavior
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: DATA-15
+  category: data_workflow_guardrails
+  type: single_turn
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - fetch_idata.py
+    - IMF.RES.WEO:WEO_LIVE
+    - NGDP_RPCH
+    - USA
+    - 2010
+    - 2024
+    final_response_must_not_include_not_evaluated:
+    - "```python"
+    - requests.get
+    - pandas.read_json
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: DATA-19
+  category: data_workflow_guardrails
+  type: fixture_based
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - WB:WDI
+    - NY_GDP_PCAP_CD
+    - "--indicator-dim SERIES"
+    - refreshable Excel
+    final_response_must_not_include_not_evaluated:
+    - "--indicator-dim INDICATOR"
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: DATA-22
+  category: data_workflow_guardrails
+  type: fixture_based
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-data
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    scripts_run: []
+    metadata_checked: false
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: true
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE"
+        --dimension-values COUNTRY --keyword "Atlantis"
+      skipped: true
+      reason: iData is unavailable on local machine
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - Atlantis
+    - not a supported WEO country
+    - valid replacement
+    final_response_must_not_include_not_evaluated:
+    - ATL
+    - Atlantis.NGDP_RPCH.A
+  passed_assertions: []
+  failed_assertions: []
+  notes: iData-dependent command skipped because iData is unavailable locally. Prompt-level
+    final response checks require a separate agent transcript; not marked pass from
+    command evidence alone.
+- id: E2E-01
+  category: core_behavior_pipeline
+  type: multi_step
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source
+      "monthly exchange rate Japan" --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source
+        "monthly exchange rate Japan" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "routed",
+          "query": "monthly exchange rate Japan",
+          "database": "IMF.STA:ER",
+          "reason": "Query matched a common topic route covered by catalog_search.py.",
+          "next_step": "Run search \"monthly exchange rate Japan\" --database IMF.STA:ER."
+        }
+      stderr: ''
+      duration_seconds: 0.025
+      stdout_contains_passed:
+      - '"status": "routed"'
+      - IMF.STA:ER
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - IMF.STA:ER
+    - Japan
+    - 2018
+    - 2024
+    - long CSV
+    final_response_must_not_include_not_evaluated:
+    - fetch before resolving
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: E2E-02
+  category: core_behavior_pipeline
+  type: multi_step
+  result: needs_follow_up
+  observed_primary_skill: imf-ra-catalog
+  observed_actions:
+    references_read:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real
+      GDP growth" --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve
+        "real GDP growth" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "resolved",
+          "query": "real GDP growth",
+          "route": {
+            "status": "default",
+            "query": "real GDP growth",
+            "database": "IMF.RES.WEO:WEO_LIVE",
+            "reason": "No specialized source or topic route matched; WEO Live remains the default for common macro concepts.",
+            "next_step": "Run search \"real GDP growth\" first; use --all-databases only if WEO Live is not plausible."
+          },
+          "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+          "summary": {
+            "result_count": 5,
+            "database_counts": {
+              "IMF.RES.WEO:WEO_LIVE": 5
+            },
+            "dimension_counts": {
+              "INDICATOR": 5
+            },
+            "status": "resolved",
+            "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+            "recommended_next_step": "Use result.database_name, result.dimension_name, and result.code for handoff; do not run a data fetch from catalog context."
+          },
+          "result": {
+            "score": 124,
+            "database_name": "IMF.RES.WEO:WEO_LIVE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDP_RPCH",
+            "name": "Gross domestic product (GDP), Constant prices, Percent change"
+          },
+          "handoff": {
+            "database": "IMF.RES.WEO:WEO_LIVE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDP_RPCH",
+            "name": "Gross domestic product (GDP), Constant prices, Percent change",
+            "notes": "Top candidate is a high-scoring base concept and outranks close variants."
+          },
+          "candidates": [
+            {
+              "score": 124,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_RPCH",
+              "name": "Gross domestic product (GDP), Constant prices, Percent change"
+            },
+            {
+              "score": 123,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_RPCH_M",
+              "name": "Gross domestic product (GDP), Constant prices, Median, Percent change"
+            },
+            {
+              "score": 122,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDPRPC_PCH",
+              "name": "Gross domestic product (GDP), Constant prices, Per capita, Percent change"
+            }
+          ]
+        }
+      stderr: ''
+      duration_seconds: 0.56
+      stdout_contains_passed:
+      - '"status": "resolved"'
+      - '"code": "NGDP_RPCH"'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_evaluated_no_agent_transcript
+    final_response_must_include_not_evaluated:
+    - NGDP_RPCH
+    - missing
+    - geography
+    - time range
+    - output format
+    final_response_must_not_include_not_evaluated:
+    - downloaded
+    - fetched
+  passed_assertions: []
+  failed_assertions: []
+  notes: Prompt-level final response checks require a separate agent transcript; not
+    marked pass from command evidence alone.
+- id: CONTRACT-01
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - bash .claude/skills/imf-ra/scripts/check_references.sh
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: bash .claude/skills/imf-ra/scripts/check_references.sh
+      exit_code: 0
+      stdout: 'OK: all skills found, all references resolve.
+
+'
+      stderr: ''
+      duration_seconds: 0.093
+      stdout_contains_passed:
+      - 'OK: all skills found, all references resolve.'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - reference_checker_passes
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-09
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata
+      G200 --codes-only
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata
+        G200 --codes-only
+      exit_code: 0
+      stdout: 'AFG,ALB,DZA,AGO,ATG,ARG,ARM,ABW,AZE,BHS,BHR,BGD,BRB,BLR,BLZ,BEN,BTN,BOL,BIH,BWA,BRA,BRN,BFA,BDI,CPV,KHM,CMR,CAF,TCD,CHL,CHN,COL,COM,COD,COG,CRI,CIV,DJI,DMA,DOM,ECU,EGY,SLV,GNQ,ERI,SWZ,ETH,FJI,GAB,GMB,GEO,GHA,GRD,GTM,GIN,GNB,GUY,HTI,HND,HUN,IND,IDN,IRN,IRQ,JAM,JOR,KAZ,KEN,KIR,KOS,KWT,KGZ,LAO,LBN,LSO,LBR,LBY,MDG,MWI,MYS,MDV,MLI,MHL,MRT,MUS,MEX,FSM,MDA,MNG,MNE,MAR,MOZ,MMR,NAM,NRU,NPL,NIC,NER,NGA,MKD,OMN,PAK,PLW,PAN,PNG,PRY,PER,PHL,POL,QAT,ROU,RUS,RWA,WSM,SAU,SEN,SRB,SYC,SLE,SLB,SOM,ZAF,SSD,LKA,KNA,LCA,VCT,SDN,SUR,SYR,STP,TJK,TZA,THA,TLS,TGO,TON,TTO,TUN,TKM,TUV,TUR,UGA,UKR,ARE,URY,UZB,VUT,VEN,VNM,WBG,YEM,ZMB,ZWE
+
+'
+      stderr: ''
+      duration_seconds: 0.03
+      stdout_contains_passed:
+      - AFG
+      - CHN
+      - NGA
+      - ZWE
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - group_helper_expands_group_to_countrycodes
+  - group_helper_outputs_idata_ready_countrycodes
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-10
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 tests/check_referenced_files.py
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 tests/check_referenced_files.py
+      exit_code: 0
+      stdout: 'OK: checked 276 file reference(s) across 23 active file(s).
+
+'
+      stderr: ''
+      duration_seconds: 0.053
+      stdout_contains_passed:
+      - 'OK: checked'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - active_referenced_file_scanner_passes
+  - missing_targets_report_source_and_suggestions
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-11
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source
+      "IFS CPI for the United States" --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source
+        "IFS CPI for the United States" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "routed",
+          "query": "IFS CPI for the United States",
+          "database": "IMF.STA:CPI",
+          "reason": "IFS is a legacy EcOS source, not a single iData dataset; route by topic to the replacement iData database.",
+          "next_step": "Run search with --database after the topic route is identified."
+        }
+      stderr: ''
+      duration_seconds: 0.026
+      stdout_contains_passed:
+      - '"status": "routed"'
+      - '"database": "IMF.STA:CPI"'
+      - IFS is a legacy EcOS source
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - catalog_helper_routes_legacy_ifs_topic
+  - catalog_helper_explains_replacement_database
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-15
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real
+      GDP growth" --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve
+        "real GDP growth" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "resolved",
+          "query": "real GDP growth",
+          "route": {
+            "status": "default",
+            "query": "real GDP growth",
+            "database": "IMF.RES.WEO:WEO_LIVE",
+            "reason": "No specialized source or topic route matched; WEO Live remains the default for common macro concepts.",
+            "next_step": "Run search \"real GDP growth\" first; use --all-databases only if WEO Live is not plausible."
+          },
+          "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+          "summary": {
+            "result_count": 5,
+            "database_counts": {
+              "IMF.RES.WEO:WEO_LIVE": 5
+            },
+            "dimension_counts": {
+              "INDICATOR": 5
+            },
+            "status": "resolved",
+            "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+            "recommended_next_step": "Use result.database_name, result.dimension_name, and result.code for handoff; do not run a data fetch from catalog context."
+          },
+          "result": {
+            "score": 124,
+            "database_name": "IMF.RES.WEO:WEO_LIVE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDP_RPCH",
+            "name": "Gross domestic product (GDP), Constant prices, Percent change"
+          },
+          "handoff": {
+            "database": "IMF.RES.WEO:WEO_LIVE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDP_RPCH",
+            "name": "Gross domestic product (GDP), Constant prices, Percent change",
+            "notes": "Top candidate is a high-scoring base concept and outranks close variants."
+          },
+          "candidates": [
+            {
+              "score": 124,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_RPCH",
+              "name": "Gross domestic product (GDP), Constant prices, Percent change"
+            },
+            {
+              "score": 123,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_RPCH_M",
+              "name": "Gross domestic product (GDP), Constant prices, Median, Percent change"
+            },
+            {
+              "score": 122,
+              "database_name": "IMF.RES.WEO:WEO_LIVE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDPRPC_PCH",
+              "name": "Gross domestic product (GDP), Constant prices, Per capita, Percent change"
+            }
+          ]
+        }
+      stderr: ''
+      duration_seconds: 0.566
+      stdout_contains_passed:
+      - '"status": "resolved"'
+      - '"handoff"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE"'
+      - '"database_name": "IMF.RES.WEO:WEO_LIVE"'
+      - '"dimension_name": "INDICATOR"'
+      - '"code": "NGDP_RPCH"'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - catalog_helper_resolves_unambiguous_identifier
+  - catalog_helper_outputs_handoff_tuple
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-16
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP
+      per capita" --database WB:WDI --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve
+        "GDP per capita" --database WB:WDI --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "ambiguous",
+          "query": "GDP per capita",
+          "route": {
+            "status": "explicit_database",
+            "query": "GDP per capita",
+            "database": "WB:WDI",
+            "reason": "The database was supplied explicitly by the caller.",
+            "next_step": "Run search \"GDP per capita\" --database WB:WDI."
+          },
+          "note": "Several close variants differ by transformation, unit, basis, or frequency.",
+          "summary": {
+            "result_count": 5,
+            "database_counts": {
+              "WB:WDI": 5
+            },
+            "dimension_counts": {
+              "SERIES": 5
+            },
+            "status": "ambiguous",
+            "note": "Several close variants differ by transformation, unit, basis, or frequency.",
+            "recommended_next_step": "Inspect the top candidates; use resolve when a single handoff identifier is needed."
+          },
+          "result": null,
+          "handoff": null,
+          "candidates": [
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_CD",
+              "name": "GDP per capita (current US$)"
+            },
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_CN",
+              "name": "GDP per capita (current LCU)"
+            },
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_KD",
+              "name": "GDP per capita (constant 2015 US$)"
+            },
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_KD_ZG",
+              "name": "GDP per capita (annual % growth)"
+            },
+            {
+              "score": 108,
+              "database_name": "WB:WDI",
+              "dimension_name": "SERIES",
+              "code": "NY_GDP_PCAP_KN",
+              "name": "GDP per capita (constant LCU)"
+            }
+          ],
+          "clarification": {
+            "question": "Which catalog candidate should I use: NY_GDP_PCAP_CD (GDP per capita (current US$)); NY_GDP_PCAP_CN (GDP per capita (current LCU)); NY_GDP_PCAP_KD (GDP per capita (constant 2015 US$)); NY_GDP_PCAP_KD_ZG (GDP per capita (annual % growth)); NY_GDP_PCAP_KN (GDP per capita (constant LCU))?",
+            "options": [
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_CD",
+                "name": "GDP per capita (current US$)",
+                "distinction": "GDP per capita (current US$)"
+              },
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_CN",
+                "name": "GDP per capita (current LCU)",
+                "distinction": "GDP per capita (current LCU)"
+              },
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_KD",
+                "name": "GDP per capita (constant 2015 US$)",
+                "distinction": "GDP per capita (constant 2015 US$)"
+              },
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_KD_ZG",
+                "name": "GDP per capita (annual % growth)",
+                "distinction": "GDP per capita (annual % growth)"
+              },
+              {
+                "database_name": "WB:WDI",
+                "dimension_name": "SERIES",
+                "code": "NY_GDP_PCAP_KN",
+                "name": "GDP per capita (constant LCU)",
+                "distinction": "GDP per capita (constant LCU)"
+              }
+            ]
+          }
+        }
+      stderr: ''
+      duration_seconds: 0.035
+      stdout_contains_passed:
+      - '"status": "ambiguous"'
+      - '"handoff": null'
+      - '"clarification"'
+      - '"database_name": "WB:WDI"'
+      - '"code": "NY_GDP_PCAP_CD"'
+      - '"code": "NY_GDP_PCAP_KD"'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - catalog_helper_preserves_wdi_gdp_per_capita_ambiguity
+  - catalog_helper_lists_candidate_variants
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-23
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions
+        IMF.STA:CPI
+      exit_code: 0
+      stdout: "database_name,dimension_name,count,example_codes\r\nIMF.STA:CPI,INDEX_TYPE,2,CPI;HICP\r\n"
+      stderr: ''
+      duration_seconds: 0.04
+      stdout_contains_passed:
+      - IMF.STA:CPI
+      - INDEX_TYPE
+      - CPI;HICP
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - catalog_helper_supports_dimension_discovery
+  - catalog_helper_prevents_indicator_dimension_assumption
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-24
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database
+      IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database
+        IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+      exit_code: 0
+      stdout: |
+        status: found
+        database: IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+        classification: vintage
+        notes: This is a dated WEO Live vintage, not the default live database.
+      stderr: ''
+      duration_seconds: 0.023
+      stdout_contains_passed:
+      - 'status: found'
+      - 'classification: vintage'
+      - dated WEO Live vintage
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - catalog_helper_classifies_weo_vintage_database
+  - catalog_helper_distinguishes_live_from_vintage
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-25
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes
+      PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes
+        PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+      exit_code: 0
+      stdout: |
+        status: complete
+        same_database: True
+        same_dimension: True
+        note: Compare the names for unit, timing, basis, and transformation differences before committing.
+        PCPI_PCH: IMF.RES.WEO:WEO_LIVE | INDICATOR | All Items, Consumer price index (CPI), Period average, percent change
+        PCPIE_PCH: IMF.RES.WEO:WEO_LIVE | INDICATOR | All Items, Consumer price index (CPI), End-of-period (EoP), percent change
+      stderr: ''
+      duration_seconds: 0.066
+      stdout_contains_passed:
+      - 'same_database: True'
+      - 'same_dimension: True'
+      - Period average, percent change
+      - End-of-period (EoP), percent change
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - catalog_helper_supports_code_comparison
+  - catalog_helper_returns_answer_ready_variant_distinctions
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-26
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April
+      2024 WEO vintage nominal GDP in US dollars" --json
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve
+        "April 2024 WEO vintage nominal GDP in US dollars" --json
+      exit_code: 0
+      stdout: |
+        {
+          "status": "resolved",
+          "query": "April 2024 WEO vintage nominal GDP in US dollars",
+          "route": {
+            "status": "routed",
+            "query": "April 2024 WEO vintage nominal GDP in US dollars",
+            "database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+            "reason": "The request targets a dated WEO Live vintage; indicator metadata are resolved from WEO Live and returned with the vintage database.",
+            "next_step": "Run resolve \"April 2024 WEO vintage nominal GDP in US dollars\" --database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE."
+          },
+          "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+          "summary": {
+            "result_count": 5,
+            "database_counts": {
+              "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE": 5
+            },
+            "dimension_counts": {
+              "INDICATOR": 5
+            },
+            "status": "resolved",
+            "note": "Top candidate is a high-scoring base concept and outranks close variants.",
+            "recommended_next_step": "Use result.database_name, result.dimension_name, and result.code for handoff; do not run a data fetch from catalog context."
+          },
+          "result": {
+            "score": 179,
+            "database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDPD",
+            "name": "Gross domestic product (GDP), Current prices, US dollar",
+            "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+          },
+          "handoff": {
+            "database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+            "dimension_name": "INDICATOR",
+            "code": "NGDPD",
+            "name": "Gross domestic product (GDP), Current prices, US dollar",
+            "notes": "Top candidate is a high-scoring base concept and outranks close variants. Indicator metadata were matched from IMF.RES.WEO:WEO_LIVE and the requested database remains IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE.",
+            "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+          },
+          "candidates": [
+            {
+              "score": 179,
+              "database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDPD",
+              "name": "Gross domestic product (GDP), Current prices, US dollar",
+              "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+            },
+            {
+              "score": 177,
+              "database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDPDPC",
+              "name": "Gross domestic product (GDP), Current prices, Per capita, US dollar",
+              "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+            },
+            {
+              "score": 177,
+              "database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE",
+              "dimension_name": "INDICATOR",
+              "code": "NGDP_FY_USD",
+              "name": "Gross domestic product (GDP), Current prices, Fiscal year, US dollar",
+              "indicator_source_database": "IMF.RES.WEO:WEO_LIVE"
+            }
+          ]
+        }
+      stderr: ''
+      duration_seconds: 0.05
+      stdout_contains_passed:
+      - '"status": "resolved"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
+      - '"database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
+      - '"indicator_source_database": "IMF.RES.WEO:WEO_LIVE"'
+      - '"code": "NGDPD"'
+      - '"handoff"'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - catalog_helper_preserves_requested_weo_vintage_database
+  - catalog_helper_reuses_weo_live_indicator_metadata
+  - catalog_helper_outputs_vintage_handoff_tuple
+  failed_assertions: []
+  notes: ''
+- id: CONTRACT-28
+  category: command_contracts
+  type: command_contract
+  result: pass
+  observed_primary_skill: 
+  observed_actions:
+    references_read: []
+    scripts_run:
+    - 'python3 -c ''import sys; sys.path.insert(0, ".claude/skills/imf-ra-catalog/scripts");
+      import catalog_data, catalog_routing, catalog_lookup, catalog_search; assert
+      catalog_data.WEO_LIVE_DB == "IMF.RES.WEO:WEO_LIVE"; assert catalog_routing.route_query("IFS
+      CPI")["database"] == "IMF.STA:CPI"; assert catalog_lookup.exact_code_matches("NGDP_RPCH",
+      "IMF.RES.WEO:WEO_LIVE"); assert catalog_search.classify_database("IMF.RES.WEO:WEO_LIVE")["status"]
+      == "found"; print("OK: catalog split modules import and expose expected helpers")''
+
+'
+    metadata_checked: true
+    clarification_asked: false
+    fetch_attempted: false
+    idata_pull_skipped: false
+  machine_check_results:
+    required_command_evidence:
+    - command: 'python3 -c ''import sys; sys.path.insert(0, ".claude/skills/imf-ra-catalog/scripts");
+        import catalog_data, catalog_routing, catalog_lookup, catalog_search; assert
+        catalog_data.WEO_LIVE_DB == "IMF.RES.WEO:WEO_LIVE"; assert catalog_routing.route_query("IFS
+        CPI")["database"] == "IMF.STA:CPI"; assert catalog_lookup.exact_code_matches("NGDP_RPCH",
+        "IMF.RES.WEO:WEO_LIVE"); assert catalog_search.classify_database("IMF.RES.WEO:WEO_LIVE")["status"]
+        == "found"; print("OK: catalog split modules import and expose expected helpers")''
+
+'
+      exit_code: 0
+      stdout: 'OK: catalog split modules import and expose expected helpers
+
+'
+      stderr: ''
+      duration_seconds: 0.042
+      stdout_contains_passed:
+      - 'OK: catalog split modules import and expose expected helpers'
+      stdout_contains_failed: []
+      stdout_must_not_contain_passed: []
+      stdout_must_not_contain_failed: []
+    final_response_status: not_required
+    final_response_must_include_not_evaluated: []
+    final_response_must_not_include_not_evaluated: []
+  passed_assertions:
+  - catalog_split_modules_import_cleanly
+  - catalog_search_preserves_public_helper_exports
+  failed_assertions: []
+  notes: ''

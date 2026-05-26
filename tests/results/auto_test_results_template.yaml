@@ -42,6 +42,16 @@ results:
       fetch_attempted: false
     evidence: >
       Command contract evidence, including key stdout/stderr lines.
+    machine_check_results:
+      required_command_evidence:
+        - command: bash .claude/skills/imf-ra/scripts/check_references.sh
+          exit_code: 0
+          stdout_contains_passed:
+            - "OK: all skills found, all references resolve."
+          stdout_contains_failed: []
+          stdout_must_not_contain_failed: []
+      final_response_must_include_failed: []
+      final_response_must_not_include_failed: []
     passed_assertions:
       - reference_checker_passes
     failed_assertions: []
@@ -61,6 +71,10 @@ results:
       fetch_attempted: false
     evidence: >
       Short trajectory evidence explaining why the result was assigned.
+    machine_check_results:
+      required_command_evidence: []
+      final_response_must_include_failed: []
+      final_response_must_not_include_failed: []
     passed_assertions:
       - start_data_retrieval_flow
     failed_assertions: []
@@ -81,6 +95,10 @@ results:
     evidence: >
       Example failure evidence: the agent attempted a broad all-country,
       all-indicator pull without explicit confirmation.
+    machine_check_results:
+      required_command_evidence: []
+      final_response_must_include_failed: []
+      final_response_must_not_include_failed: []
     passed_assertions: []
     failed_assertions:
       - ask_explicit_confirmation_before_broad_all_pull
