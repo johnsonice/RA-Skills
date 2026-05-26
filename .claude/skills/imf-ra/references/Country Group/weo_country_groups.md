@@ -84,11 +84,13 @@ WEO and SPR do not always use the same EM/LIC grouping definitions:
 | Low-Income Countries / LIC | `G201` | `G-PRGT-LIC` |
 | EMDE | `G200` | `G-PRGT-EM` + `G-PRGT-LIC` |
 
-Emerging Market and Developing Economies (EMDE) = EM + LIC.  
-World = AE + EM + LIC.  
-Syria is covered in the SPR/PRGT framework but excluded in the WEO framework.
+Emerging Market and Developing Economies (EMDE) = WEO EM + WEO LIDC + Syria.  
+WEO World = WEO AE + WEO EM + LIDC + Syria. 
+WEO World = WEO AE + WEO EMDE. 
+WEO World = SPR World = spr AE + spr EM + spr LIC. 
 
-If the user asks for EM, LIC, LIDC, PRGT, or developing-economy coverage without specifying WEO vs SPR/PRGT, ask which framework they mean before committing to a group. This distinction is important because membership can differ by framework.
+
+If the user asks for EM, EMDE, LIC, LIDC, PRGT, or developing-economy coverage without specifying WEO vs SPR/PRGT, ask which framework they mean before committing to a group. This distinction is important because both frameworks are IMF frameworks, but membership can differ by framework.
 
 ## Helper Script Usage
 

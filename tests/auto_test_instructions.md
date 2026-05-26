@@ -138,6 +138,8 @@ handoff payloads.
 These cases check WEO country/group lookup, framework-sensitive group meanings,
 ambiguous country names, and iData-ready group expansion.
 
+For EMDE prompts that say "IMF purposes" without naming WEO or SPR/PRGT, the expected behavior is to show both IMF frameworks and ask the user to choose before committing to a group: WEO `G200` versus SPR/PRGT `G-PRGT-EM` plus `G-PRGT-LIC`.
+
 | ID | Prompt | Skill Set Involved |
 |---|---|---|
 | CONV-01 | Which countries are in the WEO advanced economies group? | `imf-ra` |

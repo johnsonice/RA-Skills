@@ -188,13 +188,13 @@ TERM_EXPLANATIONS = {
     },
     "emde": {
         "title": "Emerging Market and Developing Economies",
-        "note": "WEO EMDE maps to G200. In this reference EMDE is broader than WEO EM alone.",
-        "groups": [("WEO", "G200")],
+        "note": "EMDE is framework-sensitive. WEO EMDE maps to G200; SPR/PRGT EMDE is represented by G-PRGT-EM plus G-PRGT-LIC. Clarify WEO vs SPR/PRGT before committing to a group.",
+        "groups": [("WEO", "G200"), ("SPR/PRGT", "G-PRGT-EM"), ("SPR/PRGT", "G-PRGT-LIC")],
     },
     "emdes": {
         "title": "Emerging Market and Developing Economies",
-        "note": "WEO EMDE maps to G200. In this reference EMDE is broader than WEO EM alone.",
-        "groups": [("WEO", "G200")],
+        "note": "EMDE is framework-sensitive. WEO EMDE maps to G200; SPR/PRGT EMDE is represented by G-PRGT-EM plus G-PRGT-LIC. Clarify WEO vs SPR/PRGT before committing to a group.",
+        "groups": [("WEO", "G200"), ("SPR/PRGT", "G-PRGT-EM"), ("SPR/PRGT", "G-PRGT-LIC")],
     },
 }
 

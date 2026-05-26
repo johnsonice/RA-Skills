@@ -115,20 +115,30 @@ cases:
   area: Country-group translation
   prompt: For IMF purposes, what does EMDE mean here?
   expected_primary_skill: imf-ra
-  expected_behavior: 'Uses the WEO group reference instead of guessing from memory.
+  expected_behavior: 'Uses the WEO group reference instead of guessing from memory, but treats "IMF purposes" as framework-ambiguous because both WEO and SPR/PRGT are IMF frameworks. The agent should explain that WEO EMDE maps to G200, SPR/PRGT EMDE is represented by G-PRGT-EM plus G-PRGT-LIC, and ask the user to choose WEO or SPR/PRGT before committing to a group.
 
 '
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
     - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py explain EMDE
+  expected_outputs:
+    weo_groupcode: G200
+    spr_prgt_groupcodes:
+    - G-PRGT-EM
+    - G-PRGT-LIC
   assertions:
     required:
     - use_weo_group_reference
     - include_groupcode_G200
+    - include_spr_prgt_groupcodes
+    - ask_framework_clarification
     forbidden:
     - answer_from_memory_only
     - invent_group_definition
+    - commit_to_weo_without_framework_confirmation
 - id: CONV-03
   category: core_behavior_pipeline
   type: single_turn
