@@ -1,2308 +1,1377 @@
-schema_version: "1.0"
+---
+schema_version: '1.0'
 source: tests/auto_test_instructions.md
-
 categories:
-  - routing_smoke
-  - shared_conventions
-  - catalog_discovery
-  - data_workflow
-  - helper_contract
-  - end_to_end
-
+- core_behavior_pipeline
+- catalog_helper_behavior
+- weo_group_helper_behavior
+- data_workflow_guardrails
+- command_contracts
 types:
-  - single_turn
-  - fixture_based
-  - multi_step
-  - pre_test
-  - command_contract
-
+- single_turn
+- fixture_based
+- multi_step
+- pre_test
+- command_contract
 pre_test_checks:
-  - id: PRE-01
-    category: helper_contract
-    type: pre_test
-    name: Verify referenced files exist
-    instructions: >
-      Before running behavioral prompts, scan active Markdown, YAML, shell, and
-      Python files for file-looking references and verify that each target
-      exists. If a target is missing, report whether no likely target exists or
-      whether a similarly named nearby file suggests a filename inconsistency.
-      Stop the behavioral run, alert the user with the exact source path and
-      referenced target, and ask the user to decide whether to create/restore
-      the missing target, rename the file, update the reference, or retire the
-      stale test/doc.
-    required_canonical_files:
-      - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-      - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
-      - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      - .claude/skills/imf-ra-catalog/indicators/2. bbg_variable_list.csv
-      - .claude/skills/imf-ra-catalog/indicators/3. wdi_variable_list.csv
-      - .claude/skills/imf-ra-catalog/indicators/4. wto_variable_List.csv
-    scan_targets:
-      - .claude
-      - README.md
-      - CLAUDE.md
-      - tests/auto_test_cases.yaml
-      - tests/auto_test_instructions.md
-      - tests/results/auto_test_results_template.yaml
-      - tests/results/auto_test_report_template.md
-    suggested_commands:
-      - bash .claude/skills/imf-ra/scripts/check_references.sh
-      - python3 tests/check_referenced_files.py
-    pass_condition: >
-      The skill reference checker passes, all required/canonical paths exist,
-      and the broader referenced-file scanner reports that every active
-      file-looking reference resolves.
+- id: PRE-01
+  category: command_contracts
+  type: pre_test
+  name: Verify referenced files exist
+  instructions: 'Before running behavioral prompts, scan active Markdown, YAML, shell, and Python files for file-looking references and verify that each target exists. If a target is missing, report whether no likely target exists or whether a similarly named nearby file suggests a filename inconsistency. Stop the behavioral run, alert the user with the exact source path and referenced target, and ask the user to decide whether to create/restore the missing target, rename the file, update the reference, or retire the stale test/doc.
 
+'
+  required_canonical_files:
+  - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+  - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+  - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+  - ".claude/skills/imf-ra-catalog/indicators/2. bbg_variable_list.csv"
+  - ".claude/skills/imf-ra-catalog/indicators/3. wdi_variable_list.csv"
+  - ".claude/skills/imf-ra-catalog/indicators/4. wto_variable_List.csv"
+  scan_targets:
+  - ".claude"
+  - README.md
+  - CLAUDE.md
+  - tests/auto_test_cases.yaml
+  - tests/auto_test_instructions.md
+  - tests/results/auto_test_results_template.yaml
+  - tests/results/auto_test_report_template.md
+  suggested_commands:
+  - bash .claude/skills/imf-ra/scripts/check_references.sh
+  - python3 tests/check_referenced_files.py
+  pass_condition: 'The skill reference checker passes, all required/canonical paths exist, and the broader referenced-file scanner reports that every active file-looking reference resolves.
+
+'
 cases:
-  - id: SMOKE-01
-    category: routing_smoke
-    type: single_turn
-    prompt: "Pull WEO real GDP growth for G20 countries, 2010-present."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Treats this as a direct fetch request, not a broad discovery question.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
-    assertions:
-      required:
-        - start_data_retrieval_flow
-        - preserve_direct_fetch_intent
-        - identify_missing_fetch_inputs
-      forbidden:
-        - treat_as_broad_orientation
-        - invent_identifier
-        - fetch_without_output_format
-
-  - id: SMOKE-02
-    category: routing_smoke
-    type: single_turn
-    prompt: "I'm starting a project on emerging market debt - orient me to what's available."
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Provides broad orientation across available sources or workflows instead
-      of jumping straight into a narrow fetch.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/database_overview.md
-    assertions:
-      required:
-        - provide_orientation
-        - describe_relevant_sources_or_workflows
-      forbidden:
-        - start_narrow_fetch_without_identifier
-        - invent_identifier
-
-  - id: SMOKE-03
-    category: routing_smoke
-    type: single_turn
-    prompt: "Find me a quarterly inflation series for emerging markets."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Treats this as discovery with a frequency constraint and searches for
-      suitable candidates.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "quarterly inflation" --all-databases
-    assertions:
-      required:
-        - start_catalog_discovery
-        - account_for_frequency_constraint
-      forbidden:
-        - immediate_download
-        - invent_identifier
-
-  - id: SMOKE-04
-    category: routing_smoke
-    type: single_turn
-    prompt: "Download IFS exchange rates monthly for ASEAN, 2015-present."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Treats this as a direct retrieval task with country-group and time-range
-      handling.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-    assertions:
-      required:
-        - start_data_retrieval_flow
-        - resolve_or_clarify_exchange_rate_identifier
-        - resolve_or_clarify_country_group_membership
-      forbidden:
-        - invent_identifier
-        - use_groupcode_as_country_selector
-        - fetch_without_output_format
-
-  - id: SMOKE-05
-    category: routing_smoke
-    type: single_turn
-    prompt: "What's the difference between WEO inflation and CPI in IFS?"
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Surfaces both concepts with notes instead of collapsing them into one.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-        - .claude/skills/imf-ra-catalog/databases/database_overview.md
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "inflation CPI" --all-databases
-    assertions:
-      required:
-        - compare_catalog_concepts
-        - distinguish_weo_inflation_from_ifs_cpi
-      forbidden:
-        - collapse_to_single_series
-        - immediate_download
-
-  - id: CONV-01
-    category: shared_conventions
-    type: single_turn
-    area: No unnecessary code
-    prompt: "Which countries are in the WEO advanced economies group?"
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Answers from the WEO group reference or CSV contents instead of writing
-      code if simple inspection is enough.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
-        - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
-    assertions:
-      required:
-        - use_weo_group_reference
-        - answer_with_reference_backed_membership
-      forbidden:
-        - write_new_script
-        - guess_group_membership
-
-  - id: CONV-02
-    category: shared_conventions
-    type: single_turn
-    area: Country-group translation
-    prompt: "For IMF purposes, what does EMDE mean here?"
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Uses the WEO group reference instead of guessing from memory.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
-    assertions:
-      required:
-        - use_weo_group_reference
-        - include_groupcode_G200
-      forbidden:
-        - answer_from_memory_only
-        - invent_group_definition
-
-  - id: CONV-03
-    category: shared_conventions
-    type: single_turn
-    area: Uncertainty policy
-    prompt: "Get me the IMF inflation series."
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Does not guess; asks a clarifying question because multiple plausible
-      indicators or databases exist.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "inflation CPI" --all-databases
-    assertions:
-      required:
-        - ask_clarification
-        - acknowledge_multiple_plausible_series
-      forbidden:
-        - select_single_inflation_series_without_support
-        - invent_identifier
-
-  - id: CAT-01
-    category: catalog_discovery
-    type: single_turn
-    area: WEO-first policy
-    prompt: "Find the IMF indicator for real GDP growth."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Searches WEO Live first for a common annual macro concept.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      dimension_name: INDICATOR
-      code: NGDP_RPCH
-    assertions:
-      required:
-        - start_with_weo_live
-        - include_code_NGDP_RPCH
-        - include_dimension_name
-      forbidden:
-        - search_vintage_first
-        - invent_identifier
-
-  - id: CAT-02
-    category: catalog_discovery
-    type: single_turn
-    area: Frequency mismatch
-    prompt: "Find a quarterly WEO inflation series."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Checks whether WEO supports the requested quarterly inflation concept and
-      flags a frequency mismatch or better-suited source when the catalog does
-      not support it directly.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "quarterly inflation" --all-databases
-    assertions:
-      required:
-        - verify_frequency_support_or_flag_mismatch
-        - ask_clarification_or_surface_better_suited_source
-      forbidden:
-        - pretend_quarterly_weo_is_straightforward
-        - immediate_download
-
-  - id: CAT-03
-    category: catalog_discovery
-    type: single_turn
-    area: Ambiguous candidates
-    prompt: "Find the current account balance series."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Returns multiple plausible candidates with short distinction notes
-      instead of collapsing them into one.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "current account balance" --all-databases
-    assertions:
-      required:
-        - return_multiple_candidates
-        - include_distinction_notes
-        - ask_clarification
-      forbidden:
-        - collapse_to_single_series
-        - invent_identifier
-
-  - id: CAT-04
-    category: catalog_discovery
-    type: single_turn
-    area: Cross-database search only when needed
-    prompt: "Find a financial soundness indicator for bank capital adequacy."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Searches beyond WEO when the concept is outside normal WEO coverage.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/database_overview.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "financial soundness regulatory capital risk weighted assets" --all-databases
-    assertions:
-      required:
-        - expand_beyond_weo
-        - surface_fsi_or_relevant_candidates
-      forbidden:
-        - force_weo_match
-        - invent_identifier
-
-  - id: CAT-05
-    category: catalog_discovery
-    type: single_turn
-    area: Non-vintage default
-    prompt: "Find me the WEO series for nominal GDP in USD."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Uses the non-vintage WEO catalog by default and identifies NGDPD without
-      asking for a vintage.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      dimension_name: INDICATOR
-      code: NGDPD
-    assertions:
-      required:
-        - use_database_IMF.RES.WEO:WEO_LIVE
-        - include_code_NGDPD
-      forbidden:
-        - search_vintage_without_explicit_request
-        - ask_vintage_clarification
-        - invent_identifier
-
-  - id: CAT-06
-    category: catalog_discovery
-    type: single_turn
-    area: No invented identifiers
-    prompt: "Find the exact IMF code for a custom concept that may not exist."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Surfaces the gap and asks for a hint or clarification; does not invent a
-      code.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-    assertions:
-      required:
-        - state_catalog_gap_or_uncertainty
-        - ask_for_hint_or_clarification
-      forbidden:
-        - invent_identifier
-        - claim_exact_code_without_support
-
-  - id: DATA-01
-    category: data_workflow
-    type: single_turn
-    area: Requires confirmed identifier
-    prompt: "Pull the IMF data for inflation."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      If the identifier is not confirmed, routes through catalog logic first
-      rather than inventing an indicator code.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-    assertions:
-      required:
-        - require_identifier_resolution
-        - handoff_to_catalog_or_ask_identifier_clarification
-      forbidden:
-        - invent_identifier
-        - fetch_without_confirmed_identifier
-
-  - id: DATA-02
-    category: data_workflow
-    type: single_turn
-    area: Always confirm time range
-    prompt: "Download IFS CPI for the United States."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Explicitly asks for start and end before fetching.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-    assertions:
-      required:
-        - ask_start_and_end
-        - stop_before_fetch
-      forbidden:
-        - assume_time_range
-        - fetch_without_time_range
-
-  - id: DATA-03
-    category: data_workflow
-    type: fixture_based
-    area: Ask only for unresolved multi-value dimensions
-    prompt: "Download confirmed WEO Live real GDP growth, annual, United States, 2010-2024."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_code: NGDP_RPCH
-      frequency: A
-      country: USA
-      start: "2010"
-      end: "2024"
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Uses already supplied dimensions, auto-resolves any single-value
-      dimensions silently, and asks only for unresolved multi-value dimensions.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-      optional_commands:
-        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      dimension_name: INDICATOR
-      code: NGDP_RPCH
-      country: USA
-      frequency: A
-      start: "2010"
-      end: "2024"
-    assertions:
-      required:
-        - preserve_confirmed_inputs
-        - inspect_dimensions_with_fetch_idata_explore
-        - slot_code_by_catalog_dimension_name
-        - ask_only_unresolved_dimensions
-        - ask_output_format
-      forbidden:
-        - reask_known_inputs
-        - invent_dimension_value
-        - hardcode_dimension_order_without_metadata
-        - fetch_without_output_format
-
-  - id: DATA-04
-    category: data_workflow
-    type: single_turn
-    area: Dimension options on request
-    prompt: "What frequencies are available for database IMF.RES.WEO:WEO_LIVE?"
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Uses dimension metadata and presents readable frequency options instead
-      of a raw dump when possible.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-      optional_commands:
-        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values FREQUENCY
-    assertions:
-      required:
-        - inspect_dimension_metadata
-        - present_readable_frequency_options
-      forbidden:
-        - raw_unexplained_code_dump
-        - ask_which_database
-
-  - id: DATA-05
-    category: data_workflow
-    type: single_turn
-    area: LIVE vs vintage explicit live
-    prompt: "Use live WEO data for real GDP growth."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Uses the LIVE database directly and does not substitute a vintage.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-    assertions:
-      required:
-        - use_database_IMF.RES.WEO:WEO_LIVE
-        - preserve_explicit_live_intent
-      forbidden:
-        - use_vintage_database
-        - substitute_closest_vintage
-
-  - id: DATA-06
-    category: catalog_discovery
-    type: single_turn
-    area: Vintage loose date mapping
-    prompt: "Use the April 2024 WEO vintage for nominal GDP."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Maps the request to the April 2024 WEO vintage without asking again about
-      the vintage, then preserves candidate-level ambiguity if nominal GDP unit
-      or variant is not specified.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP" --json
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
-    assertions:
-      required:
-        - resolve_to_april_2024_weo_vintage
-        - map_loose_vintage_date
-        - preserve_nominal_gdp_variant_ambiguity
-        - preserve_vintage_database_in_candidates_or_handoff
-        - use_weo_live_indicator_metadata_for_vintage
-      forbidden:
-        - ask_which_vintage_when_clear
-        - use_live_database_instead
-
-  - id: DATA-07
-    category: data_workflow
-    type: fixture_based
-    area: Output format confirmation
-    prompt: "Given database IMF.RES.WEO:WEO_LIVE and key USA.NGDP_RPCH.A for 2010-2024, download the series once you have the key."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_key: USA.NGDP_RPCH.A
-      start: "2010"
-      end: "2024"
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Asks which output format the user wants: Refreshable, Wide, or Long; for
-      Wide or Long also confirms CSV vs Excel.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      key: USA.NGDP_RPCH.A
-      start: "2010"
-      end: "2024"
-    assertions:
-      required:
-        - ask_output_format
-        - include_refreshable_wide_long_options
-        - distinguish_refreshable_from_raw_wide_and_long
-      forbidden:
-        - assume_output_format
-        - fetch_without_output_format
-
-  - id: DATA-08
-    category: data_workflow
-    type: fixture_based
-    area: Refreshable distinction
-    prompt: "Given database IMF.RES.WEO:WEO_LIVE, key USA.NGDP_RPCH.A, and time range 2010-2024, give me the raw wide file."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_key: USA.NGDP_RPCH.A
-      start: "2010"
-      end: "2024"
-      requested_output: raw_wide
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Does not substitute refreshable output for raw wide output.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      key: USA.NGDP_RPCH.A
-      start: "2010"
-      end: "2024"
-      output_format: wide
-    assertions:
-      required:
-        - preserve_raw_wide_output_semantics
-        - use_wide_format_not_refreshable
-      forbidden:
-        - substitute_refreshable_for_raw_wide
-
-  - id: DATA-09
-    category: data_workflow
-    type: single_turn
-    area: EcOS retired policy
-    prompt: "Use EcOS retrieval to get this IMF series."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Explains that EcOS retrieval is retired and provides the iData-equivalent
-      path instead.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - docs/data_tools_docs/imf_datatools_agent_api_reference.md
-    assertions:
-      required:
-        - reject_ecos_retrieval
-        - redirect_to_idata_workflow
-      forbidden:
-        - use_ecos_retrieval
-        - call_get_ecos_sdmx_data
-
-  - id: DATA-10
-    category: data_workflow
-    type: single_turn
-    area: Safe query policy
-    prompt: "Pull all countries, all indicators, all frequencies from IMF.RES.WEO:WEO_LIVE."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Avoids broad ALL pulls unless explicitly confirmed and warns or narrows
-      the request where appropriate.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    assertions:
-      required:
-        - warn_or_narrow_large_query
-        - ask_explicit_confirmation_before_broad_all_pull
-      forbidden:
-        - launch_huge_pull_immediately
-        - ask_which_database
-
-  - id: GROUP-01
-    category: data_workflow
-    type: single_turn
-    area: Country-group expansion for data pull
-    prompt: "Pull WEO real GDP growth for EMDEs, 2010-2024."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Resolves EMDEs through the WEO country-group reference and helper command
-      map, expands G200 to member country codes for iData handoff, and does not
-      use G200 directly as the iData country selector unless metadata confirms
-      an aggregate code is supported.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
-    expected_outputs:
-      groupcode: G200
-      start: "2010"
-      end: "2024"
-    assertions:
-      required:
-        - resolve_group_to_member_countries_or_clarify_aggregate
-        - use_or_mirror_weo_helper_expand_for_idata
-        - preserve_time_range_2010_2024
-      forbidden:
-        - use_groupcode_as_country_selector
-        - invent_group_membership
-        - fetch_without_output_format
-
-  - id: GROUP-02
-    category: shared_conventions
-    type: single_turn
-    area: Ambiguous EM/LIC coverage
-    prompt: "Pull real GDP growth for low-income countries, 2010-2024."
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Asks whether the user means WEO low-income developing countries or another
-      institutional coverage such as SPR or PRGT before committing to a group.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
-    assertions:
-      required:
-        - ask_group_definition_clarification
-        - mention_possible_weo_vs_spr_or_prgt_coverage
-      forbidden:
-        - assume_low_income_group_definition
-        - invent_group_membership
-
-  - id: GROUP-03
-    category: data_workflow
-    type: single_turn
-    area: Country alias resolution
-    prompt: "Download WEO nominal GDP for America, 2015-2024."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Resolves the supported country alias America to USA through the WEO
-      references, then continues the retrieval workflow without guessing missing
-      fetch inputs.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve America
-    expected_outputs:
-      country: USA
-      start: "2015"
-      end: "2024"
-    assertions:
-      required:
-        - resolve_country_alias_to_USA
-        - preserve_time_range_2015_2024
-        - require_identifier_or_output_confirmation_as_needed
-      forbidden:
-        - ask_country_clarification_for_supported_alias
-        - invent_identifier
-        - fetch_without_output_format
-
-  - id: GROUP-04
-    category: shared_conventions
-    type: single_turn
-    area: Group code versus data selector
-    prompt: "Can I use G110 directly in an iData pull for WEO data?"
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Explains that WEO group codes are for group lookup and membership mapping,
-      and should not be used directly as country selectors unless dataset
-      metadata confirms aggregate-code support.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
-    expected_outputs:
-      groupcode: G110
-    assertions:
-      required:
-        - explain_groupcode_lookup_vs_country_selector
-        - recommend_member_country_expansion_or_metadata_check
-      forbidden:
-        - say_groupcode_is_always_valid_country_selector
-        - invent_metadata_support
-
-  - id: PIPE-01
-    category: shared_conventions
-    type: single_turn
-    area: Query execution pipeline - direct lookup
-    prompt: "What does EMDE mean in the WEO country group reference?"
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Classifies this as an exact small lookup and answers directly from the
-      WEO reference/CSV without running helper commands or writing temporary
-      code.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv
-    expected_outputs:
-      groupcode: G200
-      meaning: Emerging Market and Developing Economies
-    assertions:
-      required:
-        - classify_exact_small_lookup
-        - answer_from_reference_without_code
-        - include_groupcode_G200
-      forbidden:
-        - run_helper_for_simple_exact_lookup
-        - write_new_script
-        - invent_group_definition
-
-  - id: PIPE-02
-    category: shared_conventions
-    type: single_turn
-    area: Query execution pipeline - ambiguous resolution
-    prompt: "Resolve Congo in the WEO country reference before a data pull."
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Classifies Congo as an ambiguous country term, checks the WEO helper
-      command map, uses or mirrors `resolve Congo`, and asks the user to choose
-      between Republic of Congo and Democratic Republic of the Congo before any
-      downstream data-pull setup.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
-    expected_outputs:
-      candidates:
-        - COG
-        - COD
-    assertions:
-      required:
-        - classify_fuzzy_ambiguous_lookup
-        - use_or_mirror_weo_helper_resolve
-        - present_country_candidates_with_codes
-        - ask_country_clarification_before_fetch
-      forbidden:
-        - assume_one_congo
-        - write_new_script
-        - fetch_without_country_confirmation
-
-  - id: PIPE-03
-    category: shared_conventions
-    type: single_turn
-    area: Query execution pipeline - framework comparison
-    prompt: "What is the difference between WEO and SPR/PRGT coverage in LIC?"
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Classifies this as a comparative group-membership task, checks the WEO
-      helper command map, uses or mirrors `compare G201 G-PRGT-LIC`, and reports
-      counts plus only-in-each-framework countries.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC
-    expected_outputs:
-      weo_groupcode: G201
-      spr_prgt_groupcode: G-PRGT-LIC
-      only_in_weo:
-        - NGA
-      only_in_spr_prgt:
-        - SYR
-    assertions:
-      required:
-        - classify_comparative_group_task
-        - use_or_mirror_weo_helper_compare
-        - report_group_counts
-        - report_only_in_each_group
-      forbidden:
-        - write_temp_set_diff_code
-        - answer_from_memory_only
-        - omit_framework_difference
-
-  - id: PIPE-04
-    category: data_workflow
-    type: single_turn
-    area: Query execution pipeline - iData handoff expansion
-    prompt: "Prepare WEO real GDP growth for EMDEs, 2010-2024, for an iData pull."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Classifies this as handoff preparation, checks the WEO helper command map,
-      expands G200 to member countrycode values using or mirroring
-      `expand-for-idata G200 --codes-only`, and does not pass G200 as the
-      country selector unless dataset metadata confirms aggregate support.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
-    expected_outputs:
-      groupcode: G200
-      start: "2010"
-      end: "2024"
-    assertions:
-      required:
-        - classify_handoff_expansion_task
-        - use_or_mirror_weo_helper_expand_for_idata
-        - resolve_group_to_member_countrycodes
-        - preserve_time_range_2010_2024
-      forbidden:
-        - use_groupcode_as_country_selector
-        - write_new_script
-        - fetch_without_output_format
-
-  - id: PIPE-05
-    category: shared_conventions
-    type: single_turn
-    area: Query execution pipeline - helper-supported alias
-    prompt: "What is the WEO country code for South Korea?"
-    expected_primary_skill: imf-ra
-    expected_behavior: >
-      Classifies this as a supported country alias lookup, uses direct reference
-      matching or the helper alias layer, and returns KOR without asking for
-      country clarification.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/weo_country_groups.md
-        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve "South Korea"
-    expected_outputs:
-      countrycode: KOR
-    assertions:
-      required:
-        - classify_supported_alias_lookup
-        - resolve_country_alias_to_KOR
-        - answer_with_countrycode_and_countryname
-      forbidden:
-        - ask_country_clarification_for_supported_alias
-        - write_new_script
-        - return_unofficial_country_code
-
-  - id: VINTAGE-01
-    category: catalog_discovery
-    type: single_turn
-    area: Unspecified WEO vintage
-    prompt: "Use a WEO vintage for real GDP growth."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Recognizes that the user requested a vintage but did not specify which
-      one, and asks for the intended vintage instead of choosing one silently.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
-    assertions:
-      required:
-        - ask_which_vintage
-        - preserve_real_gdp_growth_intent
-      forbidden:
-        - choose_latest_vintage_without_confirmation
-        - substitute_live_database
-
-  - id: VINTAGE-02
-    category: catalog_discovery
-    type: single_turn
-    area: Latest live versus latest vintage
-    prompt: "Use the latest WEO data for nominal GDP."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Treats latest WEO data as WEO Live by default or clarifies if the user
-      means latest historical vintage, without silently substituting a dated
-      vintage.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO data nominal GDP" --json
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-    assertions:
-      required:
-        - prefer_weo_live_or_clarify_latest_vintage
-        - preserve_nominal_gdp_intent
-      forbidden:
-        - silently_choose_dated_vintage
-        - invent_identifier
-
-  - id: VINTAGE-03
-    category: catalog_discovery
-    type: single_turn
-    area: VINTAGE substring discriminator
-    prompt: "Is IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE a live database or a WEO vintage?"
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Identifies the database as a vintage snapshot because the resource ID
-      contains VINTAGE, even though it also contains WEO_LIVE.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
-      database_form: vintage
-    assertions:
-      required:
-        - classify_resource_with_VINTAGE_as_vintage
-        - avoid_live_substring_misclassification
-      forbidden:
-        - classify_as_live_because_contains_LIVE
-        - substitute_IMF.RES.WEO:WEO_LIVE
-
-  - id: VINTAGE-04
-    category: catalog_discovery
-    type: single_turn
-    area: Latest vintage wording
-    prompt: "Use the latest WEO vintage for nominal GDP."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Treats "latest WEO vintage" as an explicit historical-vintage request,
-      resolves the latest vintage database, preserves WEO Live indicator
-      metadata as the source for indicator rows, and asks for the GDP unit or
-      variant if the nominal GDP indicator is ambiguous.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO vintage nominal GDP" --json
-    assertions:
-      required:
-        - recognize_explicit_latest_vintage_request
-        - resolve_latest_vintage_database
-        - use_weo_live_indicator_metadata_for_vintage
-        - preserve_nominal_gdp_variant_ambiguity
-        - preserve_nominal_gdp_intent
-      forbidden:
-        - substitute_live_database
-        - ask_live_or_vintage_when_user_said_vintage
-
-  - id: VINTAGE-05
-    category: catalog_discovery
-    type: single_turn
-    area: Unspecified live versus vintage
-    prompt: "Use WEO data for nominal GDP."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Presents WEO Live as the primary current-data option and mentions vintage
-      only as an alternative when the user has not specified a dated release.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/databases/vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-    expected_outputs:
-      primary_database: IMF.RES.WEO:WEO_LIVE
-    assertions:
-      required:
-        - present_weo_live_as_primary_current_option
-        - avoid_silent_vintage_default
-      forbidden:
-        - choose_closest_vintage_without_request
-        - omit_live_option
-
-  - id: CAT-07
-    category: catalog_discovery
-    type: single_turn
-    area: WDI-specific indicator file
-    prompt: "Find the World Bank WDI indicator for GDP per capita."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Uses the WDI-specific indicator catalog for an explicit World Bank WDI
-      request rather than the general IMF non-vintage variable list.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/3. wdi_variable_list.csv
-    assertions:
-      required:
-        - use_wdi_indicator_catalog
-        - include_database_WB:WDI
-        - include_dimension_name_SERIES
-        - surface_code_NY_GDP_PCAP_CD_or_related_wdi_candidates
-        - return_wdi_candidates_or_exact_match
-      forbidden:
-        - search_only_general_imf_variable_list
-        - force_weo_match
-        - invent_identifier
-
-  - id: CAT-08
-    category: catalog_discovery
-    type: single_turn
-    area: Bloomberg-specific indicator file
-    prompt: "Find the Bloomberg ticker field for 10-year government bond yields."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Uses the Bloomberg-specific indicator catalog for an explicit Bloomberg
-      request rather than WEO or the general IMF indicator catalog.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/2. bbg_variable_list.csv
-    assertions:
-      required:
-        - use_bloomberg_indicator_catalog
-        - include_database_IMF.CSF:BBGDL
-        - include_dimension_name_TICKER
-        - return_bloomberg_candidates_or_clarify
-      forbidden:
-        - force_weo_match
-        - search_only_general_imf_variable_list
-        - invent_identifier
-
-  - id: CAT-09
-    category: catalog_discovery
-    type: single_turn
-    area: WTO-specific commodity file
-    prompt: "Find the WTO-IMF Tariff Tracker commodity code for wheat."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Uses the WTO-specific catalog for a WTO tariff/commodity request and
-      returns HS commodity candidates rather than searching only the general IMF
-      variable list.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/4. wto_variable_List.csv
-      optional_commands:
-        - rg -i "wheat" ".claude/skills/imf-ra-catalog/indicators/4. wto_variable_List.csv"
-    expected_outputs:
-      database: WTO:WTOIMFTT
-      dimension_name: COMMODITY
-    assertions:
-      required:
-        - use_wto_indicator_catalog
-        - include_database_WTO:WTOIMFTT
-        - include_dimension_name_COMMODITY
-        - return_hs_commodity_candidates_or_clarify
-      forbidden:
-        - search_only_general_imf_variable_list
-        - force_weo_match
-        - invent_identifier
-
-  - id: CAT-10
-    category: catalog_discovery
-    type: single_turn
-    area: Legacy IFS migration
-    prompt: "Find the IFS CPI series for the United States."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Treats IFS as a retired legacy source hint, explains that IFS is no
-      longer a single iData dataset, and searches the replacement CPI topic
-      database for the exact indicator instead of returning an IFS database.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/database_overview.md
-        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "CPI consumer price index" --all-databases
-    expected_outputs:
-      replacement_database: IMF.STA:CPI
-    assertions:
-      required:
-        - explain_ifs_retired_as_single_idata_dataset
-        - treat_ifs_as_legacy_source_hint
-        - search_replacement_cpi_database
-        - include_replacement_database_IMF.STA_CPI
-      forbidden:
-        - return_single_IFS_database
-        - use_ecos_retrieval
-        - invent_identifier
-
-  - id: CAT-11
-    category: catalog_discovery
-    type: single_turn
-    area: Explicit legacy WEO override
-    prompt: "Find nominal GDP in IMF.RES:WEO, not WEO Live."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Honors the explicitly named legacy WEO database instead of applying the
-      default WEO Live preference, while still resolving the matching nominal
-      GDP indicator from catalog evidence.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets IMF.RES:WEO
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP" --database IMF.RES:WEO
-    expected_outputs:
-      database: IMF.RES:WEO
-      dimension_name: INDICATOR
-      code: NGDPD
-    assertions:
-      required:
-        - honor_explicit_database_IMF.RES_WEO
-        - do_not_apply_weo_live_default_when_user_overrides
-        - include_nominal_gdp_candidate_from_legacy_weo
-      forbidden:
-        - substitute_IMF.RES.WEO_WEO_LIVE
-        - ignore_explicit_not_weo_live
-        - invent_identifier
-
-  - id: DATA-11
-    category: data_workflow
-    type: fixture_based
-    area: Metadata options when requested
-    prompt: "Download confirmed WEO Live real GDP growth for the United States, 2010-2024. What frequency options are available before we choose?"
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_code: NGDP_RPCH
-      country: USA
-      start: "2010"
-      end: "2024"
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Since the user explicitly asks for frequency options, reads dimension
-      metadata and presents readable choices before continuing the fetch.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-      optional_commands:
-        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values FREQUENCY
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      dimension_name: INDICATOR
-      code: NGDP_RPCH
-      country: USA
-      start: "2010"
-      end: "2024"
-    assertions:
-      required:
-        - inspect_frequency_dimension_values
-        - present_readable_frequency_options
-      forbidden:
-        - raw_unexplained_code_dump
-        - choose_frequency_without_user_selection
-
-  - id: DATA-12
-    category: data_workflow
-    type: fixture_based
-    area: Multiple values in one dimension
-    prompt: "Download confirmed WEO Live real GDP growth for the United States and Japan, annual, 2010-2024."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_code: NGDP_RPCH
-      countries:
-        - USA
-        - JPN
-      frequency: A
-      start: "2010"
-      end: "2024"
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Builds a key using multiple country values in the country dimension while
-      preserving the exact iData dimension order.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-      optional_commands:
-        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      key: USA+JPN.NGDP_RPCH.A
-      start: "2010"
-      end: "2024"
-    assertions:
-      required:
-        - combine_multiple_values_with_plus
-        - preserve_dimension_order
-        - maintain_one_key_field_per_dimension
-        - ask_output_format
-      forbidden:
-        - add_or_drop_key_fields
-        - use_comma_separated_values_in_key
-        - fetch_without_output_format
-
-  - id: DATA-13
-    category: data_workflow
-    type: fixture_based
-    area: User already specified output format
-    prompt: "Download confirmed WEO Live real GDP growth for USA, 2010-2024, in long CSV format."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_code: NGDP_RPCH
-      country: USA
-      start: "2010"
-      end: "2024"
-      requested_output: long_csv
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Preserves the already-stated long CSV output format instead of re-asking
-      the full output-format menu.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      key: USA.NGDP_RPCH.A
-      start: "2010"
-      end: "2024"
-      output_format: long_csv
-    assertions:
-      required:
-        - preserve_output_format_long_csv
-        - confirm_or_use_stated_output_format
-        - use_fetch_idata_format_long_without_excel
-      forbidden:
-        - reask_full_output_format_menu
-        - substitute_refreshable_output
-
-  - id: DATA-14
-    category: data_workflow
-    type: single_turn
-    area: Python-only scope with explicit R request
-    prompt: "Give me R code to download WEO real GDP growth for USA."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Recognizes that the user explicitly requested R, but explains that the
-      RA skillset only validates the Python/iData fetch workflow. It should
-      provide the confirmed identifier tuple and supported fetch_idata.py route
-      instead of presenting R as a supported retrieval path.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/references/imf_datatools_agent_api_reference.md
-    assertions:
-      required:
-        - acknowledge_explicit_r_request
-        - avoid_inventing_unsupported_r_workflow
-        - explain_python_only_supported_fetch_path
-      forbidden:
-        - invent_r_idata_api
-        - present_r_as_supported_ra_fetch_path
-        - ignore_user_requested_language
-
-  - id: DATA-15
-    category: data_workflow
-    type: single_turn
-    area: No new fetch script
-    prompt: "Write a quick Python script to fetch WEO real GDP growth for USA, 2010-2024."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Uses or points to the pre-built fetch_idata.py utility instead of creating
-      a new ad hoc Python fetch script.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    assertions:
-      required:
-        - use_prebuilt_fetch_idata_utility
-        - preserve_requested_series_country_and_time_range
-        - explain_or_offer_fetch_idata_command_instead_of_new_script
-      forbidden:
-        - create_new_python_fetch_script
-        - return_raw_sdk_output_directly
-
-  - id: DATA-16
-    category: data_workflow
-    type: fixture_based
-    area: Refreshable single-indicator layout
-    prompt: "Download confirmed WEO Live real GDP growth for the United States and Japan, annual, 2010-2024, as refreshable Excel."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_code: NGDP_RPCH
-      countries:
-        - USA
-        - JPN
-      frequency: A
-      start: "2010"
-      end: "2024"
-      requested_output: refreshable_excel
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Uses fetch_idata.py with --format refreshable and expects the single
-      indicator refreshable wide layout, not raw wide output.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      key: USA+JPN.NGDP_RPCH.A
-      output_format: refreshable
-      file_extension: xlsx
-      refreshable_layout: wide
-      required_columns:
-        - DATASET
-        - Series_Code
-        - CountryName
-        - ISO3
-        - IFSCODE
-    assertions:
-      required:
-        - use_fetch_idata_format_refreshable
-        - pass_indicator_dim_from_catalog_handoff
-        - expect_refreshable_wide_for_single_indicator
-        - include_country_metadata_columns
-      forbidden:
-        - use_raw_wide_for_refreshable_request
-        - save_refreshable_as_csv
-
-  - id: DATA-17
-    category: data_workflow
-    type: fixture_based
-    area: Refreshable multi-sheet card layout
-    prompt: "Download confirmed WEO Live real GDP growth and nominal GDP in USD for the United States and Japan, annual, 2010-2024, as refreshable Excel."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_codes:
-        - NGDP_RPCH
-        - NGDPD
-      countries:
-        - USA
-        - JPN
-      frequency: A
-      start: "2010"
-      end: "2024"
-      requested_output: refreshable_excel
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Builds one key with multiple indicator values and multiple country values,
-      then expects refreshable multi-sheet card output because indicators,
-      countries, and time periods are all plural.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      key: USA+JPN.NGDP_RPCH+NGDPD.A
-      output_format: refreshable
-      file_extension: xlsx
-      refreshable_layout: multi_sheet_card
-    assertions:
-      required:
-        - combine_multiple_indicators_with_plus
-        - combine_multiple_countries_with_plus
-        - expect_multi_sheet_card_when_all_shape_axes_plural
-      forbidden:
-        - split_into_ad_hoc_scripts
-        - flatten_multi_sheet_card_to_raw_long
-
-  - id: DATA-18
-    category: data_workflow
-    type: fixture_based
-    area: Refreshable single-card layout
-    prompt: "Download confirmed WEO Live real GDP growth and nominal GDP in USD for USA, annual, 2010-2024, as refreshable Excel."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_codes:
-        - NGDP_RPCH
-        - NGDPD
-      country: USA
-      frequency: A
-      start: "2010"
-      end: "2024"
-      requested_output: refreshable_excel
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Expects a single card sheet because there are multiple indicators but not
-      multiple countries.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      key: USA.NGDP_RPCH+NGDPD.A
-      output_format: refreshable
-      refreshable_layout: single_card
-    assertions:
-      required:
-        - expect_single_card_when_multiple_indicators_but_not_all_axes_plural
-        - preserve_refreshable_metadata_rows
-      forbidden:
-        - expect_raw_long_for_refreshable_multi_indicator
-        - save_refreshable_as_csv
-
-  - id: DATA-19
-    category: data_workflow
-    type: fixture_based
-    area: Catalog dimension handoff for non-INDICATOR datasets
-    prompt: "Download confirmed WDI GDP per capita for China, 2000-2023, as refreshable Excel."
-    fixture:
-      confirmed_database: WB:WDI
-      confirmed_dimension_name: SERIES
-      confirmed_code: NY_GDP_PCAP_CD
-      geo: CHN
-      start: "2000"
-      end: "2023"
-      requested_output: refreshable_excel
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Uses the catalog-provided dimension_name SERIES when building the key and
-      passes --indicator-dim SERIES for refreshable output.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    expected_outputs:
-      database: WB:WDI
-      dimension_name: SERIES
-      code: NY_GDP_PCAP_CD
-      indicator_dim_flag: SERIES
-    assertions:
-      required:
-        - preserve_non_indicator_dimension_name
-        - pass_indicator_dim_series
-        - avoid_hardcoded_indicator_dimension
-      forbidden:
-        - assume_dimension_name_INDICATOR
-        - omit_indicator_dim_for_non_indicator_dataset
-
-  - id: DATA-20
-    category: data_workflow
-    type: fixture_based
-    area: iData transient 403 retry
-    prompt: "Download confirmed WEO Live real GDP growth for USA, annual, 2010-2024, as long CSV. If the endpoint returns 403, retry safely."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_code: NGDP_RPCH
-      country: USA
-      frequency: A
-      start: "2010"
-      end: "2024"
-      requested_output: long_csv
-      simulated_error: "403 on first fetch attempt"
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Retries a transient 403 up to three times before giving up, without
-      changing the confirmed database, key, dates, or output format.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/scripts/fetch_idata.py
-    assertions:
-      required:
-        - retry_403_up_to_three_times
-        - preserve_confirmed_fetch_arguments_across_retries
-      forbidden:
-        - change_database_after_403
-        - retry_indefinitely
-
-  - id: DATA-21
-    category: data_workflow
-    type: single_turn
-    area: Python-only scope with explicit Stata request
-    prompt: "Give me Stata code to download WEO real GDP growth for USA."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Recognizes that the user explicitly requested Stata, but explains that
-      the RA skillset only validates the Python/iData fetch workflow. It should
-      provide the confirmed identifier tuple and supported fetch_idata.py route
-      instead of presenting Stata as a supported retrieval path.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-data/references/imf_datatools_agent_api_reference.md
-    assertions:
-      required:
-        - acknowledge_explicit_stata_request
-        - avoid_inventing_unsupported_stata_workflow
-        - explain_python_only_supported_fetch_path
-      forbidden:
-        - invent_stata_idata_api
-        - present_stata_as_supported_ra_fetch_path
-        - ignore_user_requested_language
-
-  - id: DATA-22
-    category: data_workflow
-    type: fixture_based
-    area: Invalid supplied dimension value
-    prompt: "Download confirmed WEO Live real GDP growth for Atlantis, annual, 2010-2024."
-    fixture:
-      confirmed_database: IMF.RES.WEO:WEO_LIVE
-      confirmed_dimension_name: INDICATOR
-      confirmed_code: NGDP_RPCH
-      country: Atlantis
-      frequency: A
-      start: "2010"
-      end: "2024"
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Validates the supplied geography against WEO country metadata or
-      reference files, reports that Atlantis is not a supported WEO country or
-      group, and stops for a valid replacement instead of building a key.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
-    assertions:
-      required:
-        - validate_supplied_country_value
-        - report_invalid_country_or_group
-        - ask_for_valid_replacement_geography
-      forbidden:
-        - build_key_with_invalid_country
-        - invent_country_code_for_atlantis
-        - fetch_with_unvalidated_dimension_value
-
-  - id: GROUP-05
-    category: data_workflow
-    type: single_turn
-    area: Ambiguous country name
-    prompt: "Download WEO nominal GDP for Congo, 2015-2024."
-    expected_primary_skill: imf-ra-data
-    expected_behavior: >
-      Recognizes that Congo maps to multiple WEO countries, lists the supported
-      candidates with codes, and asks the user to choose before building a
-      fetch key.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
-    expected_outputs:
-      candidates:
-        - COG
-        - COD
-      start: "2015"
-      end: "2024"
-    assertions:
-      required:
-        - detect_ambiguous_country_name
-        - use_or_mirror_weo_helper_resolve
-        - list_COG_and_COD_candidates
-        - ask_country_clarification_before_fetch
-        - preserve_time_range_2015_2024
-      forbidden:
-        - choose_one_congo_without_confirmation
-        - invent_country_code
-        - fetch_without_country_disambiguation
-
-  - id: E2E-01
-    category: end_to_end
-    type: multi_step
-    area: Discovery to fetch
-    prompt: "Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Resolves the identifier first, then hands off to data flow, asks for any
-      missing dimensions, and confirms the requested long CSV output.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-        - .claude/skills/imf-ra/references/Country Group/csv/1. countries.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan" --all-databases
-    assertions:
-      required:
-        - resolve_identifier_before_fetch
-        - handoff_to_data_workflow
-        - preserve_country_Japan
-        - preserve_time_range_2018_2024
-        - preserve_output_format_long_csv
-      forbidden:
-        - fetch_before_identifier_resolution
-        - drop_output_format
-        - invent_identifier
-
-  - id: E2E-02
-    category: end_to_end
-    type: multi_step
-    area: Catalog boundary before fetch
-    prompt: "Find the code for real GDP growth and download it immediately."
-    expected_primary_skill: imf-ra-catalog
-    expected_behavior: >
-      Resolves the real GDP growth identifier first, then hands off to the data
-      workflow and stops for missing fetch inputs such as geography, time range,
-      frequency, and output format instead of fetching from catalog context.
-    evidence_sources:
-      required_files:
-        - .claude/skills/imf-ra/SKILL.md
-        - .claude/skills/imf-ra-catalog/SKILL.md
-        - .claude/skills/imf-ra-data/SKILL.md
-        - .claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv
-      optional_commands:
-        - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
-    expected_outputs:
-      database: IMF.RES.WEO:WEO_LIVE
-      dimension_name: INDICATOR
-      code: NGDP_RPCH
-    assertions:
-      required:
-        - resolve_identifier_before_fetch
-        - handoff_to_data_workflow
-        - ask_missing_fetch_inputs
-        - preserve_real_gdp_growth_identifier
-      forbidden:
-        - fetch_from_catalog_context
-        - skip_time_range_confirmation
-        - skip_output_format_confirmation
-        - invent_identifier
-
-  - id: CONTRACT-01
-    category: helper_contract
-    type: command_contract
-    area: Reference reachability
-    command: bash .claude/skills/imf-ra/scripts/check_references.sh
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Verifies that skill links and active reference paths resolve before any
-      behavioral tests run.
-    expected_stdout_contains:
-      - "OK: all skills found, all references resolve."
-    assertions:
-      required:
-        - reference_checker_passes
-      forbidden:
-        - missing_skill_or_reference_path
-
-  - id: CONTRACT-02
-    category: helper_contract
-    type: command_contract
-    area: Latest WEO non-vintage contract
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py latest-weo
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Returns WEO Live from the canonical non-vintage database catalog.
-    expected_stdout_contains:
-      - "IMF.RES.WEO:WEO_LIVE"
-      - "World Economic Outlook (WEO) Live"
-    assertions:
-      required:
-        - latest_weo_returns_live_database
-        - command_uses_non_vintage_datasets_csv
-      forbidden:
-        - latest_weo_returns_vintage_database
-        - command_references_stale_dataset_filename
-
-  - id: CONTRACT-03
-    category: helper_contract
-    type: command_contract
-    area: Catalog search ranking
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Searches WEO Live first for a common macro concept and ranks NGDP_RPCH as
-      the top real GDP growth candidate.
-    expected_stdout_contains:
-      - "IMF.RES.WEO:WEO_LIVE"
-      - "NGDP_RPCH"
-      - "Gross domestic product (GDP), Constant prices, Percent change"
-    assertions:
-      required:
-        - search_real_gdp_growth_returns_weo_live
-        - search_real_gdp_growth_includes_NGDP_RPCH
-      forbidden:
-        - search_real_gdp_growth_prioritizes_vintage
-
-  - id: CONTRACT-04
-    category: helper_contract
-    type: command_contract
-    area: Vintage dataset listing
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Lists WEO vintage rows from the canonical vintage database catalog and
-      excludes the live WEO database.
-    expected_stdout_contains:
-      - "VINTAGE"
-      - "IMF.RES.WEO:WEO_LIVE_"
-    assertions:
-      required:
-        - vintage_only_uses_vintage_datasets_csv
-        - vintage_only_results_contain_VINTAGE
-      forbidden:
-        - vintage_only_returns_plain_WEO_LIVE
-        - command_references_stale_vintage_dataset_filename
-
-  - id: CONTRACT-05
-    category: helper_contract
-    type: command_contract
-    area: WEO group expansion
-    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Expands the WEO advanced economies group into member country rows from the
-      country-group composition CSV.
-    expected_stdout_contains:
-      - "G110"
-      - "Advanced Economies"
-      - "USA"
-      - "United States"
-    assertions:
-      required:
-        - group_helper_expands_G110_members
-        - group_helper_uses_country_group_composition
-
-  - id: CONTRACT-06
-    category: helper_contract
-    type: command_contract
-    area: WEO vs SPR/PRGT group comparison
-    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Compares WEO low-income developing countries against SPR/PRGT low-income
-      countries and returns answer-ready counts plus only-in-each-group rows.
-    expected_stdout_contains:
-      - "group_a: G201"
-      - "group_b: G-PRGT-LIC"
-      - "only_in_group_a: 1"
-      - "NGA"
-      - "only_in_group_b: 13"
-      - "SYR"
-    assertions:
-      required:
-        - group_helper_compares_membership_sets
-        - group_helper_reports_only_in_each_group
-      forbidden:
-        - group_helper_returns_only_groupcode_without_members
-
-  - id: CONTRACT-07
-    category: helper_contract
-    type: command_contract
-    area: WEO ambiguous term resolution
-    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Resolves an ambiguous country term into multiple candidate country rows
-      instead of choosing one silently.
-    expected_stdout_contains:
-      - "COG"
-      - "Congo, Republic of"
-      - "COD"
-      - "Congo, Democratic Republic of the"
-    assertions:
-      required:
-        - group_helper_resolves_ambiguous_country_candidates
-        - group_helper_preserves_ambiguity
-      forbidden:
-        - group_helper_silently_picks_one_candidate
-
-  - id: CONTRACT-08
-    category: helper_contract
-    type: command_contract
-    area: WEO shorthand explanation
-    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py explain EM
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Explains EM as framework-sensitive shorthand and returns both WEO and
-      SPR/PRGT group codes.
-    expected_stdout_contains:
-      - "meaning: Emerging Market / Middle-Income Economies"
-      - "WEO: G1201"
-      - "SPR/PRGT: G-PRGT-EM"
-    assertions:
-      required:
-        - group_helper_explains_framework_sensitive_shorthand
-        - group_helper_includes_weo_and_spr_prgt_codes
-      forbidden:
-        - group_helper_collapses_em_to_single_framework
-
-  - id: CONTRACT-09
-    category: helper_contract
-    type: command_contract
-    area: WEO iData handoff expansion
-    command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Expands EMDE to comma-separated WEO member countrycode values suitable for
-      iData country selection, rather than returning the group code alone.
-    expected_stdout_contains:
-      - "AFG"
-      - "CHN"
-      - "NGA"
-      - "ZWE"
-    assertions:
-      required:
-        - group_helper_expands_group_to_countrycodes
-        - group_helper_outputs_idata_ready_countrycodes
-      forbidden:
-        - group_helper_returns_only_groupcode_without_members
-
-  - id: CONTRACT-10
-    category: helper_contract
-    type: command_contract
-    area: Active referenced-file consistency
-    command: python3 tests/check_referenced_files.py
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Scans active skill, README, CLAUDE, auto-test, and template files for
-      file-looking references. Every referenced file should exist. If a
-      referenced target is missing, the scanner reports the source line and
-      likely nearby filename matches so the user can decide whether the target
-      is missing or the reference name is inconsistent.
-    expected_stdout_contains:
-      - "OK: checked"
-    assertions:
-      required:
-        - active_referenced_file_scanner_passes
-        - missing_targets_report_source_and_suggestions
-      forbidden:
-        - unresolved_file_reference_found
-
-  - id: CONTRACT-11
-    category: helper_contract
-    type: command_contract
-    area: Catalog source routing - legacy IFS
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Classifies a legacy IFS request as a source-routing task and maps CPI to
-      the replacement iData CPI database before indicator search.
-    expected_stdout_contains:
-      - '"status": "routed"'
-      - '"database": "IMF.STA:CPI"'
-      - "IFS is a legacy EcOS source"
-    assertions:
-      required:
-        - catalog_helper_routes_legacy_ifs_topic
-        - catalog_helper_explains_replacement_database
-      forbidden:
-        - catalog_helper_treats_ifs_as_single_idata_database
-
-  - id: CONTRACT-12
-    category: helper_contract
-    type: command_contract
-    area: Catalog routed topic search - legacy IFS CPI
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "IFS CPI for the United States"
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Uses the source-routing layer to search the replacement CPI database
-      instead of writing temporary code or searching only WEO Live.
-    expected_stdout_contains:
-      - "IMF.STA:CPI"
-      - "INDEX_TYPE"
-      - "Consumer price index (CPI)"
-    assertions:
-      required:
-        - catalog_helper_runs_routed_cpi_search
-        - catalog_helper_preserves_dimension_name
-      forbidden:
-        - catalog_helper_returns_legacy_ifs_database
-
-  - id: CONTRACT-13
-    category: helper_contract
-    type: command_contract
-    area: Catalog routed topic search - exchange rates
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan"
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Recognizes exchange-rate wording as a common hard query and searches the
-      replacement Exchange Rate database without requiring ad hoc filtering.
-    expected_stdout_contains:
-      - "IMF.STA:ER"
-      - "INDICATOR"
-      - "XDC_USD"
-      - "Domestic currency per US Dollar"
-    assertions:
-      required:
-        - catalog_helper_routes_exchange_rate_topic
-        - catalog_helper_returns_exchange_rate_indicators
-      forbidden:
-        - catalog_helper_searches_only_weo_for_exchange_rates
-
-  - id: CONTRACT-14
-    category: helper_contract
-    type: command_contract
-    area: Catalog broad fuzzy search
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "current account balance" --all-databases
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Performs a broad ranked search when requested, preserving cross-database
-      ambiguity instead of collapsing the request to one source.
-    expected_stdout_contains:
-      - "IMF.RES.WEO:WEO_LIVE"
-      - "IMF.STA:BOP"
-      - "WB:WDI"
-      - "Current account balance"
-    assertions:
-      required:
-        - catalog_helper_runs_all_database_search
-        - catalog_helper_preserves_cross_database_ambiguity
-      forbidden:
-        - catalog_helper_silently_commits_to_one_current_account_source
-
-  - id: CONTRACT-15
-    category: helper_contract
-    type: command_contract
-    area: Catalog strict resolve - unambiguous WEO concept
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Runs the fuzzy ranking pipeline and returns one handoff-ready identifier
-      only because the top WEO Live real GDP growth candidate is sufficiently
-      clear.
-    expected_stdout_contains:
+- id: SMOKE-01
+  category: core_behavior_pipeline
+  type: single_turn
+  prompt: Pull WEO real GDP growth for G20 countries, 2010-present.
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Treats this as a direct fetch request, not a broad discovery question.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
+  assertions:
+    required:
+    - start_data_retrieval_flow
+    - preserve_direct_fetch_intent
+    - identify_missing_fetch_inputs
+    forbidden:
+    - treat_as_broad_orientation
+    - invent_identifier
+    - fetch_without_output_format
+- id: SMOKE-02
+  category: core_behavior_pipeline
+  type: single_turn
+  prompt: I'm starting a project on emerging market debt - orient me to what's available.
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Provides broad orientation across available sources or workflows instead of jumping straight into a narrow fetch.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/database_overview.md"
+  assertions:
+    required:
+    - provide_orientation
+    - describe_relevant_sources_or_workflows
+    forbidden:
+    - start_narrow_fetch_without_identifier
+    - invent_identifier
+- id: CONV-01
+  category: weo_group_helper_behavior
+  type: single_turn
+  area: No unnecessary code
+  prompt: Which countries are in the WEO advanced economies group?
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Answers from the WEO group reference or CSV contents instead of writing code if simple inspection is enough.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    - ".claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
+  assertions:
+    required:
+    - use_weo_group_reference
+    - answer_with_reference_backed_membership
+    forbidden:
+    - write_new_script
+    - guess_group_membership
+- id: CONV-02
+  category: weo_group_helper_behavior
+  type: single_turn
+  area: Country-group translation
+  prompt: For IMF purposes, what does EMDE mean here?
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Uses the WEO group reference instead of guessing from memory.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+  assertions:
+    required:
+    - use_weo_group_reference
+    - include_groupcode_G200
+    forbidden:
+    - answer_from_memory_only
+    - invent_group_definition
+- id: CONV-03
+  category: core_behavior_pipeline
+  type: single_turn
+  area: Uncertainty policy
+  prompt: Get me the IMF inflation series.
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Does not guess; asks a clarifying question because multiple plausible indicators or databases exist.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "inflation CPI" --all-databases
+  assertions:
+    required:
+    - ask_clarification
+    - acknowledge_multiple_plausible_series
+    forbidden:
+    - select_single_inflation_series_without_support
+    - invent_identifier
+- id: HPIPE-01
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Resolve-first catalog handoff
+  prompt: Find the identifier for WEO real GDP growth and prepare the catalog handoff. Do not download yet.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Uses the catalog helper command map and runs the strict resolve path, returning a handoff-ready tuple only after `status=resolved`.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_lookup.py"
+    required_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+  expected_outputs:
+    status: resolved
+    database: IMF.RES.WEO:WEO_LIVE
+    dimension_name: INDICATOR
+    code: NGDP_RPCH
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+      stdout_contains:
       - '"status": "resolved"'
-      - '"handoff"'
       - '"database": "IMF.RES.WEO:WEO_LIVE"'
-      - '"database_name": "IMF.RES.WEO:WEO_LIVE"'
       - '"dimension_name": "INDICATOR"'
       - '"code": "NGDP_RPCH"'
-    assertions:
-      required:
-        - catalog_helper_resolves_unambiguous_identifier
-        - catalog_helper_outputs_handoff_tuple
-      forbidden:
-        - catalog_helper_fetches_data
-        - catalog_helper_returns_vintage_for_live_default
+    final_response_must_include:
+    - IMF.RES.WEO:WEO_LIVE
+    - INDICATOR
+    - NGDP_RPCH
+    final_response_must_not_include:
+    - downloaded
+    - fetched
+  assertions:
+    required:
+    - consult_catalog_helper_map
+    - use_resolve_json_for_handoff
+    - return_handoff_only_when_status_resolved
+    - preserve_database_dimension_code
+    forbidden:
+    - write_temporary_lookup_code
+    - use_search_output_as_manual_handoff
+    - fetch_from_catalog_context
+- id: HPIPE-02
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Source routing before indicator lookup
+  prompt: For an IFS CPI request, identify the replacement database and code path before any fetch.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Treats IFS as source-routing, runs `explain-source`, then searches or resolves against the routed CPI database instead of defaulting to WEO.
 
-  - id: CONTRACT-16
-    category: helper_contract
-    type: command_contract
-    area: Catalog strict resolve - ambiguity preserved
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Runs a source-specific WDI lookup but refuses to commit because current
-      US dollars, constant US dollars, local currency, PPP, and growth variants
-      are all plausible.
-    expected_stdout_contains:
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_routing.py"
+    required_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "IFS CPI for the United States"
+  expected_outputs:
+    database: IMF.STA:CPI
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
+      stdout_contains:
+      - '"status": "routed"'
+      - '"database": "IMF.STA:CPI"'
+      - IFS is a legacy EcOS source
+    final_response_must_include:
+    - IMF.STA:CPI
+    - IFS
+    final_response_must_not_include:
+    - IMF.RES.WEO:WEO_LIVE
+  assertions:
+    required:
+    - use_explain_source_for_ifs
+    - identify_replacement_database_IMF.STA.CPI
+    - preserve_ifs_migration_note
+    forbidden:
+    - treat_ifs_as_single_idata_database
+    - default_ifs_request_to_weo_live
+    - write_temporary_routing_code
+- id: HPIPE-03
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Ambiguity gate blocks unsafe handoff
+  prompt: Find WDI GDP per capita and prepare it for handoff.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Uses the WDI-specific resolve command and stops on variant ambiguity instead of choosing a GDP-per-capita series manually.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_lookup.py"
+    - ".claude/skills/imf-ra-catalog/indicators/3. wdi_variable_list.csv"
+    required_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
+  expected_outputs:
+    status: ambiguous
+    database: WB:WDI
+    dimension_name: SERIES
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
+      stdout_contains:
       - '"status": "ambiguous"'
       - '"handoff": null'
-      - '"clarification"'
       - '"database_name": "WB:WDI"'
       - '"code": "NY_GDP_PCAP_CD"'
       - '"code": "NY_GDP_PCAP_KD"'
-    assertions:
-      required:
-        - catalog_helper_preserves_wdi_gdp_per_capita_ambiguity
-        - catalog_helper_lists_candidate_variants
-      forbidden:
-        - catalog_helper_silently_picks_wdi_variant
+    final_response_must_include:
+    - WB:WDI
+    - GDP per capita
+    - clarify
+    final_response_must_not_include:
+    - handoff-ready
+    - final code is NY_GDP_PCAP_CD
+  assertions:
+    required:
+    - use_database_specific_wdi_lookup
+    - preserve_wdi_variant_ambiguity
+    - return_clarification_options
+    forbidden:
+    - choose_wdi_variant_without_confirmation
+    - emit_handoff_when_status_ambiguous
+    - write_temporary_csv_search
+- id: HPIPE-04
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Dimension discovery guardrail
+  prompt: Before using IMF.STA:CPI, check which code dimension it uses.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Uses the `dimensions` helper and preserves the returned non-INDICATOR dimension instead of assuming a generic indicator dimension.
 
-  - id: CONTRACT-17
-    category: helper_contract
-    type: command_contract
-    area: Catalog specialized search - WDI
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "GDP per capita" --database WB:WDI
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Searches the WDI-specific indicator catalog and preserves the `SERIES`
-      dimension for World Bank handoff.
-    expected_stdout_contains:
-      - "WB:WDI"
-      - "SERIES"
-      - "NY_GDP_PCAP_CD"
-      - "GDP per capita"
-    assertions:
-      required:
-        - catalog_helper_uses_wdi_indicator_file
-        - catalog_helper_preserves_wdi_series_dimension
-      forbidden:
-        - catalog_helper_searches_only_general_imf_variable_list
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+    required_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+  expected_outputs:
+    database: IMF.STA:CPI
+    dimension_name: INDEX_TYPE
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+      stdout_contains:
+      - IMF.STA:CPI
+      - INDEX_TYPE
+      - CPI;HICP
+    final_response_must_include:
+    - INDEX_TYPE
+    final_response_must_not_include:
+    - INDICATOR dimension
+  assertions:
+    required:
+    - use_dimensions_helper
+    - preserve_dimension_name_INDEX_TYPE
+    forbidden:
+    - assume_dimension_INDICATOR
+    - write_temporary_dimension_parser
+- id: HPIPE-05
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Variant comparison helper
+  prompt: Compare PCPI_PCH and PCPIE_PCH before choosing an inflation code.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Uses `compare-codes` to distinguish period-average versus end-of-period CPI inflation and asks the user which variant is intended.
 
-  - id: CONTRACT-18
-    category: helper_contract
-    type: command_contract
-    area: Catalog specialized search - Bloomberg
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "10-year government bond yield" --database IMF.CSF:BBGDL
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Searches the Bloomberg-specific catalog and returns ticker candidates with
-      the `TICKER` dimension instead of using the general IMF indicator list.
-    expected_stdout_contains:
-      - "IMF.CSF:BBGDL"
-      - "TICKER"
-      - "10 Year"
-      - "Yield"
-    assertions:
-      required:
-        - catalog_helper_uses_bloomberg_indicator_file
-        - catalog_helper_preserves_ticker_dimension
-      forbidden:
-        - catalog_helper_searches_only_general_imf_variable_list
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+    required_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+      stdout_contains:
+      - 'same_database: True'
+      - Period average, percent change
+      - End-of-period (EoP), percent change
+    final_response_must_include:
+    - PCPI_PCH
+    - PCPIE_PCH
+    - period average
+    - end-of-period
+    final_response_must_not_include:
+    - chosen code
+  assertions:
+    required:
+    - use_compare_codes_helper
+    - distinguish_period_average_vs_end_of_period
+    - ask_variant_confirmation_before_handoff
+    forbidden:
+    - pick_variant_without_user_confirmation
+    - write_temporary_comparison_code
+- id: HPIPE-06
+  category: catalog_helper_behavior
+  type: single_turn
+  area: WEO vintage handoff preservation
+  prompt: Prepare April 2024 WEO vintage nominal GDP in US dollars for data handoff.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Uses strict resolve, preserves the requested vintage database, and notes that indicator metadata were matched from WEO Live.
 
-  - id: CONTRACT-19
-    category: helper_contract
-    type: command_contract
-    area: Catalog specialized search - WTO commodity
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "wheat" --database WTO:WTOIMFTT
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Searches the WTO-specific commodity catalog and returns HS commodity-code
-      candidates with the `COMMODITY` dimension.
-    expected_stdout_contains:
-      - "WTO:WTOIMFTT"
-      - "COMMODITY"
-      - "100111"
-      - "wheat"
-    assertions:
-      required:
-        - catalog_helper_uses_wto_indicator_file
-        - catalog_helper_preserves_commodity_dimension
-      forbidden:
-        - catalog_helper_searches_only_general_imf_variable_list
-
-  - id: CONTRACT-20
-    category: helper_contract
-    type: command_contract
-    area: Catalog common topic search - financial soundness
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "financial soundness regulatory capital risk weighted assets" --all-databases
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Handles a hard fuzzy search for a financial soundness concept and returns
-      capital-adequacy candidates without temporary parsing code.
-    expected_stdout_contains:
-      - "IMF.STA:FSIC"
-      - "FSI688_CFSI_PT"
-      - "Regulatory capital to risk-weighted assets"
-    assertions:
-      required:
-        - catalog_helper_finds_fsi_capital_adequacy
-        - catalog_helper_handles_multi_token_fuzzy_reasoning
-      forbidden:
-        - catalog_helper_returns_empty_for_fsi_query
-
-  - id: CONTRACT-21
-    category: helper_contract
-    type: command_contract
-    area: Catalog machine-readable handoff output
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Emits JSON for downstream handoff, including route metadata, ranked
-      candidates, and a handoff object when the identifier is resolved.
-    expected_stdout_contains:
-      - '"query": "real GDP growth"'
-      - '"route"'
-      - '"handoff"'
-      - '"candidates"'
-      - '"database": "IMF.RES.WEO:WEO_LIVE"'
-      - '"code": "NGDP_RPCH"'
-    assertions:
-      required:
-        - catalog_helper_outputs_machine_readable_handoff_json
-        - catalog_helper_includes_route_candidates_and_handoff
-      forbidden:
-        - catalog_helper_outputs_unparseable_json
-
-  - id: CONTRACT-22
-    category: helper_contract
-    type: command_contract
-    area: Catalog exact code lookup
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Looks up an exact known code in the requested database and returns the
-      answer-ready tuple without fuzzy inference or temporary code.
-    expected_stdout_contains:
-      - "IMF.RES.WEO:WEO_LIVE"
-      - "INDICATOR"
-      - "NGDP_RPCH"
-      - "Gross domestic product (GDP), Constant prices, Percent change"
-    assertions:
-      required:
-        - catalog_helper_supports_exact_code_lookup
-        - catalog_helper_preserves_exact_code_dimension
-      forbidden:
-        - catalog_helper_uses_fuzzy_search_for_exact_code
-
-  - id: CONTRACT-23
-    category: helper_contract
-    type: command_contract
-    area: Catalog dimension discovery
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Returns dimension names, row counts, and example codes for the selected
-      database so the agent does not infer that every database uses INDICATOR.
-    expected_stdout_contains:
-      - "IMF.STA:CPI"
-      - "INDEX_TYPE"
-      - "CPI;HICP"
-    assertions:
-      required:
-        - catalog_helper_supports_dimension_discovery
-        - catalog_helper_prevents_indicator_dimension_assumption
-      forbidden:
-        - catalog_helper_assumes_indicator_for_cpi
-
-  - id: CONTRACT-24
-    category: helper_contract
-    type: command_contract
-    area: Catalog database classification
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Classifies a dated WEO Live resource as a vintage database, not the
-      default WEO Live database.
-    expected_stdout_contains:
-      - "status: found"
-      - "classification: vintage"
-      - "dated WEO Live vintage"
-    assertions:
-      required:
-        - catalog_helper_classifies_weo_vintage_database
-        - catalog_helper_distinguishes_live_from_vintage
-      forbidden:
-        - catalog_helper_treats_vintage_as_live_default
-
-  - id: CONTRACT-25
-    category: helper_contract
-    type: command_contract
-    area: Catalog code comparison
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Compares two known WEO inflation codes and returns answer-ready
-      distinctions in timing basis rather than raw rows only.
-    expected_stdout_contains:
-      - "same_database: True"
-      - "same_dimension: True"
-      - "Period average, percent change"
-      - "End-of-period (EoP), percent change"
-    assertions:
-      required:
-        - catalog_helper_supports_code_comparison
-        - catalog_helper_returns_answer_ready_variant_distinctions
-      forbidden:
-        - catalog_helper_requires_temp_code_for_known_code_comparison
-
-  - id: CONTRACT-26
-    category: helper_contract
-    type: command_contract
-    area: Catalog WEO vintage handoff assembly
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Resolves a dated WEO vintage request into a handoff-ready tuple, using
-      WEO Live indicator metadata while preserving the requested vintage
-      database in the result and handoff object.
-    expected_stdout_contains:
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_routing.py"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_lookup.py"
+    required_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
+  expected_outputs:
+    status: resolved
+    database: IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+    indicator_source_database: IMF.RES.WEO:WEO_LIVE
+    dimension_name: INDICATOR
+    code: NGDPD
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
+      stdout_contains:
       - '"status": "resolved"'
       - '"database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
-      - '"database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
       - '"indicator_source_database": "IMF.RES.WEO:WEO_LIVE"'
       - '"code": "NGDPD"'
-      - '"handoff"'
-    assertions:
-      required:
-        - catalog_helper_preserves_requested_weo_vintage_database
-        - catalog_helper_reuses_weo_live_indicator_metadata
-        - catalog_helper_outputs_vintage_handoff_tuple
-      forbidden:
-        - catalog_helper_returns_live_database_for_vintage_request
-        - catalog_helper_returns_no_match_for_weo_vintage_indicator
+    final_response_must_include:
+    - IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+    - NGDPD
+    - IMF.RES.WEO:WEO_LIVE
+    final_response_must_not_include:
+    - IMF.RES.WEO:WEO_LIVE as the requested database
+  assertions:
+    required:
+    - preserve_requested_weo_vintage_database
+    - use_weo_live_indicator_metadata_for_vintage
+    - include_code_NGDPD
+    forbidden:
+    - silently_replace_vintage_with_live_database
+    - ask_which_vintage_when_explicit
+    - write_temporary_vintage_mapping_code
+- id: HPIPE-07
+  category: weo_group_helper_behavior
+  type: multi_step
+  area: Catalog plus country-group helper composition
+  prompt: Prepare WEO real GDP growth for EMDEs, 2010-2024, for an iData pull.
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Runs the catalog resolve helper for the indicator and the WEO group helper for EMDE expansion, then hands off confirmed fields to the data workflow without using G200 as a country selector.
 
-  - id: CONTRACT-27
-    category: helper_contract
-    type: command_contract
-    area: Catalog ambiguity clarification output
-    command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
-    expected_exit_codes:
-      - 0
-    expected_behavior: >
-      Emits a structured clarification prompt and candidate options when the
-      helper cannot safely choose among WDI GDP-per-capita variants.
-    expected_stdout_contains:
-      - '"status": "ambiguous"'
-      - '"clarification"'
-      - '"question"'
-      - '"options"'
-      - '"handoff": null'
-    assertions:
-      required:
-        - catalog_helper_returns_clarification_for_ambiguous_resolve
-        - catalog_helper_does_not_emit_handoff_when_ambiguous
-      forbidden:
-        - catalog_helper_silently_picks_wdi_variant
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    required_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
+  expected_outputs:
+    database: IMF.RES.WEO:WEO_LIVE
+    dimension_name: INDICATOR
+    code: NGDP_RPCH
+    groupcode: G200
+    start: '2010'
+    end: '2024'
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+      stdout_contains:
+      - '"code": "NGDP_RPCH"'
+      - '"database": "IMF.RES.WEO:WEO_LIVE"'
+    - command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
+      stdout_contains:
+      - AFG
+      - CHN
+      - NGA
+    final_response_must_include:
+    - NGDP_RPCH
+    - 2010
+    - 2024
+    final_response_must_not_include:
+    - use G200 as the country selector
+  assertions:
+    required:
+    - use_catalog_resolve_for_indicator
+    - use_weo_group_expand_for_idata
+    - preserve_time_range_2010_2024
+    - handoff_to_data_workflow_with_member_countrycodes
+    forbidden:
+    - use_groupcode_as_country_selector
+    - write_temporary_catalog_or_group_lookup_code
+    - fetch_without_output_format
+- id: CAT-02
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Frequency mismatch
+  prompt: Find a quarterly WEO inflation series.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Checks whether WEO supports the requested quarterly inflation concept and flags a frequency mismatch or better-suited source when the catalog does not support it directly.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "quarterly inflation" --all-databases
+  assertions:
+    required:
+    - verify_frequency_support_or_flag_mismatch
+    - ask_clarification_or_surface_better_suited_source
+    forbidden:
+    - pretend_quarterly_weo_is_straightforward
+    - immediate_download
+- id: CAT-04
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Cross-database search only when needed
+  prompt: Find a financial soundness indicator for bank capital adequacy.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Searches beyond WEO when the concept is outside normal WEO coverage.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/database_overview.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "financial soundness regulatory capital risk weighted assets" --all-databases
+  assertions:
+    required:
+    - expand_beyond_weo
+    - surface_fsi_or_relevant_candidates
+    forbidden:
+    - force_weo_match
+    - invent_identifier
+- id: CAT-05
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Non-vintage default
+  prompt: Find me the WEO series for nominal GDP in USD.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Uses the non-vintage WEO catalog by default and identifies NGDPD without asking for a vintage.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
+  expected_outputs:
+    database: IMF.RES.WEO:WEO_LIVE
+    dimension_name: INDICATOR
+    code: NGDPD
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
+      stdout_contains:
+      - NGDPD
+      - IMF.RES.WEO:WEO_LIVE
+    final_response_must_include:
+    - NGDPD
+    - IMF.RES.WEO:WEO_LIVE
+    final_response_must_not_include:
+    - vintage
+  assertions:
+    required:
+    - use_database_IMF.RES.WEO:WEO_LIVE
+    - include_code_NGDPD
+    forbidden:
+    - search_vintage_without_explicit_request
+    - ask_vintage_clarification
+    - invent_identifier
+- id: CAT-06
+  category: catalog_helper_behavior
+  type: single_turn
+  area: No invented identifiers
+  prompt: Find the exact IMF code for a custom concept that may not exist.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Surfaces the gap and asks for a hint or clarification; does not invent a code.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+  machine_checks:
+    final_response_must_include:
+    - cannot confirm an exact code
+    - clarification
+    final_response_must_not_include:
+    - handoff-ready
+    - exact code is
+  assertions:
+    required:
+    - state_catalog_gap_or_uncertainty
+    - ask_for_hint_or_clarification
+    forbidden:
+    - invent_identifier
+    - claim_exact_code_without_support
+- id: DATA-01
+  category: data_workflow_guardrails
+  type: single_turn
+  area: Requires confirmed identifier
+  prompt: Pull the IMF data for inflation.
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'If the identifier is not confirmed, routes through catalog logic first rather than inventing an indicator code.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+  assertions:
+    required:
+    - require_identifier_resolution
+    - handoff_to_catalog_or_ask_identifier_clarification
+    forbidden:
+    - invent_identifier
+    - fetch_without_confirmed_identifier
+- id: DATA-03
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Ask only for unresolved multi-value dimensions
+  prompt: Download confirmed WEO Live real GDP growth, annual, United States, 2010-2024.
+  fixture:
+    confirmed_database: IMF.RES.WEO:WEO_LIVE
+    confirmed_dimension_name: INDICATOR
+    confirmed_code: NGDP_RPCH
+    frequency: A
+    country: USA
+    start: '2010'
+    end: '2024'
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Uses already supplied dimensions, auto-resolves any single-value dimensions silently, and asks only for unresolved multi-value dimensions.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
+  expected_outputs:
+    database: IMF.RES.WEO:WEO_LIVE
+    dimension_name: INDICATOR
+    code: NGDP_RPCH
+    country: USA
+    frequency: A
+    start: '2010'
+    end: '2024'
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
+      stdout_contains:
+      - IMF.RES.WEO:WEO_LIVE
+    final_response_must_include:
+    - IMF.RES.WEO:WEO_LIVE
+    - NGDP_RPCH
+    - USA
+    - output format
+    final_response_must_not_include:
+    - re-confirm United States
+    - re-confirm 2010-2024
+  assertions:
+    required:
+    - preserve_confirmed_inputs
+    - inspect_dimensions_with_fetch_idata_explore
+    - slot_code_by_catalog_dimension_name
+    - ask_only_unresolved_dimensions
+    - ask_output_format
+    forbidden:
+    - reask_known_inputs
+    - invent_dimension_value
+    - hardcode_dimension_order_without_metadata
+    - fetch_without_output_format
+- id: DATA-07
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Output format confirmation
+  prompt: Given database IMF.RES.WEO:WEO_LIVE and key USA.NGDP_RPCH.A for 2010-2024, download the series once you have the key.
+  fixture:
+    confirmed_database: IMF.RES.WEO:WEO_LIVE
+    confirmed_key: USA.NGDP_RPCH.A
+    start: '2010'
+    end: '2024'
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Asks which output format the user wants: Refreshable, Wide, or Long; for Wide or Long also confirms CSV vs Excel.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+  expected_outputs:
+    database: IMF.RES.WEO:WEO_LIVE
+    key: USA.NGDP_RPCH.A
+    start: '2010'
+    end: '2024'
+  machine_checks:
+    final_response_must_include:
+    - Refreshable
+    - Wide
+    - Long
+    final_response_must_not_include:
+    - assuming CSV
+    - assuming Excel
+    - downloaded
+  assertions:
+    required:
+    - ask_output_format
+    - include_refreshable_wide_long_options
+    - distinguish_refreshable_from_raw_wide_and_long
+    forbidden:
+    - assume_output_format
+    - fetch_without_output_format
+- id: DATA-09
+  category: data_workflow_guardrails
+  type: single_turn
+  area: EcOS retired policy
+  prompt: Use EcOS retrieval to get this IMF series.
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Explains that EcOS retrieval is retired and provides the iData-equivalent path instead.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - docs/data_tools_docs/imf_datatools_agent_api_reference.md
+  assertions:
+    required:
+    - reject_ecos_retrieval
+    - redirect_to_idata_workflow
+    forbidden:
+    - use_ecos_retrieval
+    - call_get_ecos_sdmx_data
+- id: DATA-10
+  category: data_workflow_guardrails
+  type: single_turn
+  area: Safe query policy
+  prompt: Pull all countries, all indicators, all frequencies from IMF.RES.WEO:WEO_LIVE.
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Avoids broad ALL pulls unless explicitly confirmed and warns or narrows the request where appropriate.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+  assertions:
+    required:
+    - warn_or_narrow_large_query
+    - ask_explicit_confirmation_before_broad_all_pull
+    forbidden:
+    - launch_huge_pull_immediately
+    - ask_which_database
+- id: GROUP-02
+  category: weo_group_helper_behavior
+  type: single_turn
+  area: Ambiguous EM/LIC coverage
+  prompt: Pull real GDP growth for low-income countries, 2010-2024.
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Asks whether the user means WEO low-income developing countries or another institutional coverage such as SPR or PRGT before committing to a group.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+  assertions:
+    required:
+    - ask_group_definition_clarification
+    - mention_possible_weo_vs_spr_or_prgt_coverage
+    forbidden:
+    - assume_low_income_group_definition
+    - invent_group_membership
+- id: GROUP-04
+  category: weo_group_helper_behavior
+  type: single_turn
+  area: Group code versus data selector
+  prompt: Can I use G110 directly in an iData pull for WEO data?
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Explains that WEO group codes are for group lookup and membership mapping, and should not be used directly as country selectors unless dataset metadata confirms aggregate-code support.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+  expected_outputs:
+    groupcode: G110
+  assertions:
+    required:
+    - explain_groupcode_lookup_vs_country_selector
+    - recommend_member_country_expansion_or_metadata_check
+    forbidden:
+    - say_groupcode_is_always_valid_country_selector
+    - invent_metadata_support
+- id: PIPE-02
+  category: weo_group_helper_behavior
+  type: single_turn
+  area: Query execution pipeline - ambiguous resolution
+  prompt: Resolve Congo in the WEO country reference before a data pull.
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Classifies Congo as an ambiguous country term, checks the WEO helper command map, uses or mirrors `resolve Congo`, and asks the user to choose between Republic of Congo and Democratic Republic of the Congo before any downstream data-pull setup.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
+  expected_outputs:
+    candidates:
+    - COG
+    - COD
+  assertions:
+    required:
+    - classify_fuzzy_ambiguous_lookup
+    - use_or_mirror_weo_helper_resolve
+    - present_country_candidates_with_codes
+    - ask_country_clarification_before_fetch
+    forbidden:
+    - assume_one_congo
+    - write_new_script
+    - fetch_without_country_confirmation
+- id: PIPE-03
+  category: weo_group_helper_behavior
+  type: single_turn
+  area: Query execution pipeline - framework comparison
+  prompt: What is the difference between WEO and SPR/PRGT coverage in LIC?
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Classifies this as a comparative group-membership task, checks the WEO helper command map, uses or mirrors `compare G201 G-PRGT-LIC`, and reports counts plus only-in-each-framework countries.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC
+  expected_outputs:
+    weo_groupcode: G201
+    spr_prgt_groupcode: G-PRGT-LIC
+    only_in_weo:
+    - NGA
+    only_in_spr_prgt:
+    - SYR
+  assertions:
+    required:
+    - classify_comparative_group_task
+    - use_or_mirror_weo_helper_compare
+    - report_group_counts
+    - report_only_in_each_group
+    forbidden:
+    - write_temp_set_diff_code
+    - answer_from_memory_only
+    - omit_framework_difference
+- id: VINTAGE-01
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Unspecified WEO vintage
+  prompt: Use a WEO vintage for real GDP growth.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Recognizes that the user requested a vintage but did not specify which one, and asks for the intended vintage instead of choosing one silently.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
+  assertions:
+    required:
+    - ask_which_vintage
+    - preserve_real_gdp_growth_intent
+    forbidden:
+    - choose_latest_vintage_without_confirmation
+    - substitute_live_database
+- id: VINTAGE-02
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Latest live versus latest vintage
+  prompt: Use the latest WEO data for nominal GDP.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Treats latest WEO data as WEO Live by default or clarifies if the user means latest historical vintage, without silently substituting a dated vintage.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO data nominal GDP" --json
+  expected_outputs:
+    database: IMF.RES.WEO:WEO_LIVE
+  assertions:
+    required:
+    - prefer_weo_live_or_clarify_latest_vintage
+    - preserve_nominal_gdp_intent
+    forbidden:
+    - silently_choose_dated_vintage
+    - invent_identifier
+- id: VINTAGE-04
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Latest vintage wording
+  prompt: Use the latest WEO vintage for nominal GDP.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Treats "latest WEO vintage" as an explicit historical-vintage request, resolves the latest vintage database, preserves WEO Live indicator metadata as the source for indicator rows, and asks for the GDP unit or variant if the nominal GDP indicator is ambiguous.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO vintage nominal GDP" --json
+  assertions:
+    required:
+    - recognize_explicit_latest_vintage_request
+    - resolve_latest_vintage_database
+    - use_weo_live_indicator_metadata_for_vintage
+    - preserve_nominal_gdp_variant_ambiguity
+    - preserve_nominal_gdp_intent
+    forbidden:
+    - substitute_live_database
+    - ask_live_or_vintage_when_user_said_vintage
+- id: CAT-11
+  category: catalog_helper_behavior
+  type: single_turn
+  area: Explicit legacy WEO override
+  prompt: Find nominal GDP in IMF.RES:WEO, not WEO Live.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Honors the explicitly named legacy WEO database instead of applying the default WEO Live preference, while still resolving the matching nominal GDP indicator from catalog evidence.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets IMF.RES:WEO
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP" --database IMF.RES:WEO
+  expected_outputs:
+    database: IMF.RES:WEO
+    dimension_name: INDICATOR
+    code: NGDPD
+  assertions:
+    required:
+    - honor_explicit_database_IMF.RES_WEO
+    - do_not_apply_weo_live_default_when_user_overrides
+    - include_nominal_gdp_candidate_from_legacy_weo
+    forbidden:
+    - substitute_IMF.RES.WEO_WEO_LIVE
+    - ignore_explicit_not_weo_live
+    - invent_identifier
+- id: DATA-15
+  category: data_workflow_guardrails
+  type: single_turn
+  area: No new fetch script
+  prompt: Write a quick Python script to fetch WEO real GDP growth for USA, 2010-2024.
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Uses or points to the pre-built fetch_idata.py utility instead of creating a new ad hoc Python fetch script.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+  machine_checks:
+    final_response_must_include:
+    - fetch_idata.py
+    - IMF.RES.WEO:WEO_LIVE
+    - NGDP_RPCH
+    - USA
+    - 2010
+    - 2024
+    final_response_must_not_include:
+    - '```python'
+    - requests.get
+    - pandas.read_json
+  assertions:
+    required:
+    - use_prebuilt_fetch_idata_utility
+    - preserve_requested_series_country_and_time_range
+    - explain_or_offer_fetch_idata_command_instead_of_new_script
+    forbidden:
+    - create_new_python_fetch_script
+    - return_raw_sdk_output_directly
+- id: DATA-19
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Catalog dimension handoff for non-INDICATOR datasets
+  prompt: Download confirmed WDI GDP per capita for China, 2000-2023, as refreshable Excel.
+  fixture:
+    confirmed_database: WB:WDI
+    confirmed_dimension_name: SERIES
+    confirmed_code: NY_GDP_PCAP_CD
+    geo: CHN
+    start: '2000'
+    end: '2023'
+    requested_output: refreshable_excel
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Uses the catalog-provided dimension_name SERIES when building the key and passes --indicator-dim SERIES for refreshable output.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-data/scripts/fetch_idata.py"
+  expected_outputs:
+    database: WB:WDI
+    dimension_name: SERIES
+    code: NY_GDP_PCAP_CD
+    indicator_dim_flag: SERIES
+  machine_checks:
+    final_response_must_include:
+    - WB:WDI
+    - NY_GDP_PCAP_CD
+    - --indicator-dim SERIES
+    - refreshable Excel
+    final_response_must_not_include:
+    - --indicator-dim INDICATOR
+  assertions:
+    required:
+    - preserve_non_indicator_dimension_name
+    - pass_indicator_dim_series
+    - avoid_hardcoded_indicator_dimension
+    forbidden:
+    - assume_dimension_name_INDICATOR
+    - omit_indicator_dim_for_non_indicator_dataset
+- id: DATA-22
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Invalid supplied dimension value
+  prompt: Download confirmed WEO Live real GDP growth for Atlantis, annual, 2010-2024.
+  fixture:
+    confirmed_database: IMF.RES.WEO:WEO_LIVE
+    confirmed_dimension_name: INDICATOR
+    confirmed_code: NGDP_RPCH
+    country: Atlantis
+    frequency: A
+    start: '2010'
+    end: '2024'
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Validates the supplied geography against WEO country metadata or reference files, reports that Atlantis is not a supported WEO country or group, and stops for a valid replacement instead of building a key.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
+      stdout_must_not_contain:
+      - Atlantis
+    final_response_must_include:
+    - Atlantis
+    - not a supported WEO country
+    - valid replacement
+    final_response_must_not_include:
+    - ATL
+    - Atlantis.NGDP_RPCH.A
+  assertions:
+    required:
+    - validate_supplied_country_value
+    - report_invalid_country_or_group
+    - ask_for_valid_replacement_geography
+    forbidden:
+    - build_key_with_invalid_country
+    - invent_country_code_for_atlantis
+    - fetch_with_unvalidated_dimension_value
+- id: E2E-01
+  category: core_behavior_pipeline
+  type: multi_step
+  area: Discovery to fetch
+  prompt: Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Resolves the identifier first, then hands off to data flow, asks for any missing dimensions, and confirms the requested long CSV output.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan" --database IMF.STA:ER
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
+      stdout_contains:
+      - '"status": "routed"'
+      - IMF.STA:ER
+    final_response_must_include:
+    - IMF.STA:ER
+    - Japan
+    - 2018
+    - 2024
+    - long CSV
+    final_response_must_not_include:
+    - fetch before resolving
+  assertions:
+    required:
+    - resolve_identifier_before_fetch
+    - handoff_to_data_workflow
+    - preserve_country_Japan
+    - preserve_time_range_2018_2024
+    - preserve_output_format_long_csv
+    forbidden:
+    - fetch_before_identifier_resolution
+    - drop_output_format
+    - invent_identifier
+- id: E2E-02
+  category: core_behavior_pipeline
+  type: multi_step
+  area: Catalog boundary before fetch
+  prompt: Find the code for real GDP growth and download it immediately.
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Resolves the real GDP growth identifier first, then hands off to the data workflow and stops for missing fetch inputs such as geography, time range, frequency, and output format instead of fetching from catalog context.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
+    optional_commands:
+    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
+  expected_outputs:
+    database: IMF.RES.WEO:WEO_LIVE
+    dimension_name: INDICATOR
+    code: NGDP_RPCH
+  machine_checks:
+    required_command_evidence:
+    - command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+      stdout_contains:
+      - '"status": "resolved"'
+      - '"code": "NGDP_RPCH"'
+    final_response_must_include:
+    - NGDP_RPCH
+    - missing
+    - geography
+    - time range
+    - output format
+    final_response_must_not_include:
+    - downloaded
+    - fetched
+  assertions:
+    required:
+    - resolve_identifier_before_fetch
+    - handoff_to_data_workflow
+    - ask_missing_fetch_inputs
+    - preserve_real_gdp_growth_identifier
+    forbidden:
+    - fetch_from_catalog_context
+    - skip_time_range_confirmation
+    - skip_output_format_confirmation
+    - invent_identifier
+- id: CONTRACT-01
+  category: command_contracts
+  type: command_contract
+  area: Reference reachability
+  command: bash .claude/skills/imf-ra/scripts/check_references.sh
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Verifies that skill links and active reference paths resolve before any behavioral tests run.
+
+'
+  expected_stdout_contains:
+  - 'OK: all skills found, all references resolve.'
+  assertions:
+    required:
+    - reference_checker_passes
+    forbidden:
+    - missing_skill_or_reference_path
+- id: CONTRACT-09
+  category: command_contracts
+  type: command_contract
+  area: WEO iData handoff expansion
+  command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Expands EMDE to comma-separated WEO member countrycode values suitable for iData country selection, rather than returning the group code alone.
+
+'
+  expected_stdout_contains:
+  - AFG
+  - CHN
+  - NGA
+  - ZWE
+  assertions:
+    required:
+    - group_helper_expands_group_to_countrycodes
+    - group_helper_outputs_idata_ready_countrycodes
+    forbidden:
+    - group_helper_returns_only_groupcode_without_members
+- id: CONTRACT-10
+  category: command_contracts
+  type: command_contract
+  area: Active referenced-file consistency
+  command: python3 tests/check_referenced_files.py
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Scans active skill, README, CLAUDE, auto-test, and template files for file-looking references. Every referenced file should exist. If a referenced target is missing, the scanner reports the source line and likely nearby filename matches so the user can decide whether the target is missing or the reference name is inconsistent.
+
+'
+  expected_stdout_contains:
+  - 'OK: checked'
+  assertions:
+    required:
+    - active_referenced_file_scanner_passes
+    - missing_targets_report_source_and_suggestions
+    forbidden:
+    - unresolved_file_reference_found
+- id: CONTRACT-11
+  category: command_contracts
+  type: command_contract
+  area: Catalog source routing - legacy IFS
+  command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Classifies a legacy IFS request as a source-routing task and maps CPI to the replacement iData CPI database before indicator search.
+
+'
+  expected_stdout_contains:
+  - '"status": "routed"'
+  - '"database": "IMF.STA:CPI"'
+  - IFS is a legacy EcOS source
+  assertions:
+    required:
+    - catalog_helper_routes_legacy_ifs_topic
+    - catalog_helper_explains_replacement_database
+    forbidden:
+    - catalog_helper_treats_ifs_as_single_idata_database
+- id: CONTRACT-15
+  category: command_contracts
+  type: command_contract
+  area: Catalog strict resolve - unambiguous WEO concept
+  command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Runs the fuzzy ranking pipeline and returns one handoff-ready identifier only because the top WEO Live real GDP growth candidate is sufficiently clear.
+
+'
+  expected_stdout_contains:
+  - '"status": "resolved"'
+  - '"handoff"'
+  - '"database": "IMF.RES.WEO:WEO_LIVE"'
+  - '"database_name": "IMF.RES.WEO:WEO_LIVE"'
+  - '"dimension_name": "INDICATOR"'
+  - '"code": "NGDP_RPCH"'
+  assertions:
+    required:
+    - catalog_helper_resolves_unambiguous_identifier
+    - catalog_helper_outputs_handoff_tuple
+    forbidden:
+    - catalog_helper_fetches_data
+    - catalog_helper_returns_vintage_for_live_default
+- id: CONTRACT-16
+  category: command_contracts
+  type: command_contract
+  area: Catalog strict resolve - ambiguity preserved
+  command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Runs a source-specific WDI lookup but refuses to commit because current US dollars, constant US dollars, local currency, PPP, and growth variants are all plausible.
+
+'
+  expected_stdout_contains:
+  - '"status": "ambiguous"'
+  - '"handoff": null'
+  - '"clarification"'
+  - '"database_name": "WB:WDI"'
+  - '"code": "NY_GDP_PCAP_CD"'
+  - '"code": "NY_GDP_PCAP_KD"'
+  assertions:
+    required:
+    - catalog_helper_preserves_wdi_gdp_per_capita_ambiguity
+    - catalog_helper_lists_candidate_variants
+    forbidden:
+    - catalog_helper_silently_picks_wdi_variant
+- id: CONTRACT-23
+  category: command_contracts
+  type: command_contract
+  area: Catalog dimension discovery
+  command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Returns dimension names, row counts, and example codes for the selected database so the agent does not infer that every database uses INDICATOR.
+
+'
+  expected_stdout_contains:
+  - IMF.STA:CPI
+  - INDEX_TYPE
+  - CPI;HICP
+  assertions:
+    required:
+    - catalog_helper_supports_dimension_discovery
+    - catalog_helper_prevents_indicator_dimension_assumption
+    forbidden:
+    - catalog_helper_assumes_indicator_for_cpi
+- id: CONTRACT-24
+  category: command_contracts
+  type: command_contract
+  area: Catalog database classification
+  command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Classifies a dated WEO Live resource as a vintage database, not the default WEO Live database.
+
+'
+  expected_stdout_contains:
+  - 'status: found'
+  - 'classification: vintage'
+  - dated WEO Live vintage
+  assertions:
+    required:
+    - catalog_helper_classifies_weo_vintage_database
+    - catalog_helper_distinguishes_live_from_vintage
+    forbidden:
+    - catalog_helper_treats_vintage_as_live_default
+- id: CONTRACT-25
+  category: command_contracts
+  type: command_contract
+  area: Catalog code comparison
+  command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Compares two known WEO inflation codes and returns answer-ready distinctions in timing basis rather than raw rows only.
+
+'
+  expected_stdout_contains:
+  - 'same_database: True'
+  - 'same_dimension: True'
+  - Period average, percent change
+  - End-of-period (EoP), percent change
+  assertions:
+    required:
+    - catalog_helper_supports_code_comparison
+    - catalog_helper_returns_answer_ready_variant_distinctions
+    forbidden:
+    - catalog_helper_requires_temp_code_for_known_code_comparison
+- id: CONTRACT-26
+  category: command_contracts
+  type: command_contract
+  area: Catalog WEO vintage handoff assembly
+  command: python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Resolves a dated WEO vintage request into a handoff-ready tuple, using WEO Live indicator metadata while preserving the requested vintage database in the result and handoff object.
+
+'
+  expected_stdout_contains:
+  - '"status": "resolved"'
+  - '"database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
+  - '"database_name": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
+  - '"indicator_source_database": "IMF.RES.WEO:WEO_LIVE"'
+  - '"code": "NGDPD"'
+  - '"handoff"'
+  assertions:
+    required:
+    - catalog_helper_preserves_requested_weo_vintage_database
+    - catalog_helper_reuses_weo_live_indicator_metadata
+    - catalog_helper_outputs_vintage_handoff_tuple
+    forbidden:
+    - catalog_helper_returns_live_database_for_vintage_request
+    - catalog_helper_returns_no_match_for_weo_vintage_indicator
+- id: CONTRACT-28
+  category: command_contracts
+  type: command_contract
+  area: Catalog split-module import contract
+  command: 'python3 -c ''import sys; sys.path.insert(0, ".claude/skills/imf-ra-catalog/scripts"); import catalog_data, catalog_routing, catalog_lookup, catalog_search; assert catalog_data.WEO_LIVE_DB == "IMF.RES.WEO:WEO_LIVE"; assert catalog_routing.route_query("IFS CPI")["database"] == "IMF.STA:CPI"; assert catalog_lookup.exact_code_matches("NGDP_RPCH", "IMF.RES.WEO:WEO_LIVE"); assert catalog_search.classify_database("IMF.RES.WEO:WEO_LIVE")["status"] == "found"; print("OK: catalog split modules import and expose expected helpers")''
+
+'
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Verifies that the reshaped catalog helper modules import cleanly and that the CLI-facing module still exposes the public helper functions needed by older tests or agent workflows.
+
+'
+  expected_stdout_contains:
+  - 'OK: catalog split modules import and expose expected helpers'
+  assertions:
+    required:
+    - catalog_split_modules_import_cleanly
+    - catalog_search_preserves_public_helper_exports
+    forbidden:
+    - catalog_split_breaks_import_compatibility

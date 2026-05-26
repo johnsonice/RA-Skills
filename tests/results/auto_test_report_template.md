@@ -27,6 +27,12 @@ missing target or inconsistent path/name before running behavioral cases.
 |---|---|---|
 | DATA-10 | `ask_explicit_confirmation_before_broad_all_pull` | Agent attempted a broad pull without confirmation. |
 
+## Machine Check Failures
+
+| ID | Failed Check | Evidence |
+|---|---|---|
+| HPIPE-03 | `final_response_must_not_include: handoff-ready` | Agent treated an ambiguous WDI lookup as ready for handoff. |
+
 ## Needs Follow-Up
 
 | ID | Reason |
@@ -35,12 +41,11 @@ missing target or inconsistent path/name before running behavioral cases.
 
 ## Coverage Notes
 
-- Routing smoke:
-- Shared conventions:
-- Catalog discovery:
-- Data workflow:
-- Helper contracts:
-- End to end:
+- Core behavior pipeline:
+- Catalog helper behavior:
+- WEO group helper behavior:
+- Data workflow guardrails:
+- Command contracts:
 
 ## Run Notes
 
