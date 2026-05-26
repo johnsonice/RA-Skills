@@ -51,11 +51,6 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 | `indicators/3. wdi_variable_list.csv` | World Bank WDI variable catalog. Use when the user requests WDI or `WB:WDI`. |
 | `indicators/4. wto_variable_List.csv` | WTO variable catalog. Use when the user requests WTO goods, tariff, or commodity codes. |
 
-### Maintenance Reference
-
-| File | Purpose |
-|---|---|
-| `references/catalog_schema_and_maintenance.md` | CSV column schemas and catalog maintenance conventions. Not needed for ordinary lookup unless schema details are unclear. |
 
 ## Default Selection Policy
 
@@ -87,92 +82,105 @@ code: <code>
 name: <name>
 ```
 
-## Task Shape Routing
-
-Before choosing files, helper commands, or temporary code, classify the catalog task shape:
-
-| Task shape | Examples | Preferred action |
-|---|---|---|
-| Exact small lookup | "What is `NGDP_RPCH`?", "What database is `IMF.RES.WEO:WEO_LIVE`?" | Use `catalog_search.py code` or `classify-database`, or answer directly from the relevant CSV/Markdown row. |
-| Fuzzy indicator lookup | "real GDP growth", "nominal GDP in USD", "bank capital adequacy" | Use `catalog_search.py search` or `resolve` before writing code. |
-| Source routing | "IFS CPI", "World Bank GDP per capita", "Bloomberg 10-year yield" | Use `catalog_search.py resolve` when an indicator is needed, or `explain-source` when only the source route is needed. |
-| Dimension discovery | "What dimension does CPI use?", "Is WDI `SERIES` or `INDICATOR`?" | Use `catalog_search.py dimensions` and preserve the returned `dimension_name`. |
-| Variant comparison | "WEO inflation vs CPI", "PCPI_PCH vs PCPIE_PCH" | Use `catalog_search.py compare-codes`, compare unit/transformation/basis, and ask if the intended variant is unclear. |
-| Vintage classification | "latest WEO data", "April 2024 WEO vintage", "`*_VINTAGE`" | Use `resolve` for vintage indicator requests, `datasets --vintage-only` for listing vintages, and `classify-database` for exact database checks. |
-| Handoff preparation | "find the code and download it", "use this for iData" | Use `resolve`; hand off only when it returns `status=resolved` and a `handoff` object. |
-| Validation | "does this code exist?", "is this database live or vintage?" | Validate against the source CSVs or the most specific helper command. |
-
-Decision rules:
-
-1. Answer directly from reference CSV/Markdown only for exact, small lookups.
-2. For fuzzy, repeated, comparative, source-routing, validation, vintage, or handoff tasks, use the most specific `scripts/catalog_search.py` command before writing code.
-3. Resolve ambiguous terms before committing to a result. If multiple plausible matches exist, list candidates with codes and ask for confirmation.
-4. Write temporary code only when no helper command covers the task.
-5. If a temporary-code pattern appears repeatedly, promote it into `scripts/catalog_search.py`.
-
 ## Lookup Workflow
 
-1. **Classify the task shape.** Decide whether the request is an exact lookup, fuzzy indicator lookup, source-routing question, variant comparison, vintage classification, validation, or handoff preparation.
-2. **Parse the request.** Identify the concept, preferred database, unit, transformation, frequency, geography, and vintage requirement when available.
-3. **Select a dataset.** Use `non_vintage_datasets.csv` by default, `vintage_datasets.csv` only for explicit vintage requests, and `database_overview.md` for high-level source selection.
-4. **Select the indicator file.** Choose the general non-vintage indicator list or the specific Bloomberg, WDI, or WTO list based on the dataset family.
-5. **Find candidate codes.** Search within the selected indicator file for exact names, close wording, aliases, and source-specific terminology.
-6. **Preserve dimensions.** Always carry through `dimension_name`; do not assume the code dimension is `INDICATOR`.
-7. **Resolve ambiguity.** Compare candidates by unit, transformation, valuation, frequency, price basis, and database coverage.
-8. **Return the result.** Commit to a single identifier only when the match is exact and unambiguous. Otherwise, return a short candidate list and ask for confirmation.
+Use this catalog-specific workflow after the umbrella `imf-ra` policy routes the task here.
+
+1. **Parse catalog intent.** Identify concept, preferred database/source, unit, transformation, frequency, geography, and vintage requirement when available.
+2. **Apply dataset policy.** Use `non_vintage_datasets.csv` by default. Use `vintage_datasets.csv` only for explicit vintage, historical-release, dated snapshot, or versioned-release requests.
+3. **Choose the source family.** Default WEO-style macro concepts to `IMF.RES.WEO:WEO_LIVE`; use database-specific indicator files for Bloomberg, WDI, and WTO requests.
+4. **Preserve `dimension_name`.** Do not assume the code dimension is `INDICATOR`; hand off the exact dimension returned by the catalog helper.
+5. **Compare candidate meaning.** For close matches, distinguish unit, transformation, valuation, frequency, price basis, and database coverage.
+6. **Return only safe identifiers.** Commit to `(database, dimension_name, code)` only when exact and unambiguous; otherwise return candidates and ask for confirmation.
 
 ## Helper Responsibility
 
-Use `scripts/catalog_search.py` as the operational lookup engine for catalog work. The helper owns mechanical lookup tasks that are easy to get wrong by hand:
+Before writing temporary Python for any catalog lookup, you MUST check this command map and run the most specific helper command that fits the task.
 
-- Route plain-English requests to the right source family: WEO Live, WEO vintage, legacy IFS replacement topic databases, WDI, Bloomberg, WTO, or broad all-database search.
-- Select the right indicator catalog file for the routed database.
-- Reuse WEO Live indicator metadata for WEO vintage databases while preserving the requested vintage database in output.
-- Rank fuzzy candidates across large CSVs using catalog terminology and synonym expansion.
-- Preserve `dimension_name`; never assume all databases use `INDICATOR`.
-- Stop on ambiguity and return candidate records plus a clarification prompt.
-- Assemble a handoff-ready payload with `database`, `dimension_name`, `code`, `name`, and notes when `resolve` can safely commit.
+`scripts/catalog_search.py` is the catalog capability map. Consult it during task classification before writing temporary Python.
 
-The helper does not fetch data, expand country groups, choose date ranges, transform series, or build charts. Those responsibilities belong to `imf-ra-data`, the umbrella WEO country-group helper, or `imf-ra-charts`.
+Helper implementation is split by responsibility:
 
-Inspect CSV and Markdown files directly only for exact one-row confirmation, schema questions, or curated database guidance. Use helper commands for broad search, fuzzy ranking, source routing, validation, explicit vintage handling, or any lookup over large indicator catalogs.
+| File | Role |
+|---|---|
+| `scripts/catalog_search.py` | CLI commands and output formatting. |
+| `scripts/catalog_data.py` | CSV paths, constants, loaders, and row record helpers. |
+| `scripts/catalog_routing.py` | Source routing, WEO live/vintage handling, IFS migration routing, database classification. |
+| `scripts/catalog_lookup.py` | Candidate selection, scoring, exact code lookup, ambiguity handling, and handoff payloads. |
 
-Before using `scripts/catalog_search.py`, map the user's wording to terminology that appears in the catalog. The helper should accelerate a source-aligned lookup, not invent indicator logic.
+### Core Navigation Map
 
-Common helper commands:
-
-```bash
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py latest-weo
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO_LIVE
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "current account balance" --all-databases
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States"
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP" --database IMF.RES.WEO:WEO_LIVE
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "GDP per capita" --database WB:WDI
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "10-year government bond yield" --database IMF.CSF:BBGDL
-python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "wheat" --database WTO:WTOIMFTT
-```
-
-Command contracts:
-
-| Command | Use when | Output guarantee |
+| If the user wants to... | Use this helper command | Key input |
 |---|---|---|
-| `search` | Ranked candidates are needed for inspection. | Ranked candidates with `database_name`, `dimension_name`, `code`, and `name`; JSON includes route and summary metadata. |
-| `resolve` | A single handoff identifier is needed. | `status` is `resolved`, `ambiguous`, or `no_match`; JSON includes `handoff` only when safe to commit and `clarification` when ambiguous. |
-| `explain-source` | Source family or legacy routing is unclear. | Returns `routed`, `default`, or `needs_more_context` plus the next search step. |
-| `code` | The user already has a code. | Returns exact code matches without fuzzy inference. |
-| `dimensions` | The required code dimension is unclear. | Returns dimension names, counts, and example codes for a database. |
-| `classify-database` | LIVE/vintage/legacy status is unclear. | Classifies the database and explains whether it is default live, vintage, legacy, or non-vintage. |
-| `compare-codes` | Two or more known codes need distinction. | Returns same/different database and dimension labels plus each code name. |
+| Resolve a metric into a handoff-ready identifier | `resolve "<query>" --json` | natural-language metric request |
+| Inspect ranked candidates without commitment | `search "<query>"` | metric request |
+| Route source-family wording | `explain-source "<query>" --json` | IFS/WDI/Bloomberg/WTO/WEO wording |
+| Validate or explain a known code | `code <code> --database <db>` | code, optional database |
+| Discover the code dimension for a database | `dimensions <database>` | database |
+| Classify live/vintage/legacy database status | `classify-database <database>` | database |
+| Compare known indicator variants | `compare-codes <code_a> <code_b> --database <db>` | codes, optional database |
+| List WEO vintages or datasets | `datasets <query> --vintage-only` | dataset query |
+| Get default WEO Live database | `latest-weo` | none |
 
-Use `resolve --json` as the default command when a user asks to find the identifier, prepare for iData, or find-and-download. If `status=resolved`, pass the `handoff` object to `imf-ra-data`. If `status=ambiguous`, present the candidates or the `clarification` question and wait for confirmation. Use `search` when you want ranked candidates without commitment, and `explain-source` when the user only asks where a source family routes. Use `code`, `dimensions`, `classify-database`, and `compare-codes` for exact lookup, validation, and variant-comparison workflows. If these commands cover the workflow, do not write temporary Python. If no command covers the task shape, then temporary code is acceptable.
+### Detailed Helper Capabilities
+
+#### 1. Source Routing Module
+
+- **`explain-source "<query>" --json`**
+  - **Core Utility:** Routes source wording to WEO Live, WEO vintage, IFS replacement topic databases, WDI, Bloomberg, WTO, or default WEO Live.
+  - **When to Trigger:** Use when the user names IFS, WDI, Bloomberg, WTO, a WEO vintage, or an unclear source family.
+  - **Operational Rule:** Do not treat legacy `IFS` as a single iData database; route it to the replacement topic database.
+
+- **`classify-database <database>`**
+  - **Core Utility:** Validates an exact database and labels it as WEO Live, vintage, legacy WEO, non-vintage, or missing.
+  - **When to Trigger:** Use before handoff when LIVE/vintage/legacy status matters.
+
+#### 2. Indicator Lookup Module
+
+- **`search "<query>"`**
+  - **Core Utility:** Ranks candidate indicators using catalog terminology and synonym scoring.
+  - **When to Trigger:** Use for exploratory fuzzy lookup or when the user wants options.
+  - **Operational Rule:** Preserve `database_name`, `dimension_name`, `code`, and `name` for every candidate.
+
+- **`resolve "<query>" --json`**
+  - **Core Utility:** Returns a single `handoff` only when the top candidate is safe; otherwise returns candidates and clarification.
+  - **When to Trigger:** Use as the default before `imf-ra-data` when the user asks to find, use, or download a metric.
+  - **Operational Rule:** If `status=ambiguous`, ask the clarification question. Do not hand off a candidate manually.
+
+- **`code <code> --database <db>`**
+  - **Core Utility:** Finds exact code metadata without fuzzy inference.
+  - **When to Trigger:** Use when the user already supplies a code.
+
+#### 3. Dimension & Variant Module
+
+- **`dimensions <database>`**
+  - **Core Utility:** Shows catalog dimensions and example codes for a database.
+  - **When to Trigger:** Use when the code dimension may not be `INDICATOR`.
+  - **Operational Rule:** Always preserve the returned `dimension_name`.
+
+- **`compare-codes <codes...> --database <db>`**
+  - **Core Utility:** Compares known codes by database, dimension, and official name.
+  - **When to Trigger:** Use for variant questions such as period-average vs end-of-period CPI.
+
+#### 4. Dataset & Vintage Module
+
+- **`latest-weo`**
+  - **Core Utility:** Returns the default non-vintage WEO Live database.
+  - **When to Trigger:** Use when the user asks for current/latest WEO data without a vintage.
+
+- **`datasets <query> --vintage-only`**
+  - **Core Utility:** Lists dated WEO vintage databases.
+  - **When to Trigger:** Use when the user asks for historical WEO releases or an unspecified vintage.
+
+### Anti-Patterns & Enforcement Rules
+
+1. **No code guessing:** Do not invent `database`, `dimension_name`, or `code`; validate through CSVs or helper output.
+2. **No redundant snippets:** Do not write temporary Python that reimplements routing, fuzzy ranking, exact code lookup, dimension discovery, or code comparison.
+3. **Resolve before handoff:** Pass only `resolve --json` output with `status=resolved` and a `handoff` object to `imf-ra-data`.
+4. **Preserve dimensions:** Never assume the code dimension is `INDICATOR`; carry the returned `dimension_name`.
+5. **Use direct references only for small exact checks:** CSV/Markdown inspection is fine for one-row confirmation or schema guidance; use helper commands for fuzzy, routed, comparative, vintage, or handoff workflows.
+6. **Promote repeated gaps:** Write temporary code only when no helper command covers the task; if the same pattern repeats, add it to `catalog_search.py`.
+7. **Keep responsibilities separate:** Catalog helpers do not fetch data, expand country groups, choose date ranges, transform series, or build charts.
 
 ## Ambiguity and Uncertainty
 
