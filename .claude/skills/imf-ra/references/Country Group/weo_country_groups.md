@@ -38,18 +38,6 @@ Important pull rule: do not use `groupcode` or `groupcode_s` as the country valu
 - To list groups that include a country, use `csv/3. country_group_composition.csv`.
 - To answer exact membership questions, prefer `csv/3. country_group_composition.csv` over inferred logic.
 
-## Lookup Execution Policy
-
-For WEO country and group questions, follow this policy:
-
-1. Classify the task shape: exact lookup, fuzzy lookup, membership expansion, comparison, handoff preparation, validation, or data-pull setup.
-2. Answer directly from the reference CSV/Markdown only for exact, small lookups.
-3. For fuzzy, repeated, comparative, expansion, validation, or handoff tasks, check the helper command map before writing code.
-4. Resolve ambiguous terms before running a helper. If multiple plausible matches exist, list candidates with codes and ask for confirmation before committing.
-5. Use the most specific existing helper command for the task.
-6. Write temporary code only when no helper command covers the task.
-7. If a temporary-code pattern appears repeatedly, promote it into a helper command later.
-
 ## Group Types
 
 `csv/2. country_groups.csv` contains these group categories:
@@ -104,20 +92,64 @@ If the user asks for EM, LIC, LIDC, PRGT, or developing-economy coverage without
 
 ## Helper Script Usage
 
-Use `scripts/weo_country_groups.py` as a convenience helper for ambiguous, repeated, or processing-heavy lookups. When the helper has a command matching the task shape, prefer it over writing temporary Python. The CSV files remain the source of truth.
+This helper is the capability map for WEO country, group, membership, and framework lookups. Consult it during task classification before writing temporary Python. The CSV files remain the source of truth.
 
-Before running the helper, normalize the user's wording to a canonical WEO code or exact English label when possible. Do not pass raw non-English text, empty text, or highly informal wording directly to the helper.
+Implementation files:
 
-| User task | Preferred command |
+| File | Role |
 |---|---|
-| Find country or group candidates for an ambiguous term | `resolve <query>` |
-| Explain RA shorthand such as EM, LIC, EMDE, AE | `explain <term>` |
-| List countries in a group | `members <group>` |
-| Compare two group definitions | `compare <group_a> <group_b>` |
-| Expand a group to iData country selectors | `expand-for-idata <group> --codes-only` |
-| List groups containing a country | `memberships <country>` |
-| Search group metadata | `groups <query>` |
-| Search country metadata | `countries <query>` |
+| `scripts/weo_country_groups.py` | CLI entry point and user-facing commands. |
+| `scripts/weo_country_groups_data.py` | CSV paths, alias dictionaries, explanations, and `CsvTables`. |
+| `scripts/weo_country_groups_lookup.py` | Reusable lookup functions: aliases, country/group resolution, and group membership. |
+
+### Core Navigation Map
+
+| If the user wants to... | Use this helper command | Key input |
+|---|---|---|
+| Resolve ambiguous country/group wording | `resolve <query>` | `query` |
+| Explain RA shorthand or framework caveats | `explain <term>` | `AE`, `EM`, `EMDE`, `LIC`, `LIDC` |
+| List countries in a WEO or SPR/PRGT group | `members <group>` | `groupcode`, alias, or group name |
+| List groups containing a country | `memberships <country>` | `countrycode`, alias, or country name |
+| Expand a group for iData country selectors | `expand-for-idata <group> --codes-only` | `group` |
+| Compare WEO vs SPR/PRGT group coverage | `compare <group_a> <group_b>` | two group terms |
+| Search group metadata | `groups <query>` | group code/name/type |
+| Search country metadata | `countries <query>` | country code/name/department |
+
+### Detailed Helper Capabilities
+
+#### 1. Resolution Module
+
+- **`resolve <query>`**
+  - **Core Utility:** Returns country and group candidates for ambiguous wording.
+  - **When to Trigger:** Use before choosing a code for terms like `Congo`, `Korea`, `EM`, or informal regional labels.
+  - **Operational Rule:** If multiple plausible candidates appear, show them and ask for confirmation.
+
+- **`explain <term>`**
+  - **Core Utility:** Explains common RA shorthand and WEO vs SPR/PRGT differences.
+  - **When to Trigger:** Use for `AE`, `EM`, `EMDE`, `LIC`, `LIDC`, or PRGT-related requests.
+  - **Operational Rule:** Do not collapse WEO and SPR/PRGT definitions unless the helper/reference says they match.
+
+#### 2. Membership Module
+
+- **`members <group>`**
+  - **Core Utility:** Lists exact member countries for one group.
+  - **When to Trigger:** Use for questions like "which countries are in Advanced Economies?"
+  - **Operational Rule:** Use membership output instead of inferring group composition from names.
+
+- **`memberships <country>`**
+  - **Core Utility:** Lists all groups that include one country.
+  - **When to Trigger:** Use when classifying a country into WEO, regional, analytical, or PRGT groups.
+
+- **`compare <group_a> <group_b>`**
+  - **Core Utility:** Shows counts, overlap, and countries only in each group.
+  - **When to Trigger:** Use for WEO vs PRGT comparisons, especially `G201` vs `G-PRGT-LIC` and `G1201` vs `G-PRGT-EM`.
+
+#### 3. iData Handoff Module
+
+- **`expand-for-idata <group> --codes-only`**
+  - **Core Utility:** Converts a group into comma-separated `countrycode` values.
+  - **When to Trigger:** Use before data pulls that require selected countries.
+  - **Operational Rule:** Do not pass `groupcode` or `groupcode_s` as an iData country selector unless dataset metadata explicitly supports that aggregate.
 
 Examples:
 
@@ -128,6 +160,13 @@ python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
 python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC
 python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
 ```
+
+### Anti-Patterns & Enforcement Rules
+
+1. Do not write temporary code that reimplements alias matching, group membership expansion, or WEO vs PRGT comparison when a helper command covers the task.
+2. Do not guess `countrycode`, `groupcode`, or `groupcode_s`; validate through the CSVs or helper output.
+3. Do not pass raw non-English text, empty text, or highly informal wording directly to the helper; normalize to a likely English label or code first.
+4. Do not use `groupcode` as a country selector for iData pulls; expand to member `countrycode` values first.
 
 ## Output Guidance
 
