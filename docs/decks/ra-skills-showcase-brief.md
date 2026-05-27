@@ -50,7 +50,7 @@ A 10-slide brief feeding the ppt-master skill. Audience is mixed (RAs, technical
 **Bullets:**
 - Lives under `.claude/skills/` in the analyst's repo. **Project-local**, not a global install — auto-loaded only inside RA-Skills.
 - Built on Anthropic Claude Code + Claude Skills. No new app to learn; the analyst's existing Claude Code becomes the workspace.
-- **Input:** natural language. *"Pull WEO real GDP growth for G20 countries, 2010–present."*
+- **Input:** natural language. *"Pull WEO real GDP growth for advanced economies, 2010–present."*
 - **Output:** a refreshable Excel, a wide/long CSV, or (soon) a chart — produced by the agent, sitting in the analyst's working directory.
 
 **Visual:** Single-line flow — `"plain English request"` → `RA Skills agent` → `tidy Excel + chart`. Underneath the agent box, four small skill tiles: `imf-ra`, `imf-ra-catalog`, `imf-ra-data`, `imf-ra-charts`.
@@ -77,13 +77,13 @@ A 10-slide brief feeding the ppt-master skill. Audience is mixed (RAs, technical
 **Takeaway:** The agent answers from files, not from memory. No identifier hallucinations.
 
 **Bullets:**
-- **669 datasets** and **81,035 indicators** live in CSVs the agent reads directly — `idata_full_datasets_list.csv`, `idata_full_indicators_list.csv`.
-- WEO country-group memberships (Advanced Economies, EMDE, G7, ASEAN-5, …) live in `country_group_composition.csv` — *exact* membership truth.
+- Dataset and indicator truth lives in CSVs the agent reads directly — `imf-ra-catalog/databases/non_vintage_datasets.csv`, `imf-ra-catalog/databases/vintage_datasets.csv`, and `imf-ra-catalog/indicators/*.csv`.
+- WEO country-group memberships (Advanced Economies, EMDE, G7, ASEAN-5, ...) live in `imf-ra/Country Group/Country Group.csv` — *exact* membership truth.
 - Same pattern for conventions, SDK reference, retired endpoints. Markdown for prose, CSV for structured truth.
 - Result: **no model drift on identifiers**, **reproducible answers**, **auditable provenance** — every claim points to a file.
 - *Policy:* if a CSV answers the question, read it directly. Write code only for aggregation, joins, repeated filtering.
 
-**Visual:** Three stacked rows — `669 datasets`, `81,035 indicators`, `country groups`. Each row points to a CSV icon. A small "no hallucination" stamp.
+**Visual:** Three stacked rows — dataset catalogs, indicator catalogs, country groups. Each row points to a CSV icon. A small "no hallucination" stamp.
 
 ---
 
@@ -93,7 +93,7 @@ A 10-slide brief feeding the ppt-master skill. Audience is mixed (RAs, technical
 
 **Walk-through:**
 
-> *"Pull WEO real GDP growth for G20 countries, 2010–present."*
+> *"Pull WEO real GDP growth for advanced economies, 2010–present."*
 
 The agent resolves to:
 
@@ -102,11 +102,11 @@ The agent resolves to:
 | Database | `WEO_LIVE` |
 | Indicator | `NGDP_RPCH` |
 | Frequency | `A` (annual) |
-| Geo | `G20` member ISO3 list, auto-expanded |
+| Geo | `Advanced Economies(AE)` member country-code list, auto-expanded |
 
 **Bullets:**
 - **LIVE vs vintage** is explicit. Latest data unless the user says *"April 2024 WEO vintage"* — then it locks to that snapshot.
-- **Country groups expand by name or code** — *"advanced economies"* → `G110` member list.
+- **Country groups expand through the unified CSV helper** — *"advanced economies"* -> `Advanced Economies(AE)` member country codes.
 - **Ambiguous?** The agent surfaces top candidates with distinguishing notes and asks. Never guesses an identifier.
 - **Retired endpoints** (EcOS) are refused with a pointer to the current iData equivalent.
 
@@ -138,15 +138,15 @@ The agent resolves to:
 
 **Sequence (left-to-right or top-to-bottom):**
 
-1. **RA types:** *"Pull WEO real GDP growth for G20 countries, 2010–present."*
-2. **`imf-ra-catalog` resolves:** `WEO_LIVE / NGDP_RPCH / A / G20-members`. Confirms with the RA.
+1. **RA types:** *"Pull WEO real GDP growth for advanced economies, 2010–present."*
+2. **`imf-ra-catalog` resolves:** `WEO_LIVE / NGDP_RPCH / A / Advanced Economies(AE)` member country codes. Confirms with the RA.
 3. **`imf-ra-data` fetches:** 7-step protocol → `fetch_idata.py` → refreshable Excel with countries enriched.
 4. **`imf-ra-charts` (soon) hands off** to the internal chart tool.
 5. **RA opens the Excel** — ready for Stata, the chart tool, or the next memo.
 
 **What the RA never had to do:**
 - Look up an indicator code.
-- Remember which ISO3s are in the G20.
+- Remember which countries are in `Advanced Economies(AE)`.
 - Read the iData SDK docs.
 - Reformat a wide-API response into a long panel.
 - Re-ask the same question they asked last Monday.
@@ -162,7 +162,7 @@ The agent resolves to:
 **Bullets:**
 - **`imf-ra-charts` wiring.** Connect to the internal chart tool — close the discovery → fetch → chart loop end-to-end.
 - **More sources beyond iData.** Haver (priority), Bloomberg, Datastream, EDSS — add as additional `imf-ra-*` workers, no rework of the chain.
-- **Curated overlays.** Institutional knowledge as data — *"use IFS quarterly, not WEO annual, for X"* — captured in `overlays/` so the agent stops re-learning it.
+- **Curated routing.** Institutional knowledge as data — legacy IFS routing, WEO LIVE/vintage rules, and source-specific indicator catalogs — captured in `database_overview.md` and the catalog helper modules so the agent stops re-learning it.
 - **Downstream automation.** Notebook templates, reusable modules, scheduled refresh pipelines.
 - **Closing line:** *From chatbot to colleague — and the colleague keeps getting better.*
 

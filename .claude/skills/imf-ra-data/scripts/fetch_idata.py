@@ -92,7 +92,7 @@ idata_utilities.PRIVATE = True
 
 # Country lookup: lives in the imf-ra skill, two levels up from here
 COUNTRIES_CSV = (
-    Path(__file__).parents[2] / "imf-ra" / "references" / "Country Group" / "csv" / "1. countries.csv"
+    Path(__file__).parents[2] / "imf-ra" / "Country Group" / "Country Group.csv"
 )
 
 # Candidate column names for the COUNTRY dimension (tried in order)
@@ -109,7 +109,7 @@ _INDICATOR_DIMS = (
 
 
 def load_country_lookup():
-    """Return {iso3: {name, ifs}} from the RA catalog 1. countries.csv."""
+    """Return {iso3: {name, ifs}} from the RA consolidated country-group CSV."""
     try:
         df = pd.read_csv(COUNTRIES_CSV, dtype=str)
         return {

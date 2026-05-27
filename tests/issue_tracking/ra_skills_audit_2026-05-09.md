@@ -23,9 +23,9 @@ Evidence sources:
 - **Impact:** Even when the script returns a vintage code, the SKILL doesn't enforce a *stop-and-confirm* gate, so the agent silently proceeds.
 
 ### 1.3 Country-group codes are being used as series codes (production bug)
-- **Evidence:** `tests/issue_tracking/issues.md:11-13` — `COUNTRY=G200` is being passed as a series code instead of expanding to member countries.
-- **Where:** No expansion rule exists in `imf-ra-data/SKILL.md`'s key-build step. The umbrella mentions `weo_country_groups.py members` but doesn't mandate it for G-prefix inputs.
-- **Coverage:** No test case in the harness exercises this path → regression can recur.
+- **Evidence:** `tests/issue_tracking/issues.md:11-14` — an aggregate/group identifier can be passed as an iData country selector instead of expanding to member countries.
+- **Current expected path:** Expand group requests through `.claude/skills/imf-ra/Country Group/weo_country_groups.py expand-for-idata ... --codes-only`, backed by the unified `.claude/skills/imf-ra/Country Group/Country Group.csv`.
+- **Coverage:** The current harness includes WEO group helper and command-contract cases for this path.
 
 ### 1.4 Two test prompts are unrunnable in fresh sessions
 - **Evidence:** `ra_skills_autotest_2026-05-09.md` marks DATA-04 and DATA-10 as **Needs follow-up** because both prompts implicitly assume prior `database_id` context. The harness explicitly requires fresh sessions.
@@ -88,12 +88,10 @@ Evidence sources:
 - **Evidence:** Umbrella `imf-ra/SKILL.md:21,23` uses real markdown links to references. Workers refer to the umbrella in **prose only** — `imf-ra-catalog/SKILL.md:12` ("See the umbrella `imf-ra` for shared conventions"), `imf-ra-charts/SKILL.md:12` (same), no clickable link.
 - **Impact:** Minor. Asymmetric reference graph in the docs.
 
-### 3.3 Country-group CSV redundancy
-- **Evidence:** `imf-ra/references/Country Group/csv/`:
-  - `group_dummies_idata.csv` (198 × 51 group columns) and `group_dummies_old_codes.csv` (198 × 51 cols) encode **identical** membership in different naming.
-  - `country_group_composition.csv` (1,945 rows) repeats `grouptype, groupcode, groupname, groupcode_s, groupname_s` in every row.
-  - `countries.csv` and both `group_dummies_*.csv` redundantly re-encode the 4-column country identity in every row.
-- **Impact:** Source-of-truth ambiguity — three files all encode the same axis. If one is stale, no test catches it. (Helper script reads `country_group_composition.csv` and `countries.csv`; the dummies files might be unused.)
+### 3.3 Country-group CSV source of truth
+- **Current structure:** Country-group data now lives in one folder: `.claude/skills/imf-ra/Country Group/`.
+- **Current files:** `Country Group.csv`, `weo_country_groups.md`, and `weo_country_groups.py`.
+- **Impact:** The old split-reference ambiguity has been removed. Current tests should verify this unified folder and helper path only.
 
 ### 3.4 Coverage gap: ambiguous-multi-database matches
 - **Evidence:** CAT-03 tests one ambiguous concept; no case covers the same concept living in 2+ databases (e.g. real GDP growth in WEO *and* IFS).
@@ -114,12 +112,11 @@ Evidence sources:
 
 - **Templates vs CSV columns:** perfect alignment — both `idata_template.md` files match the actual CSV headers exactly. Not a defect.
 - **Dataset CSV (`idata_full_datasets_list.csv`):** 76 KB / 669 rows / clean. Loadable in context. No issues.
-- **`check_references.sh`:** validates SKILL→reference markdown links resolve. Currently passes. Useful but limited — does not validate frontmatter, does not validate that referenced sections actually exist within target files, does not catch terminology drift.
+- **Reference checks:** The old standalone filename/link checker was removed. Current coverage lives in the auto-test cases and command contracts for the unified helper and CSV path.
 - **Helper-script verdicts:**
   - `catalog_search.py search` — irreducible value, keep and emphasize as default for indicator lookups.
   - `catalog_search.py datasets / latest-weo` — borderline, could be replaced with grep.
-  - `weo_country_groups.py groups / members / group-a` — kept for the 52-entry `GROUP_ALIASES` map (the only non-trivial logic).
-  - `weo_country_groups.py summary / countries / memberships` — convenience; CSV reads suffice.
+  - `weo_country_groups.py groups / members / expand-for-idata / compare / resolve / explain` — kept as the unified interface over `Country Group.csv`.
   - `fetch_idata.py` — SDK wrapper, not a reference-data helper; out of scope but does encode irreducible refreshable-format pivot logic.
 
 ---

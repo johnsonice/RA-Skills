@@ -28,7 +28,13 @@ Do not use this skill to fetch data, transform time series, or build charts. Tho
 
 Before lookup, load shared RA conventions from the umbrella `imf-ra` skill when the request involves country codes, WEO country groups, frequency conventions, dates, units, or downstream fetch behavior.
 
-For WEO regions, country groups, aggregates, and informal country names, normalize geography through the umbrella WEO country-group references before selecting variables or handing off to `imf-ra-data`.
+For WEO regions, country groups, aggregates, and informal country names, normalize geography through the umbrella `imf-ra` country-group folder before selecting variables or handing off to `imf-ra-data`:
+
+- `imf-ra/Country Group/Country Group.csv` is the single consolidated country-group matrix.
+- `imf-ra/Country Group/weo_country_groups.md` explains the matrix layout, aliases, WEO vs SPR/PRGT caveats, and iData country-selector rules.
+- `imf-ra/Country Group/weo_country_groups.py` resolves country/group wording, expands groups to member `countrycode` values, and compares WEO vs SPR/PRGT framework coverage.
+
+Catalog helpers still own dataset and indicator discovery only. They must not expand country groups, choose country membership, or use a group/category column as an iData country selector.
 
 ## Reference Files
 
@@ -180,7 +186,7 @@ Helper implementation is split by responsibility:
 4. **Preserve dimensions:** Never assume the code dimension is `INDICATOR`; carry the returned `dimension_name`.
 5. **Use direct references only for small exact checks:** CSV/Markdown inspection is fine for one-row confirmation or schema guidance; use helper commands for fuzzy, routed, comparative, vintage, or handoff workflows.
 6. **Promote repeated gaps:** Write temporary code only when no helper command covers the task; if the same pattern repeats, add it to `catalog_search.py`.
-7. **Keep responsibilities separate:** Catalog helpers do not fetch data, expand country groups, choose date ranges, transform series, or build charts.
+7. **Keep responsibilities separate:** Catalog helpers do not fetch data, expand country groups, choose country membership, choose date ranges, transform series, or build charts.
 
 ## Ambiguity and Uncertainty
 
@@ -189,7 +195,7 @@ Do not guess identifiers. Ask for clarification when:
 - Several variables match the same concept but differ by unit, transformation, valuation, or price basis.
 - Multiple databases plausibly cover the request and WEO Live is not clearly preferred.
 - Frequency is required but unclear or incompatible with the selected dataset.
-- The request implies a WEO group, panel, or region whose membership is unclear.
+- The request implies a WEO group, panel, or region whose membership is unclear. Use `imf-ra/Country Group/weo_country_groups.py` for geography resolution or ask a framework/membership clarification before handoff.
 - The user asks for a vintage but does not specify which vintage.
 
 When presenting alternatives, include:
@@ -220,4 +226,4 @@ If no useful match exists in the reference files, state the gap clearly and ask 
 
 ## Handoff
 
-Once the user confirms the identifier, hand off to `imf-ra-data` with the selected `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints.
+Once the user confirms the identifier, hand off to `imf-ra-data` with the selected `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints. If geography came from a WEO group/category, hand off member `countrycode` values from `imf-ra/Country Group/weo_country_groups.py`, not the group/category column name.

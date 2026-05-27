@@ -1,5 +1,7 @@
 # IMF RA Skill Family Implementation Plan
 
+> **Historical scaffold plan.** This plan records the original April 2026 global-skill scaffold and is no longer the current implementation reference. The live repo now uses project-local `.claude/skills/`, CSV-backed catalog references, `catalog_search.py` helper modules, `fetch_idata.py`, and the consolidated `imf-ra/Country Group/` folder. Use `README.md`, `CLAUDE.md`, and `docs/specs/2026-04-29-imf-ra-skill-family-design.md` for the current layout.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Scaffold the v1 IMF RA Claude Code skill family — four sibling skills under `~/.claude/skills/` (`imf-ra` umbrella + `imf-ra-data`, `imf-ra-charts`, `imf-ra-catalog` workers) with frontmatter, structural references, catalog templates, smoke-test prompts, and a reference-reachability checker. Real domain content (SDK calls, chart-tool invocations, real database catalog entries) is filled in iteratively after this scaffolding lands.
@@ -24,7 +26,6 @@ Files created by this plan:
 | `~/.claude/skills/imf-ra/SKILL.md` | Umbrella entry point. Frontmatter with broad description, body that maps the family. |
 | `~/.claude/skills/imf-ra/references/conventions.md` | Shared conventions stub: SDK setup pointer, country codes, frequency, dates, units. |
 | `~/.claude/skills/imf-ra/tests/prompts.md` | Smoke-test prompts with expected primary skill for each. |
-| `~/.claude/skills/imf-ra/scripts/check_references.sh` | Bash reference-reachability checker. |
 | `~/.claude/skills/imf-ra-data/SKILL.md` | Worker frontmatter + body pointing to umbrella + sdk-usage. |
 | `~/.claude/skills/imf-ra-data/references/sdk-usage.md` | Stub for internal Python SDK call patterns. |
 | `~/.claude/skills/imf-ra-charts/SKILL.md` | Worker frontmatter + body pointing to umbrella, sdk-usage, chart-tool-usage. |
@@ -576,101 +577,7 @@ Expected: prints `8`.
 
 ---
 
-## Task 12: Write the reference reachability checker (real TDD)
-
-**Files:**
-- Create: `~/.claude/skills/imf-ra/scripts/check_references.sh`
-- Test: shell-based — make a temp broken reference and confirm the script flags it.
-
-- [ ] **Step 1: Set up a failing-state test (inject a broken reference)**
-
-Run:
-
-```bash
-cp ~/.claude/skills/imf-ra/SKILL.md ~/.claude/skills/imf-ra/SKILL.md.bak
-printf '\n[broken](references/does_not_exist.md)\n' >> ~/.claude/skills/imf-ra/SKILL.md
-```
-
-This creates the broken-state we expect the checker to detect.
-
-- [ ] **Step 2: Run the not-yet-existing script (expect "command not found" / file not found)**
-
-Run: `bash ~/.claude/skills/imf-ra/scripts/check_references.sh; echo "exit=$?"`
-Expected: error like `No such file or directory`, then `exit=` non-zero (typically `127`). Confirms the test is real.
-
-- [ ] **Step 3: Write the script**
-
-Content of `~/.claude/skills/imf-ra/scripts/check_references.sh`:
-
-```bash
-#!/usr/bin/env bash
-# Verify that every markdown reference in each family SKILL.md points to an existing file.
-# Exits non-zero if any reference is broken.
-
-set -euo pipefail
-
-SKILLS_DIR="${SKILLS_DIR:-$HOME/.claude/skills}"
-FAMILY=("imf-ra" "imf-ra-data" "imf-ra-charts" "imf-ra-catalog")
-
-errors=0
-
-for skill in "${FAMILY[@]}"; do
-    skill_dir="$SKILLS_DIR/$skill"
-    skill_md="$skill_dir/SKILL.md"
-
-    if [[ ! -f "$skill_md" ]]; then
-        echo "MISSING: $skill_md"
-        errors=$((errors + 1))
-        continue
-    fi
-
-    # Extract markdown link targets that point to .md files (e.g., (references/conventions.md)).
-    while IFS= read -r ref; do
-        [[ -z "$ref" ]] && continue
-        [[ "$ref" =~ ^https?:// ]] && continue
-
-        ref_path="$skill_dir/$ref"
-        if [[ ! -e "$ref_path" ]]; then
-            echo "BROKEN REF in $skill_md: $ref"
-            errors=$((errors + 1))
-        fi
-    done < <(grep -oE '\([^)]+\.md[^)]*\)' "$skill_md" | sed -E 's/^\(|\)$//g')
-done
-
-if [[ $errors -eq 0 ]]; then
-    echo "OK: all skills found, all references resolve."
-    exit 0
-else
-    echo "FAILED: $errors broken reference(s)."
-    exit 1
-fi
-```
-
-Then make it executable:
-
-```bash
-chmod +x ~/.claude/skills/imf-ra/scripts/check_references.sh
-```
-
-- [ ] **Step 4: Run the script — expect FAILURE because of the injected broken ref**
-
-Run: `bash ~/.claude/skills/imf-ra/scripts/check_references.sh; echo "exit=$?"`
-Expected output contains `BROKEN REF in /Users/huang/.claude/skills/imf-ra/SKILL.md: references/does_not_exist.md` and ends with `exit=1`.
-
-- [ ] **Step 5: Restore the umbrella SKILL.md, then re-run**
-
-Run:
-
-```bash
-mv ~/.claude/skills/imf-ra/SKILL.md.bak ~/.claude/skills/imf-ra/SKILL.md
-bash ~/.claude/skills/imf-ra/scripts/check_references.sh; echo "exit=$?"
-```
-
-Expected output: `OK: all skills found, all references resolve.` and `exit=0`.
-
----
-
-## Task 13: Final end-to-end verification
+## Task 12: Final end-to-end verification
 
 **Files:** none modified — this task only runs checks.
 
@@ -696,17 +603,12 @@ done
 
 Expected: four lines, each ending in `: OK`.
 
-- [ ] **Step 3: Run the reference reachability checker**
-
-Run: `bash ~/.claude/skills/imf-ra/scripts/check_references.sh; echo "exit=$?"`
-Expected: `OK: all skills found, all references resolve.` and `exit=0`.
-
-- [ ] **Step 4: Confirm the catalog templates exist**
+- [ ] **Step 3: Confirm the catalog templates exist**
 
 Run: `ls ~/.claude/skills/imf-ra-catalog/databases/_template.md ~/.claude/skills/imf-ra-catalog/overlays/_template.md`
 Expected: both paths print without error.
 
-- [ ] **Step 5: Confirm the smoke-test prompts file has all eight rows**
+- [ ] **Step 4: Confirm the smoke-test prompts file has all eight rows**
 
 Run: `grep -c '^| [0-9]' ~/.claude/skills/imf-ra/tests/prompts.md`
 Expected: `8`.

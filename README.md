@@ -26,13 +26,13 @@
 
 Recommended chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-charts`.
 
-Reference truth lives in CSVs (`imf-ra-catalog/databases/`, `imf-ra-catalog/indicators/`, and WEO country groups under `imf-ra/references/Country Group/csv/`) so the agent answers from data rather than memory.
+Reference truth lives in CSVs (`imf-ra-catalog/databases/`, `imf-ra-catalog/indicators/`, and the consolidated WEO country-group file at `imf-ra/Country Group/Country Group.csv`) so the agent answers from data rather than memory.
 
 Key guardrails:
 
 - For catalog indicator/code discovery, source routing, exact code lookup, dimension discovery, database classification, and code comparison, the agent should use the relevant `imf-ra-catalog/scripts/catalog_search.py` command before writing temporary code. Direct CSV/Markdown inspection is still appropriate for exact one-row confirmation and curated guidance.
-- WEO country groups are resolved through `imf-ra/references/Country Group/weo_country_groups.md` and the three WEO group CSVs.
-- WEO `groupcode` values such as `G110` are for group lookup and membership mapping. They should not be used directly as iData country selectors; resolve groups to member `countrycode` values first unless dataset metadata confirms a supported aggregate code.
+- WEO country groups are resolved through the self-contained `imf-ra/Country Group/` folder: `weo_country_groups.md` for guidance, `Country Group.csv` for the unified reference matrix, and `weo_country_groups.py` for lookup/expansion commands.
+- WEO group/category columns such as `Advanced Economies(AE)` are for group lookup and membership mapping. They should not be used directly as iData country selectors; resolve groups to member `countrycode` values first unless dataset metadata confirms a supported aggregate code.
 - For EM/LIC/PRGT requests, the agent should clarify WEO vs SPR/PRGT coverage because the group definitions can differ.
 
 ## Sample queries
@@ -41,11 +41,11 @@ Drop any of these into Claude Code from inside the repo:
 
 - *"I'm starting a project on emerging-market debt — orient me to what's available."*
 - *"Which countries are in the WEO advanced economies group?"*
-- *"Can I use G110 directly in an iData pull, or should I expand it to countries?"*
+- *"Can I use Advanced Economies(AE) directly in an iData pull, or should I expand it to countries?"*
 - *"What's the difference between WEO inflation and CPI in IFS?"*
 - *"Find the current account balance series."*
 - *"Find a quarterly inflation series for emerging markets."*
-- *"Pull WEO real GDP growth for G20 countries, 2010–present."*
+- *"Pull WEO real GDP growth for advanced economies, 2010–present."*
 - *"Download IFS exchange rates monthly for ASEAN, 2015–present."*
 - *"Use the April 2024 WEO vintage for nominal GDP."*
 
@@ -63,19 +63,7 @@ claude   # or open Claude Code with cwd = this repo
 
 Skills live under `.claude/skills/` and are **project-local** — Claude Code auto-loads them only when working in this repo. Nothing is installed globally.
 
-## Verify
-
-```bash
-bash .claude/skills/imf-ra/scripts/check_references.sh
-# Expected: OK: all skills found, all references resolve.
-
-python3 tests/check_referenced_files.py
-# Expected: OK: checked ... file reference(s) across ... active file(s).
-```
-
 Behavioral test pack: [`tests/auto_test_cases.yaml`](tests/auto_test_cases.yaml) defines prompts, fixtures, evidence files, and assertions for routing, catalog, data workflow, helper-contract, and end-to-end checks. [`tests/auto_test_instructions.md`](tests/auto_test_instructions.md) mirrors the same cases for human review. Run records and templates live under [`tests/results/`](tests/results/); issue notes live under [`tests/issue_tracking/`](tests/issue_tracking/).
-
-> **Windows:** run the verify script from **Git Bash** or **WSL** — the shebang is LF-pinned and PowerShell/`cmd` won't execute it.
 
 ## Layout
 
@@ -83,6 +71,7 @@ Behavioral test pack: [`tests/auto_test_cases.yaml`](tests/auto_test_cases.yaml)
 RA-Skills/
 ├── .claude/skills/
 │   ├── imf-ra/             # umbrella + shared conventions
+│   │   └── Country Group/  # unified WEO country-group CSV, guide, and helper
 │   ├── imf-ra-catalog/     # database / variable-code discovery
 │   ├── imf-ra-data/        # SDK-based data fetch
 │   └── imf-ra-charts/      # chart handoff (scaffold)

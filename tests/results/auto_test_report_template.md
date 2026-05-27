@@ -2,24 +2,12 @@
 
 ## Summary
 
-Pre-test status: Pass / Fail / Not run
-
 | Result | Count |
 |---|---:|
 | Pass | 0 |
 | Fail | 0 |
 | Needs follow-up | 0 |
 | Total | 0 |
-
-## Pre-Test Checks
-
-| Check | Result | Evidence |
-|---|---|---|
-| Reference reachability | Pass | `bash .claude/skills/imf-ra/scripts/check_references.sh` returned OK. |
-| Referenced-file consistency | Pass | `python3 tests/check_referenced_files.py` returned `OK: checked ... file reference(s)`. |
-
-If either pre-test check fails, stop and ask the user how to revise the
-missing target or inconsistent path/name before running behavioral cases.
 
 ## Failures
 
