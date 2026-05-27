@@ -136,7 +136,7 @@ The iData key is a dot-separated string of all dimension values in the exact ord
 - Combine multiple values within one dimension with `+` (e.g. `USA+GBR.NGDP_RPCH.A`).
 - The total number of dot-separated fields must match the total number of dimensions — do not add or drop dots.
 
-**Country group rule:** Do **not** use a WEO group code (e.g. `G110`, `G200`) directly as the country selector in an iData key. Resolve the group to its member `countrycode` values first (via `imf-ra` WEO group helpers), then join them with `+`. Use a group aggregate code only when the database metadata explicitly confirms it is a valid dimension value.
+**Country group rule:** Do **not** use a WEO group/category column name (e.g. `Advanced Economies(AE)`, `Emerging Market and Developing Economies(EMDE)`) directly as the country selector in an iData key. Resolve the group to its member `countrycode` values first (via `imf-ra` WEO group helpers), then join them with `+`. Use a group aggregate value only when the database metadata explicitly confirms it is a valid dimension value.
 
 ### Step 6 — Confirm output format
 
@@ -205,9 +205,9 @@ Refreshable output layout is auto-selected by data shape (indicators × countrie
 |---|---|---|
 | `DATASET` | Always | The `--db` argument |
 | `Series_Code` | Always | All dimension values joined with `.` in key order |
-| `CountryName` | Country dimension detected | Looked up from `imf-ra` `1. countries.csv` |
+| `CountryName` | Country dimension detected | Looked up from `imf-ra` `Country Group.csv` |
 | `ISO3` | Country dimension detected | Raw country code from the data |
-| `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `1. countries.csv` (`countrycode_s`) |
+| `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `Country Group.csv` (`countrycode_s`) |
 | `<dim_name>` (non-country, non-indicator) | Each additional dimension | Raw dimension code (e.g. `FREQ`, `DATA_TRANSFORMATION`) |
 | `<indicator dim_name>` | When indicator dim detected | Human-readable label from `get_dimension_values()["Name"]` |
 | `2019`, `2019Q1`, `2019M1` … | Always | Pivoted date columns; format matches frequency (A/Q/M/D) |

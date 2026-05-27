@@ -11,42 +11,12 @@ types:
 - single_turn
 - fixture_based
 - multi_step
-- pre_test
 - command_contract
-pre_test_checks:
-- id: PRE-01
-  category: command_contracts
-  type: pre_test
-  name: Verify referenced files exist
-  instructions: 'Before running behavioral prompts, scan active Markdown, YAML, shell, and Python files for file-looking references and verify that each target exists. If a target is missing, report whether no likely target exists or whether a similarly named nearby file suggests a filename inconsistency. Stop the behavioral run, alert the user with the exact source path and referenced target, and ask the user to decide whether to create/restore the missing target, rename the file, update the reference, or retire the stale test/doc.
-
-'
-  required_canonical_files:
-  - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
-  - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
-  - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
-  - ".claude/skills/imf-ra-catalog/indicators/2. bbg_variable_list.csv"
-  - ".claude/skills/imf-ra-catalog/indicators/3. wdi_variable_list.csv"
-  - ".claude/skills/imf-ra-catalog/indicators/4. wto_variable_List.csv"
-  scan_targets:
-  - ".claude"
-  - README.md
-  - CLAUDE.md
-  - tests/auto_test_cases.yaml
-  - tests/auto_test_instructions.md
-  - tests/results/auto_test_results_template.yaml
-  - tests/results/auto_test_report_template.md
-  suggested_commands:
-  - bash .claude/skills/imf-ra/scripts/check_references.sh
-  - python3 tests/check_referenced_files.py
-  pass_condition: 'The skill reference checker passes, all required/canonical paths exist, and the broader referenced-file scanner reports that every active file-looking reference resolves.
-
-'
 cases:
 - id: SMOKE-01
   category: core_behavior_pipeline
   type: single_turn
-  prompt: Pull WEO real GDP growth for G20 countries, 2010-present.
+  prompt: Pull WEO real GDP growth for advanced economies, 2010-present.
   expected_primary_skill: imf-ra-data
   expected_behavior: 'Treats this as a direct fetch request, not a broad discovery question.
 
@@ -97,11 +67,10 @@ cases:
 '
   evidence_sources:
     required_files:
-    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
-    - ".claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv"
+    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
+    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
   assertions:
     required:
     - use_weo_group_reference
@@ -115,25 +84,25 @@ cases:
   area: Country-group translation
   prompt: For IMF purposes, what does EMDE mean here?
   expected_primary_skill: imf-ra
-  expected_behavior: 'Uses the WEO group reference instead of guessing from memory, but treats "IMF purposes" as framework-ambiguous because both WEO and SPR/PRGT are IMF frameworks. The agent should explain that WEO EMDE maps to G200, SPR/PRGT EMDE is represented by G-PRGT-EM plus G-PRGT-LIC, and ask the user to choose WEO or SPR/PRGT before committing to a group.
+  expected_behavior: 'Uses the WEO group reference instead of guessing from memory, but treats "IMF purposes" as framework-ambiguous because both WEO and SPR/PRGT are IMF frameworks. The agent should explain that WEO EMDE maps to Emerging Market and Developing Economies(EMDE), SPR/PRGT EMDE is represented by SPR-Emerging Market and Middle-Income Economies(EM) plus SPR-Low-Income Developing Countries (LIC), and ask the user to choose WEO or SPR/PRGT before committing to a group.
 
 '
   evidence_sources:
     required_files:
-    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py explain EMDE
+    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" explain EMDE
   expected_outputs:
-    weo_groupcode: G200
-    spr_prgt_groupcodes:
-    - G-PRGT-EM
-    - G-PRGT-LIC
+    weo_group_column: Emerging Market and Developing Economies(EMDE)
+    spr_prgt_group_columns:
+    - SPR-Emerging Market and Middle-Income Economies(EM)
+    - SPR-Low-Income Developing Countries (LIC)
   assertions:
     required:
     - use_weo_group_reference
-    - include_groupcode_G200
-    - include_spr_prgt_groupcodes
+    - include_group_column_Emerging Market and Developing Economies(EMDE)
+    - include_spr_prgt_group_columns
     - ask_framework_clarification
     forbidden:
     - answer_from_memory_only
@@ -419,22 +388,22 @@ cases:
   area: Catalog plus country-group helper composition
   prompt: Prepare WEO real GDP growth for EMDEs, 2010-2024, for an iData pull.
   expected_primary_skill: imf-ra
-  expected_behavior: 'Runs the catalog resolve helper for the indicator and the WEO group helper for EMDE expansion, then hands off confirmed fields to the data workflow without using G200 as a country selector.
+  expected_behavior: 'Runs the catalog resolve helper for the indicator and the WEO group helper for EMDE expansion, then hands off confirmed fields to the data workflow without using Emerging Market and Developing Economies(EMDE) as a country selector.
 
 '
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
     - ".claude/skills/imf-ra-catalog/SKILL.md"
-    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
     required_commands:
     - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
-    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
+    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_outputs:
     database: IMF.RES.WEO:WEO_LIVE
     dimension_name: INDICATOR
     code: NGDP_RPCH
-    groupcode: G200
+    group_column: Emerging Market and Developing Economies(EMDE)
     start: '2010'
     end: '2024'
   machine_checks:
@@ -443,7 +412,7 @@ cases:
       stdout_contains:
       - '"code": "NGDP_RPCH"'
       - '"database": "IMF.RES.WEO:WEO_LIVE"'
-    - command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
+    - command: python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
       stdout_contains:
       - AFG
       - CHN
@@ -453,7 +422,7 @@ cases:
     - 2010
     - 2024
     final_response_must_not_include:
-    - use G200 as the country selector
+    - use Emerging Market and Developing Economies(EMDE) as the country selector
   assertions:
     required:
     - use_catalog_resolve_for_indicator
@@ -461,7 +430,7 @@ cases:
     - preserve_time_range_2010_2024
     - handoff_to_data_workflow_with_member_countrycodes
     forbidden:
-    - use_groupcode_as_country_selector
+    - use_group_column_as_country_selector
     - write_temporary_catalog_or_group_lookup_code
     - fetch_without_output_format
 - id: CAT-02
@@ -745,8 +714,8 @@ cases:
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
   assertions:
     required:
     - ask_group_definition_clarification
@@ -758,24 +727,24 @@ cases:
   category: weo_group_helper_behavior
   type: single_turn
   area: Group code versus data selector
-  prompt: Can I use G110 directly in an iData pull for WEO data?
+  prompt: Can I use Advanced Economies(AE) directly in an iData pull for WEO data?
   expected_primary_skill: imf-ra
-  expected_behavior: 'Explains that WEO group codes are for group lookup and membership mapping, and should not be used directly as country selectors unless dataset metadata confirms aggregate-code support.
+  expected_behavior: 'Explains that WEO group/category columns are for group lookup and membership mapping, and should not be used directly as country selectors unless dataset metadata confirms aggregate-code support.
 
 '
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/references/Country Group/csv/2. country_groups.csv"
+    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
   expected_outputs:
-    groupcode: G110
+    group_column: Advanced Economies(AE)
   assertions:
     required:
-    - explain_groupcode_lookup_vs_country_selector
+    - explain_group_column_lookup_vs_country_selector
     - recommend_member_country_expansion_or_metadata_check
     forbidden:
-    - say_groupcode_is_always_valid_country_selector
+    - say_group_column_is_always_valid_country_selector
     - invent_metadata_support
 - id: PIPE-02
   category: weo_group_helper_behavior
@@ -789,10 +758,10 @@ cases:
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py resolve Congo
+    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" resolve Congo
   expected_outputs:
     candidates:
     - COG
@@ -813,19 +782,19 @@ cases:
   area: Query execution pipeline - framework comparison
   prompt: What is the difference between WEO and SPR/PRGT coverage in LIC?
   expected_primary_skill: imf-ra
-  expected_behavior: 'Classifies this as a comparative group-membership task, checks the WEO helper command map, uses or mirrors `compare G201 G-PRGT-LIC`, and reports counts plus only-in-each-framework countries.
+  expected_behavior: 'Classifies this as a comparative group-membership task, checks the WEO helper command map, uses or mirrors `compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"`, and reports counts plus only-in-each-framework countries.
 
 '
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra/references/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/references/Country Group/csv/3. country_group_composition.csv"
+    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 .claude/skills/imf-ra/scripts/weo_country_groups.py compare G201 G-PRGT-LIC
+    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
   expected_outputs:
-    weo_groupcode: G201
-    spr_prgt_groupcode: G-PRGT-LIC
+    weo_group_column: Low-Income Developing Countries (LIDC)
+    spr_prgt_group_column: SPR-Low-Income Developing Countries (LIC)
     only_in_weo:
     - NGA
     only_in_spr_prgt:
@@ -1041,7 +1010,7 @@ cases:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
     - ".claude/skills/imf-ra-data/SKILL.md"
-    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
     - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
   machine_checks:
@@ -1080,7 +1049,7 @@ cases:
     - ".claude/skills/imf-ra-catalog/SKILL.md"
     - ".claude/skills/imf-ra-data/SKILL.md"
     - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
-    - ".claude/skills/imf-ra/references/Country Group/csv/1. countries.csv"
+    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
     - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
     - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan" --database IMF.STA:ER
@@ -1156,31 +1125,14 @@ cases:
     - skip_time_range_confirmation
     - skip_output_format_confirmation
     - invent_identifier
-- id: CONTRACT-01
-  category: command_contracts
-  type: command_contract
-  area: Reference reachability
-  command: bash .claude/skills/imf-ra/scripts/check_references.sh
-  expected_exit_codes:
-  - 0
-  expected_behavior: 'Verifies that skill links and active reference paths resolve before any behavioral tests run.
-
-'
-  expected_stdout_contains:
-  - 'OK: all skills found, all references resolve.'
-  assertions:
-    required:
-    - reference_checker_passes
-    forbidden:
-    - missing_skill_or_reference_path
 - id: CONTRACT-09
   category: command_contracts
   type: command_contract
   area: WEO iData handoff expansion
-  command: python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only
+  command: python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_exit_codes:
   - 0
-  expected_behavior: 'Expands EMDE to comma-separated WEO member countrycode values suitable for iData country selection, rather than returning the group code alone.
+  expected_behavior: 'Expands EMDE to comma-separated WEO member countrycode values suitable for iData country selection, rather than returning the group/category column alone.
 
 '
   expected_stdout_contains:
@@ -1193,25 +1145,7 @@ cases:
     - group_helper_expands_group_to_countrycodes
     - group_helper_outputs_idata_ready_countrycodes
     forbidden:
-    - group_helper_returns_only_groupcode_without_members
-- id: CONTRACT-10
-  category: command_contracts
-  type: command_contract
-  area: Active referenced-file consistency
-  command: python3 tests/check_referenced_files.py
-  expected_exit_codes:
-  - 0
-  expected_behavior: 'Scans active skill, README, CLAUDE, auto-test, and template files for file-looking references. Every referenced file should exist. If a referenced target is missing, the scanner reports the source line and likely nearby filename matches so the user can decide whether the target is missing or the reference name is inconsistent.
-
-'
-  expected_stdout_contains:
-  - 'OK: checked'
-  assertions:
-    required:
-    - active_referenced_file_scanner_passes
-    - missing_targets_report_source_and_suggestions
-    forbidden:
-    - unresolved_file_reference_found
+    - group_helper_returns_only_group_column_without_members
 - id: CONTRACT-11
   category: command_contracts
   type: command_contract

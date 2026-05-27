@@ -25,7 +25,7 @@ The umbrella does not execute the full workflow by itself. Worker skills chain b
 
 ## Shared Operating Rules
 
-- Use reference CSVs as the source of truth for identifiers, codes, group membership, and catalog lookup.
+- Use reference CSVs as the source of truth for identifiers, codes, group membership, and catalog lookup. For WEO countries and groups, the single consolidated source is `Country Group/Country Group.csv`.
 - Do not rely on memory for database IDs, indicator codes, WEO groups, country membership, or iData dimensions.
 - Do not guess when there is material uncertainty. List plausible candidates and ask for confirmation.
 - For straightforward questions that can be answered by direct file inspection, answer from the files without writing code.
@@ -38,7 +38,7 @@ This policy applies across `imf-ra-catalog`, WEO country/group helpers, `imf-ra-
 
 1. **Classify before acting.** Decide whether the request is exact lookup, fuzzy lookup, source routing, membership expansion, comparison, validation, handoff preparation, data pull, or charting.
 2. **Use direct references only for small exact checks.** Answer from CSV/Markdown directly only when the request is a single-record lookup that needs no ranking, expansion, API call, or computation.
-3. **Check helper maps before writing code.** For fuzzy, repeated, comparative, expansion, validation, handoff, or data-pull tasks, inspect the relevant helper command map first. Existing helper commands are the preferred action.
+3. **Check helper maps before writing code.** For fuzzy, repeated, comparative, expansion, validation, handoff, or data-pull tasks, inspect the relevant helper command map first in markdowns. Existing helper commands are the preferred action.
 4. **Use the most specific helper.** If a helper covers the core task, run it and adapt its structured output. Do not rewrite helper logic for output styling or minor formatting differences.
 5. **Resolve ambiguity before execution.** If reference data produces multiple plausible official codes, groups, databases, dimensions, or variants, show candidates and ask for confirmation before committing.
 6. **Gate temporary code strictly.** Write temporary code only when no helper command or helper combination covers the core task, or when the task requires one-off transformation, analysis, or visualization beyond the helper scope.
@@ -47,7 +47,11 @@ This policy applies across `imf-ra-catalog`, WEO country/group helpers, `imf-ra-
 
 ## WEO Country And Group Conventions
 
-For WEO countries, WEO country groups, WEO aggregates, WEO regions, and informal RA group names, use [references/Country Group/weo_country_groups.md](references/Country%20Group/weo_country_groups.md). That reference owns the WEO country/group code systems, source tables, helper command map, aliases, EM/LIC/PRGT caveats, and iData country-selector rules.
+For WEO countries, WEO country groups, WEO aggregates, WEO regions, and informal RA group names, use the self-contained `Country Group/` folder:
+
+- `Country Group/Country Group.csv` is the single consolidated country-group matrix and source of truth.
+- `Country Group/weo_country_groups.md` explains the matrix layout, aliases, EM/LIC/PRGT caveats, helper command map, and iData country-selector rules.
+- `Country Group/weo_country_groups.py` is the helper for country/group resolution, membership expansion, framework comparison, and iData-ready country-code handoff.
 
 For WEO country/group tasks involving ambiguity, membership expansion, comparison, or iData handoff, open the WEO reference and use its helper command map before writing temporary code.
 

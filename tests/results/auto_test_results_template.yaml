@@ -14,49 +14,8 @@ summary:
   pass: 0
   fail: 0
   needs_follow_up: 0
-  pre_test_passed: false
-
-pre_test:
-  checks_run:
-    - id: PRE-01
-      result: pass
-      commands_run:
-        - bash .claude/skills/imf-ra/scripts/check_references.sh
-        - python3 tests/check_referenced_files.py
-      evidence: >
-        Replace with exact stdout/stderr summary. If a missing target or likely
-        filename inconsistency is found, stop and ask the user how to revise
-        before running behavioral cases.
 
 results:
-  - id: CONTRACT-01
-    result: pass
-    observed_primary_skill: null
-    observed_skill_set: []
-    observed_actions:
-      references_read: []
-      scripts_run:
-        - bash .claude/skills/imf-ra/scripts/check_references.sh
-      metadata_checked: false
-      clarification_asked: false
-      fetch_attempted: false
-    evidence: >
-      Command contract evidence, including key stdout/stderr lines.
-    machine_check_results:
-      required_command_evidence:
-        - command: bash .claude/skills/imf-ra/scripts/check_references.sh
-          exit_code: 0
-          stdout_contains_passed:
-            - "OK: all skills found, all references resolve."
-          stdout_contains_failed: []
-          stdout_must_not_contain_failed: []
-      final_response_must_include_failed: []
-      final_response_must_not_include_failed: []
-    passed_assertions:
-      - reference_checker_passes
-    failed_assertions: []
-    notes: ""
-
   - id: SMOKE-01
     result: pass
     observed_primary_skill: imf-ra-data

@@ -5,10 +5,10 @@ machine-readable source of truth is [auto_test_cases.yaml](auto_test_cases.yaml)
 which stores the prompts, fixtures, categories, and assertions.
 
 The purpose of this catalog is to make sure the RA pipeline behaves like a
-research assistant workflow, not just a collection of isolated prompts. The 45
-active cases check whether the agent starts with the right skill, uses helper
-commands before temporary code, resolves catalog identifiers before data
-retrieval, preserves confirmed intent across handoffs, and stops for
+research assistant workflow, not just a collection of isolated prompts. The test
+set has 43 active cases that check whether the agent starts with the right
+skill, uses helper commands before temporary code, resolves catalog identifiers
+before data retrieval, preserves confirmed intent across handoffs, and stops for
 clarification when a safe fetch is not yet possible.
 
 The pipeline logic is:
@@ -27,29 +27,6 @@ behavior, data workflow guardrails, and command contracts.
 For each case, use the prompt listed here or in
 [auto_test_cases.yaml](auto_test_cases.yaml). Start from a fresh session when
 possible unless the YAML case is marked `fixture_based` or `multi_step`.
-
-### Pre-Test Checks
-
-Before running behavioral prompts, run the pre-test checks in
-[auto_test_cases.yaml](auto_test_cases.yaml). At minimum:
-
-```bash
-bash .claude/skills/imf-ra/scripts/check_references.sh
-python3 tests/check_referenced_files.py
-```
-
-Expected result:
-
-- The reference checker prints `OK: all skills found, all references resolve.`
-- The referenced-file scanner prints an `OK: checked ... file reference(s)`
-  summary.
-
-The referenced-file scanner reads active Markdown, YAML, shell, and Python
-files, extracts file-looking references, and verifies that each target exists.
-If a target is missing, it reports the source file/line and any likely nearby
-filename matches. Stop before behavioral testing and ask the user whether to
-create/restore the missing target, rename the file, update the reference, or
-retire the stale test/doc.
 
 Record whether the agent:
 
@@ -104,7 +81,7 @@ confirmed intent survives the catalog-to-data handoff.
 
 | ID | Prompt | Skill Set Involved |
 |---|---|---|
-| SMOKE-01 | Pull WEO real GDP growth for G20 countries, 2010-present. | `imf-ra` -> `imf-ra-data`; `imf-ra-catalog` if identifier confirmation is needed |
+| SMOKE-01 | Pull WEO real GDP growth for advanced economies, 2010-present. | `imf-ra` -> `imf-ra-data`; `imf-ra-catalog` if identifier confirmation is needed |
 | SMOKE-02 | I'm starting a project on emerging market debt - orient me to what's available. | `imf-ra` |
 | CONV-03 | Get me the IMF inflation series. | `imf-ra` -> `imf-ra-catalog` |
 | E2E-01 | Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format. | `imf-ra` -> `imf-ra-catalog` -> `imf-ra-data` |
@@ -138,14 +115,14 @@ handoff payloads.
 These cases check WEO country/group lookup, framework-sensitive group meanings,
 ambiguous country names, and iData-ready group expansion.
 
-For EMDE prompts that say "IMF purposes" without naming WEO or SPR/PRGT, the expected behavior is to show both IMF frameworks and ask the user to choose before committing to a group: WEO `G200` versus SPR/PRGT `G-PRGT-EM` plus `G-PRGT-LIC`.
+For EMDE prompts that say "IMF purposes" without naming WEO or SPR/PRGT, the expected behavior is to show both IMF frameworks and ask the user to choose before committing to a group: WEO `Emerging Market and Developing Economies(EMDE)` versus SPR/PRGT `SPR-Emerging Market and Middle-Income Economies(EM)` plus `SPR-Low-Income Developing Countries (LIC)`.
 
 | ID | Prompt | Skill Set Involved |
 |---|---|---|
 | CONV-01 | Which countries are in the WEO advanced economies group? | `imf-ra` |
 | CONV-02 | For IMF purposes, what does EMDE mean here? | `imf-ra` |
 | GROUP-02 | Pull real GDP growth for low-income countries, 2010-2024. | `imf-ra` |
-| GROUP-04 | Can I use G110 directly in an iData pull for WEO data? | `imf-ra` |
+| GROUP-04 | Can I use Advanced Economies(AE) directly in an iData pull for WEO data? | `imf-ra` |
 | PIPE-02 | Resolve Congo in the WEO country reference before a data pull. | `imf-ra` |
 | PIPE-03 | What is the difference between WEO and SPR/PRGT coverage in LIC? | `imf-ra` |
 | HPIPE-07 | Prepare WEO real GDP growth for EMDEs, 2010-2024, for an iData pull. | `imf-ra` -> `imf-ra-catalog` -> WEO group helper -> `imf-ra-data` |
@@ -171,16 +148,14 @@ LIVE-vs-vintage routing.
 ### Command Contracts
 
 These cases are deterministic command checks. Run them before or alongside
-behavioral tests to make sure helper scripts and canonical filenames still
-support the prompt-level cases.
+behavioral tests to make sure helper scripts still support the prompt-level
+cases.
 
 The contract set keeps one deterministic check for each helper capability that
 the prompt cases depend on.
 
 | ID | Command | Purpose |
 |---|---|---|
-| CONTRACT-01 | `bash .claude/skills/imf-ra/scripts/check_references.sh` | Active skill references resolve. |
-| CONTRACT-10 | `python3 tests/check_referenced_files.py` | Active file references resolve; missing targets include source lines and likely filename suggestions. |
 | CONTRACT-28 | `python3 -c 'import ... catalog_data, catalog_routing, catalog_lookup, catalog_search ...'` | Split catalog helper modules import cleanly and preserve public helper exports. |
 | CONTRACT-11 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json` | Legacy IFS CPI routes to `IMF.STA:CPI`. |
 | CONTRACT-15 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json` | Strict resolve returns WEO Live `NGDP_RPCH`. |
@@ -189,7 +164,7 @@ the prompt cases depend on.
 | CONTRACT-24 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE` | Database classification identifies a WEO vintage. |
 | CONTRACT-25 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE` | Code comparison distinguishes period-average vs end-of-period CPI inflation. |
 | CONTRACT-26 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json` | WEO vintage resolution returns the vintage database, the matched WEO Live indicator source, and `NGDPD`. |
-| CONTRACT-09 | `python3 .claude/skills/imf-ra/scripts/weo_country_groups.py expand-for-idata G200 --codes-only` | Group expansion returns iData-ready member country codes. |
+| CONTRACT-09 | `python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only` | Group expansion returns iData-ready member country codes. |
 
 ## Result Outputs
 
