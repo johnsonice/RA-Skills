@@ -124,18 +124,27 @@ def load_country_lookup():
         return {}
 
 
+_NO_METADATA_DBS = ("GEE_LIVE", "GAS_LIVE")
+
 def fetch_scale_from_metadata(db, key):
-    """Return scale int (0, 3, 6, or 9) from iData series metadata. Returns 0 on failure.
+    """Return scale int (0, 3, 6, or 9), or None if scale cannot be determined.
+
+    Returns None (not 0) when metadata is unavailable so callers can omit the
+    SCALE row entirely rather than implying scale=0 (Units).
 
     WEO LIVE and vintage databases don't expose scale in their own metadata endpoint;
     the base IMF.RES:WEO database must be queried instead.
-    Databases with no metadata (e.g. GEE_LIVE, GAS_LIVE) silently return 0.
+    Databases in _NO_METADATA_DBS have no metadata endpoint — returns None.
     """
+    db_short = db.split(":")[-1]
+    if any(db_short.startswith(stub) for stub in _NO_METADATA_DBS):
+        return None
+
     meta_db = "IMF.RES:WEO" if "WEO" in db else db
     try:
         meta = idata_utilities.get_idata_metadata(meta_db, key)
         if meta is None:
-            return 0
+            return None
         if hasattr(meta, "columns") and "scale" in meta.columns:
             vals = meta["scale"].dropna().unique()
             if len(vals) >= 1:
@@ -144,7 +153,7 @@ def fetch_scale_from_metadata(db, key):
             return int(meta["scale"])
     except Exception:
         pass
-    return 0
+    return None
 
 
 def format_date_label(ts, freq_code):
@@ -193,8 +202,7 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
         series_code = ".".join(str(v) for v in series_key if pd.notna(v) and str(v) != "")
 
         row_data: dict = {"DATASET": db, "Series_Code": series_code}
-        if scale_label is not None:
-            row_data["SCALE"] = scale_label
+        row_data["SCALE"] = scale_label if scale_label is not None else ""
         if country_col:
             idx = id_cols.index(country_col)
             cv  = str(series_key[idx])
@@ -211,9 +219,7 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
             row_data[lbl] = r[val_col]
         series_data[series_code] = row_data
 
-    meta_labels = ["DATASET", "Series_Code"]
-    if scale_label is not None:
-        meta_labels.append("SCALE")
+    meta_labels = ["DATASET", "Series_Code", "SCALE"]
     if country_col:
         meta_labels += ["COUNTRY", "ISO3", "IFSCODE"]
     for col in id_cols:
@@ -241,8 +247,7 @@ def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
     grp = grp.reset_index(drop=True).copy()
     out = pd.DataFrame(index=grp.index)
     out["DATASET"] = db
-    if scale_label is not None:
-        out["SCALE"] = scale_label
+    out["SCALE"] = scale_label if scale_label is not None else ""
 
     if id_cols:
         out["Series_Code"] = grp[id_cols].apply(
@@ -290,7 +295,7 @@ def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
     return pivot[non_date + date_present]
 
 
-def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None, scale=0):
+def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None, scale=None):
     """Build the RA refreshable enriched format. Layout is auto-selected by data shape:
 
     1. Wide (n_indicators == 1):
@@ -334,7 +339,7 @@ def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None, sc
         val_col = numeric[-1] if numeric else df_long.columns[-1]
 
     # ── 2b. Apply scale: divide values by 10^scale ───────────────────────────
-    scale_label = SCALE_LABELS.get(scale) if scale else None
+    scale_label = SCALE_LABELS.get(scale, "") if scale is not None else ""
     if scale:
         df_long = df_long.copy()
         df_long[val_col] = df_long[val_col] / (10 ** scale)
@@ -633,9 +638,10 @@ def main():
         sys.exit(1)
 
     scale = fetch_scale_from_metadata(args.db, args.key)
-    scale_label = SCALE_LABELS.get(scale) if scale else None
+    scale_label = SCALE_LABELS.get(scale, "") if scale is not None else ""
     if scale_label:
-        print(f"Scale    : {scale_label} (values divided by 10^{scale})")
+        div_note = f" (values divided by 10^{scale})" if scale else ""
+        print(f"Scale    : {scale_label}{div_note}")
 
     if args.fmt == "long":
         out_df = df.reset_index() if isinstance(df.index, pd.DatetimeIndex) else df
@@ -647,8 +653,7 @@ def main():
             if val_col:
                 out_df = out_df.copy()
                 out_df[val_col] = out_df[val_col] / (10 ** scale)
-        if scale_label:
-            out_df["SCALE"] = scale_label
+        out_df["SCALE"] = scale_label
         saved = save_output(out_df, args.output)
         print(f"\nSaved to: {saved}")
         return
@@ -659,6 +664,7 @@ def main():
             numeric_cols = out_df.select_dtypes(include="number").columns
             out_df = out_df.copy()
             out_df[numeric_cols] = out_df[numeric_cols] / (10 ** scale)
+        out_df["SCALE"] = scale_label
         saved = save_output(out_df, args.output)
         print(f"\nSaved to: {saved}")
         return

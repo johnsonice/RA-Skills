@@ -210,7 +210,7 @@ Refreshable output layout is auto-selected by data shape (indicators × countrie
 |---|---|---|
 | `DATASET` | Always | The `--db` argument |
 | `Series_Code` | Always | All dimension values joined with `.` in key order |
-| `SCALE` | `scale` field in iData metadata is non-zero | Human-readable label: `Thousands` / `Millions` / `Billions`; values already divided by 10^scale |
+| `SCALE` | Always present | Human-readable scale label: `Units` / `Thousands` / `Millions` / `Billions`; empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
 | `COUNTRY` | Country dimension detected | Human-readable name looked up from `imf-ra` `Country Group.csv` |
 | `ISO3` | Country dimension detected | Raw ISO3 code from the data |
 | `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `Country Group.csv` (`countrycode_s`) |
@@ -226,7 +226,7 @@ One tab per indicator (named by indicator label, max 31 chars). Within each tab:
 |---|---|
 | `DATASET` | Database identifier |
 | `Series_Code` | Dot-separated dimension values for that series |
-| `SCALE` | Human-readable scale label (`Thousands` / `Millions` / `Billions`); omitted when metadata `scale` is 0 or absent; values already divided by 10^scale |
+| `SCALE` | Human-readable scale label (`Units` / `Thousands` / `Millions` / `Billions`); empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
 | `COUNTRY` | Human-readable country name (when country dimension present) |
 | `ISO3` | Raw ISO3 code (when country dimension present) |
 | `IFSCODE` | IFS code (when country dimension present) |
@@ -276,7 +276,7 @@ For all iData sources (handoff has `database`, `dimension_name`, `code` fields �
 
 ## Haver Fetch
 
-When the catalog handoff contains a `codes` list, pass those `CODE@DATABASE` strings directly to `fetch_haver.py --codes`. Do not reconstruct or modify them — the catalog already resolved countries, aggtype, datatype, and the exact series codes.
+When the catalog handoff contains a `codes` list, pass those `CODE@DATABASE` strings directly to `fetch_haver.py --codes`. **Do not reconstruct or modify them — the catalog already resolved countries, aggtype, datatype, and the exact series codes.**
 
 ### Step 1 — Confirm time range
 
