@@ -40,7 +40,8 @@
       "Bash(python3 /Users/jamieyang/RA-Skills/.claude/skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search \"consumer price inflation weekly\" --database WEEKLY --limit 20)",
       "Bash(python3 /Users/jamieyang/RA-Skills/.claude/skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search \"inflation expectations weekly\" --database WEEKLY --limit 15)",
       "Bash(python3 /Users/jamieyang/RA-Skills/.claude/skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search \"breakeven inflation TIPS\" --database WEEKLY --limit 15)",
-      "Bash(python3 /Users/jamieyang/RA-Skills/.claude/skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search \"price index weekly United States\" --database WEEKLY --limit 10)"
+      "Bash(python3 /Users/jamieyang/RA-Skills/.claude/skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search \"price index weekly United States\" --database WEEKLY --limit 10)",
+      "Edit(/.claude/skills/imf-ra-data/**)"
     ]
   }
 }
