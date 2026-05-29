@@ -27,6 +27,7 @@ CSV catalogs remain the source of truth for identifiers. Metadata fields here ar
 | `IMF.CSF:BBGDL` | Specialized catalog | Bloomberg tickers and market-data fields. |
 | `WB:WDI` | Specialized catalog | World Bank development indicators. |
 | `WTO:WTOIMFTT` | Specialized catalog | WTO-IMF Tariff Tracker HS commodity codes and tariff/goods-trade classifications. |
+| `HAVER:*` | External service (200+ databases) | US macro detail, global economies, high-frequency financial and daily data, industry statistics, fund flows, emerging markets, and international organization data. Accessed via `haver_utilities` — use `scripts/Haver/haver_catalog_search.py` for indicator lookup and `fetch_haver.py` for retrieval. |
 
 ## World Economic Outlook (WEO) Live
 - **Database:** `IMF.RES.WEO:WEO_LIVE`
@@ -182,3 +183,40 @@ CSV catalogs remain the source of truth for identifiers. Metadata fields here ar
 6. **Metals and metal products (HS 68-83):** Hot-rolled steel, refined copper, unwrought aluminum, unwrought gold, and other metal goods.
 7. **Machinery and electronics (HS 84-85):** Laptops, smartphones, processors, lithium-ion batteries, and other machinery or electronic goods.
 8. **Transport, instruments, and miscellaneous goods (HS 86-97):** Passenger cars, aircraft, medical instruments, furniture, and other manufactured products.
+
+## Haver Analytics
+- **Database:** `HAVER:<database_code>` (200+ databases; specify by sub-database code, e.g. `HAVER:USECON`, `HAVER:EMERGE`)
+- **Status:** External service. Access via `haver_utilities`; use `scripts/Haver/haver_catalog_search.py` for indicator lookup and `fetch_haver.py` for retrieval.
+- **Coverage:** 1945–present. Annual, quarterly, monthly, weekly, and daily frequencies. Global.
+
+**Overview:** Haver Analytics provides economic, financial, industry, and forecast data for advanced and emerging economies, drawing on 200+ databases from over 750 government and private sources. It covers US macro and regional detail, global country summaries, high-frequency financial and daily series, industry statistics, fund flows, third-party forecasts, and data from major international organizations including the IMF, BIS, and IIF.
+
+**Sub-database catalog by category:**
+
+1. **United States macro detail (`USECON` and related):** Core US national accounts (`USNA`), capital stock (`CAPSTOCK`), payroll employment (`LABOR`), household employment (`EMPL`), covered employment and wages (`CEW`), occupational employment (`OES`), industrial production (`IP`), consumer prices (`CPIDATA`), producer prices (`PPI`, `PPIR`), international transactions (`USINT`), trade detail (`USTRADE`), surveys (`SURVEYS`), flow of funds (`FFUNDS`), and government finance (`GOVFIN`).
+
+2. **High-frequency and financial data:** US daily (`DAILY`), global daily (`INTDAILY`), US weekly (`WEEKLY`), global weekly (`INTWKLY`), and cryptocurrency statistics (`CRYPTO`). Third-party: bond indexes (`BONDINDX`).
+
+3. **EPFR Global fund flows:** Equity fund sector/industry allocations and flows (`EPFRESA`, `EPFRESF`), equity fund flows by country group (`EPFREIN`, `EPFREEM`), bond fund flows (`EPFRBIN`, `EPFRBEM`, `EPFRBMM`), and country-level allocations and flows for equities and bonds (`EPFRECA`, `EPFRBCA`, `EPFRECF`, `EPFRBCF`). Daily variants: `EPRDEFF`, `EPFRDECF`, `EPFRDBFF`, `EPFRDBCF`, `EPFRDESF`.
+
+4. **Industry and global sector detail:** Quarterly Financial Report (`QFR`), Annual Survey of Manufactures (`ASM`), Baltic freight indexes (`BALTIC`), global sector statistics (`GLSECTOR`), transportation (`TRANSPRT`), tourism (`TOURISM`).
+
+5. **Energy detail:** Global energy statistics (`ENERGY`), weekly electric output (`EEI`), and JODI oil database (`JODI`).
+
+6. **Advanced economies — country summaries and detail:** G10 summary (`G10`), and country-specific databases for Australia/New Zealand (`ANZ`), Belgium/Netherlands/Luxembourg (`BENELUX`), Canada (`CANADA`), Euro area/EU (`EUDATA`), France (`FRANCE`), Germany (`GERMANY`), Ireland (`IRELAND`), Italy (`ITALY`), Japan (`JAPAN`), Nordic countries (`NORDIC`), Spain (`SPAIN`), UK (`UK`), and Andorra/Austria/Cyprus/Greece/Malta/Portugal/Switzerland (`ALPMED`).
+
+7. **Europe detail:** European national accounts (`EUNA`), surveys (`EUSURVYS`), financial accounts (`EUFIN`), debt securities (`EUSEC`), government finance (`EUGOV`), regional labor (`EULABOR`), European Commission macro forecasts (`AMECO`), international transactions (`EUINT`), demographics (`EUPOP`), and trade detail (`EUTRADE`).
+
+8. **Emerging markets:** Country summaries (`EMERGE`), Latin America (`EMERGELA`), Asia Pacific (`EMERGEPR`), Central/Eastern Europe and Western Asia (`EMERGECW`), Middle East and Africa (`EMERGEMA`). Country surveys (`INTSURVYS`) and ESG indicators (`ESG`).
+
+9. **Advanced and emerging market regional databases:** Country-level regional breakdowns for Australia/NZ, Canada, France, Germany, Italy, Japan, Spain, UK, Cyprus/Portugal/Switzerland, MENA (`MENAR`), and Sub-Saharan Africa (`SUBAFR`).
+
+10. **Third-party forecasts and surveys:** Macroeconomic Advisers/S&P Global short-term quarterly forecasts (`MA4CAST`), IIF forecasts (`IIFDATA`), US GDP headline as-reported tables (`ASREPGDP`), Blue Chip consensus forecasts (`BLUECHIP`), and Markit/S&P Global Purchasing Managers surveys (`MKTPMI`).
+
+11. **International organization data:** BIS statistics including QEDS and JEDH (`BIS`); IMF IFS monthly/quarterly (`IFS`) and annual (`IFSANN`), Direction of Trade monthly (`IMFDOTM`) and annual (`IMFDOT`), Balance of Payments quarterly (`IMFBOP`) and annual (`IMFBOPA`), CPIS (`CPIS`), CDIS (`CDIS`), WEO annual (`IMFWEO`), and Regional Economic Outlook (`IMFREO`).
+
+12. **US regional:** Selected regional indicators (`REGIONAL`, `REGIONW`), regional demographics (`USPOP`), gross state product (`GSP`), mortgage delinquencies by state (`MBAMTG`), state government finance (`GOVFIN`), and regional employment by state and county (`EMPLR`, `EMPLC`, `CEWR`).
+
+13. **FX rates:** Monthly FX rates for conversion (`FXRATES`).
+
+14. **Archives:** Discontinued and pre-revision vintages for US national accounts, Euro area series, CANSIM (Canada), and annual US press release archives from 2004–2024 (`USARC04`–`USARC24`, `EUARC`, `EUARC18`, `CANSIM`, `CANSIMR`, `GLARC`, `USNA09`, `USNA92`, `USNA96`, `USNA13`).

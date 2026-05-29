@@ -11,8 +11,8 @@ Fetching IMF data series via the internal Python SDK.
 
 Load these skills in order as needed:
 
-- **`imf-ra`** (umbrella) — load first for shared conventions: country codes, WEO country groups, frequency handling, uncertainty policy, and SDK environment setup.
-- **`imf-ra-catalog`** — load before this skill when the database or indicator is not yet identified. It translates plain-English descriptions into a confirmed `(database, dimension_name, code, frequency, geo)` tuple.
+- **`imf-ra`** (umbrella) — load first for shared conventions and cross-skill execution policy: country codes, WEO country group resolution helpers, frequency handling, lookup execution policy, and SDK environment setup.
+- **`imf-ra-catalog`** — load before this skill when the database or indicator is not yet identified. For iData sources it returns a confirmed `(database, dimension_name, code)` identifier; for Haver sources it returns a confirmed `codes: ["CODE@DB", ...]` list after variant disambiguation. Ready for handoff in either case.
 - **`imf-ra-data`** (this skill) — takes over once the identifier is confirmed. Resolves remaining dimensions, builds the iData key, and executes the fetch.
 - **`imf-ra-charts`** — load after this skill when the user wants to visualize the tidy output.
 
@@ -65,13 +65,18 @@ If the user explicitly asks for R or Stata code:
 
 ## CLI Fetch Protocol
 
+**This protocol is for iData sources only. For Haver sources, skip directly to [Haver Fetch](#haver-fetch).**
+
 **Never create a new Python script to explore or fetch data.** A pre-built fetch utility already exists. Follow these seven steps every time.
 
 ### Step 1 — Catalog lookup
 
-If the `(database, dimension_name, code, frequency, geo)` tuple is not yet confirmed, invoke **`imf-ra-catalog`** to resolve it. Do **not** search catalog files directly from this skill — all indicator and database discovery is owned by `imf-ra-catalog`.
+If the identifier is not yet confirmed, invoke **`imf-ra-catalog`** — do **not** search catalog files directly from this skill.
 
-If you are arriving from a catalog handoff with a confirmed identifier, skip directly to Step 2.
+- **iData path:** the catalog uses `resolve "<query>" --json`. If it returns `status=resolved` with a `handoff` object (`database`, `dimension_name`, `code`), proceed to Step 2. If `status=ambiguous`, surface the clarification and wait.
+- **Haver path:** the catalog uses the Haver Lookup Path (H1–H3: scope → build dblist → search → surface variants → confirm). When the `codes` list is confirmed, skip Steps 2–7 entirely and go to [Haver Fetch](#haver-fetch).
+
+If you are arriving from a confirmed catalog handoff, check its shape: `database + code` fields → Step 2; `codes` list → Haver Fetch.
 
 ### Step 2 — Read dimensions
 
@@ -136,14 +141,14 @@ The iData key is a dot-separated string of all dimension values in the exact ord
 - Combine multiple values within one dimension with `+` (e.g. `USA+GBR.NGDP_RPCH.A`).
 - The total number of dot-separated fields must match the total number of dimensions — do not add or drop dots.
 
-**Country group rule:** Do **not** use a WEO group/category column name (e.g. `Advanced Economies(AE)`, `Emerging Market and Developing Economies(EMDE)`) directly as the country selector in an iData key. Resolve the group to its member `countrycode` values first (via `imf-ra` WEO group helpers), then join them with `+`. Use a group aggregate value only when the database metadata explicitly confirms it is a valid dimension value.
+**Country group rule:** Do **not** use a WEO group/category column name (e.g. `Advanced Economies(AE)`, `Emerging Market and Developing Economies(EMDE)`) directly as the country selector in an iData key. If arriving from a catalog handoff, `geo` is already expanded to member `countrycode` values — use them directly. If geography was not resolved by the catalog, expand the group via `imf-ra` WEO group helpers and join member codes with `+`. Use a group aggregate value only when the database metadata explicitly confirms it is a valid dimension value.
 
 ### Step 6 — Confirm output format
 
 Before executing, always ask the user which output format they want. Do **not** assume a format.
 
 > **Output format** — which would you like?
-> - **Refreshable** — RA enriched Excel (`.xlsx`) with human-readable indicator labels; `CountryName`, `ISO3`, `IFSCODE` added when a country dimension is present. Layout auto-selected by data shape:
+> - **Refreshable** — RA enriched Excel (`.xlsx`) with human-readable indicator labels; `COUNTRY`, `ISO3`, `IFSCODE` added when a country dimension is present. Layout auto-selected by data shape:
 >   - **Multi-sheet card** (triggered when indicators > 1 AND countries > 1 AND time periods > 1): one tab per indicator; each tab is card format (first column = `Label` with metadata + date rows, one column per series/country).
 >   - **Wide** (single indicator cases): single sheet, dates as columns, one row per series.
 >   - **Long** (all other cases): single sheet, card format.
@@ -205,10 +210,11 @@ Refreshable output layout is auto-selected by data shape (indicators × countrie
 |---|---|---|
 | `DATASET` | Always | The `--db` argument |
 | `Series_Code` | Always | All dimension values joined with `.` in key order |
-| `CountryName` | Country dimension detected | Looked up from `imf-ra` `Country Group.csv` |
-| `ISO3` | Country dimension detected | Raw country code from the data |
+| `SCALE` | `scale` field in iData metadata is non-zero | Human-readable label: `Thousands` / `Millions` / `Billions`; values already divided by 10^scale |
+| `COUNTRY` | Country dimension detected | Human-readable name looked up from `imf-ra` `Country Group.csv` |
+| `ISO3` | Country dimension detected | Raw ISO3 code from the data |
 | `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `Country Group.csv` (`countrycode_s`) |
-| `<dim_name>` (non-country, non-indicator) | Each additional dimension | Raw dimension code (e.g. `FREQ`, `DATA_TRANSFORMATION`) |
+| `<dim_name>` (non-country, non-indicator) | Each additional dimension | Raw dimension code (e.g. `FREQ`, `DATA_TRANSFORMATION`, `COUNTERPART_COUNTRY`) |
 | `<indicator dim_name>` | When indicator dim detected | Human-readable label from `get_dimension_values()["Name"]` |
 | `2019`, `2019Q1`, `2019M1` … | Always | Pivoted date columns; format matches frequency (A/Q/M/D) |
 
@@ -220,8 +226,9 @@ One tab per indicator (named by indicator label, max 31 chars). Within each tab:
 |---|---|
 | `DATASET` | Database identifier |
 | `Series_Code` | Dot-separated dimension values for that series |
-| `CountryName` | Country name (when country dimension present) |
-| `ISO3` | Country code (when country dimension present) |
+| `SCALE` | Human-readable scale label (`Thousands` / `Millions` / `Billions`); omitted when metadata `scale` is 0 or absent; values already divided by 10^scale |
+| `COUNTRY` | Human-readable country name (when country dimension present) |
+| `ISO3` | Raw ISO3 code (when country dimension present) |
 | `IFSCODE` | IFS code (when country dimension present) |
 | `<dim_name>` | Raw code for each non-country, non-indicator dimension |
 | `<indicator dim_name>` | Human-readable label (same for all columns within one tab) |
@@ -248,20 +255,69 @@ See [references/imf_datatools_agent_api_reference.md](references/imf_datatools_a
 
 ## When you don't know the series identifier
 
-Invoke `imf-ra-catalog` first to translate the user's description into a confirmed `(database, dimension_name, code, frequency, geo)`. Return here once the identifier is confirmed and proceed from Step 2.
+Invoke `imf-ra-catalog` first. For iData sources it returns a confirmed `(database, dimension_name, code)` — return here and proceed from Step 2. For Haver sources it returns a confirmed `codes: ["CODE@DB", ...]` list — go directly to Haver Fetch.
 
 ## After catalog handoff
 
 When `imf-ra-catalog` returns a confirmed identifier:
+
+**If the handoff contains a `codes` field** (a list of `CODE@DATABASE` strings such as `["n186xnr@EMERGE", "n199xnr@EMERGE"]`), this is a Haver pull. Skip the iData CLI Fetch Protocol (Steps 2–7) entirely and go to [## Haver Fetch](#haver-fetch) below. The catalog has already confirmed countries, aggtype, datatype, and the specific series — do not re-ask those questions.
+
+For all iData sources (handoff has `database`, `dimension_name`, `code` fields — no `codes` list):
 
 - `database` is the iData database identifier; use it in Step 2 to fetch dimensions via the API.
 - `dimension_name` is the indicator dimension name for this database (e.g. `INDICATOR`, `TICKER`, `SERIES`). Pass it as `--indicator-dim` when calling `fetch_idata.py --format refreshable`.
 - `code` is the confirmed indicator code; slot it into the position matching `dimension_name` when building the key.
 - `name` explains unit, valuation, transformation, and price basis; use it to phrase follow-up questions when candidates differ.
 - `frequency` — if confirmed by the catalog, use it directly in the key; skip asking the user for frequency in Step 3.
-- `geo` — if confirmed by the catalog, use it directly as the country/region dimension value; skip asking the user for geography in Step 3.
+- `geo` — if confirmed by the catalog, it is already expanded to member `countrycode` values (e.g. `USA+GBR+DEU`), not a group name. Use it directly as the country dimension value in the key; skip asking the user for geography in Step 3.
 - For WEO candidates, keep the LIVE database as the priority — do not substitute a vintage unless the user asked for one.
 - Resolve all remaining dimensions and the time range via Steps 2–6 before calling `fetch_idata.py`.
+
+## Haver Fetch
+
+When the catalog handoff contains a `codes` list, pass those `CODE@DATABASE` strings directly to `fetch_haver.py --codes`. Do not reconstruct or modify them — the catalog already resolved countries, aggtype, datatype, and the exact series codes.
+
+### Step 1 — Confirm time range
+
+The catalog handoff pre-confirms all series-selection decisions. The only remaining input is the time range:
+
+- Ask the user for **start** and **end** year if not already specified. Do not proceed without a confirmed range.
+- If the user asks to add more series (different country, different variant), route back to `imf-ra-catalog` to identify the additional codes before fetching.
+
+### Step 2 — Confirm output format
+
+Ask the user which format they want:
+
+> **Output format** — which would you like?
+> - **Refreshable** — Card-format `.xlsx`: metadata rows (`.DESC`, `.T1`, `.TN`, `.LSOURCE`, `.AGG`, `.FRQ`, `.DATA_TYPE`, `.MAG`) followed by date rows; one column per series.
+> - **Wide** — Dates as rows, one column per series. CSV or Excel.
+> - **Long** — One row per observation: `Date`, `Ticker`, `Value`. CSV or Excel.
+
+### Step 3 — Execute with fetch_haver.py
+
+```bash
+# Refreshable
+python .claude/skills/imf-ra-data/scripts/fetch_haver.py \
+    --codes "GDP@USECON" "UNRATE@USECON" \
+    --start "<YYYY>" --end "<YYYY>" \
+    --format refreshable \
+    --output <filename>.xlsx
+
+# Wide
+python .claude/skills/imf-ra-data/scripts/fetch_haver.py \
+    --codes "GDP@USECON" \
+    --start "<YYYY>" --end "<YYYY>" \
+    --format wide          # add --excel for .xlsx, default is .csv
+
+# Long
+python .claude/skills/imf-ra-data/scripts/fetch_haver.py \
+    --codes "GDP@USECON" \
+    --start "<YYYY>" --end "<YYYY>" \
+    --format long          # add --excel for .xlsx, default is .csv
+```
+
+See [references/imf_datatools_agent_api_reference.md § 9](references/imf_datatools_agent_api_reference.md) for the full `haver_utilities` API reference.
 
 ## Safe query policy
 

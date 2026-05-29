@@ -5,10 +5,11 @@ description: Use when the user describes data they want in plain English, such a
 
 # IMF RA Catalog
 
-Use this skill to translate a research request into a stable catalog identifier tuple:
+Use this skill to translate a research request into a confirmed identifier ready for handoff to `imf-ra-data`:
 
 ```text
-(database, dimension_name, code)
+iData sources:  (database, dimension_name, code)
+Haver sources:  codes: ["CODE@DB", ...]
 ```
 
 The catalog identifies datasets, dataflows, dimensions, and indicator codes. It does not fetch data. After an identifier is confirmed, hand off to `imf-ra-data` for execution.
@@ -17,7 +18,7 @@ The catalog identifies datasets, dataflows, dimensions, and indicator codes. It 
 
 Use this skill when the user needs to:
 
-- Select the most appropriate IMF, World Bank, WTO, Bloomberg, or related dataset.
+- Select the most appropriate IMF, World Bank, WTO, Bloomberg, Haver, or related dataset.
 - Map a plain-English concept to a dataset-specific variable or indicator code.
 - Resolve ambiguity between similar indicators, transformations, units, dimensions, or database families.
 - Identify the latest non-vintage dataset or an explicitly requested vintage dataset.
@@ -57,6 +58,15 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 | `indicators/3. wdi_variable_list.csv` | World Bank WDI variable catalog. Use when the user requests WDI or `WB:WDI`. |
 | `indicators/4. wto_variable_List.csv` | WTO variable catalog. Use when the user requests WTO goods, tariff, or commodity codes. |
 
+### Haver Indicator Catalog
+
+Haver metadata is stored in a SQLite database, not a CSV. Use `scripts/Haver/haver_catalog_search.py` for all Haver lookups — do not search this source with the general CSV-based helper.
+
+| Resource | Location |
+|---|---|
+| `haver.db` | One level above the RA-Skills repo root. |
+| `scripts/Haver/haver_catalog_search.py` | Haver-specific catalog search CLI (FTS5 + scoring over SQLite). |
+
 
 ## Default Selection Policy
 
@@ -66,6 +76,7 @@ The CSV files are the source of truth for identifiers. Markdown files provide cu
 4. Do not silently replace non-vintage `WEO_LIVE` with a dated WEO vintage. If the user asks for a WEO vintage but does not specify one, ask whether they want the latest available WEO Live vintage or a specific historical vintage.
 5. Search all databases only when WEO Live, GAS Live, and other highlighted databases in `database_overview.md` lack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
 6. Use database-specific indicator files for Bloomberg, WDI, and WTO requests rather than the general non-vintage variable list.
+7. Treat Haver as a peer source, not a last resort. Route to the **Haver Lookup Path** proactively — without waiting for the user to name Haver — whenever the concept matches a Haver-owned data type (consult `databases/database_overview.md` for Haver sub-database coverage). For WEO-style macro concepts that exist in both iData and Haver, iData remains the default. When the concept is ambiguous between iData and Haver, use run an iData search  first, then the Haver Lookup Path; present both sets of results. Routing to Haver means entering the Haver Lookup Path at H1 — not running a search immediately.
 
 ## Legacy IFS Requests
 
@@ -92,20 +103,72 @@ name: <name>
 
 Use this catalog-specific workflow after the umbrella `imf-ra` policy routes the task here.
 
+**Step 1 and 2 are shared. Step 2 branches into two separate paths — follow only the one that matches the source family chosen.**
+
 1. **Parse catalog intent.** Identify concept, preferred database/source, unit, transformation, frequency, geography, and vintage requirement when available.
-2. **Apply dataset policy.** Use `non_vintage_datasets.csv` by default. Use `vintage_datasets.csv` only for explicit vintage, historical-release, dated snapshot, or versioned-release requests.
-3. **Choose the source family.** Default WEO-style macro concepts to `IMF.RES.WEO:WEO_LIVE`; use database-specific indicator files for Bloomberg, WDI, and WTO requests.
+
+2. **Choose the source family.**
+   - Default WEO-style macro concepts to `IMF.RES.WEO:WEO_LIVE`; use database-specific indicator files for Bloomberg, WDI, and WTO requests.
+   - **Read `databases/database_overview.md` before any search.** Use it to determine which source family owns the concept. Do not route based on training assumptions — derive source routing from the overview every time.
+   - If the concept matches Haver-owned categories (e.g. US weekly/daily data, fund flows, freight, US regional, emerging market country summaries, high-frequency financial, third-party forecasts, industry statistics), route to the **Haver Lookup Path** without running an iData search first. Do not wait for the user to name Haver.
+   - If the user explicitly requests Haver or names a Haver database (USECON, EMERGE, WEEKLY, etc.), use the **Haver Lookup Path** exclusively for that request.
+   - When the concept could plausibly be in both iData and Haver, start with the **Haver Lookup Path** (complete all H1 scoping first), then run an iData search; present results from both sources.
+   - If an iData search returns no useful match and Haver has not yet been searched, go to the **Haver Lookup Path** before declaring a gap.
+
+   → **Haver source selected:** Go to the Haver Lookup Path below. Do **not** run any search until H1 scoping is complete.
+   → **iData source selected:** continue with Steps 3–6 below.
+
+### iData Lookup Path
+
+3. **Apply dataset policy.** Use `non_vintage_datasets.csv` by default. Use `vintage_datasets.csv` only for explicit vintage, historical-release, dated snapshot, or versioned-release requests.
 4. **Preserve `dimension_name`.** Do not assume the code dimension is `INDICATOR`; hand off the exact dimension returned by the catalog helper.
 5. **Compare candidate meaning.** For close matches, distinguish unit, transformation, valuation, frequency, price basis, and database coverage.
-6. **Return only safe identifiers.** Commit to `(database, dimension_name, code)` only when exact and unambiguous; otherwise return candidates and ask for confirmation.
+6. **Return only safe identifiers.** Commit to `(database, dimension_name, code)` only when exact and unambiguous; otherwise return candidates with distinction notes and ask for confirmation.
+
+### Haver Lookup Path
+
+Haver's data model differs fundamentally from iData: each series code resolves to exactly one country and one measurement variant. There is no multi-dimensional key. Disambiguation and confirmation happen here in the catalog, before any handoff.
+
+**GATE: Do not run any search until H1 scoping is complete and a dblist is confirmed.**
+
+H1. **Collect country/region and frequency.** Two inputs are required to build the target database list. Do not ask for aggtype or datatype at this stage — those are surfaced from search results in H2.
+
+   - **Country/region:** Which countries or geographic scope? (e.g. US, Euro area, G10, emerging markets)
+   - **Frequency:** D (daily), W (weekly), M (monthly), Q (quarterly), or A (annual)?
+
+   If either is not stated in the user's request, ask for both in a single message. Do not proceed to H1a until both are confirmed.
+
+H1a. **Build target database list.** Read the Haver Analytics section of `databases/database_overview.md`. Using the confirmed country/region and frequency from H1, identify which sub-databases to search. Produce a confirmed dblist before any search.
+
+   Example routing (not exhaustive — always derive from `database_overview.md`):
+
+   | Frequency | Geography | Example target databases |
+   |---|---|---|
+   | D | Any | `INTDAILY` |
+   | W | Any | `INTWKLY` |
+   | M/Q/A | Advanced economies | `G10`, `ANZ`, `BENELUX`, `CANADA`, `UK`, `JAPAN`, `ALPMED`, and other AE-specific databases |
+   | M/Q/A | Emerging markets | `EMERGE`, `EMERGELA`, `EMERGEPR`, `EMERGECW`, `EMERGEMA` |
+   | M/Q/A | US | `USECON`, `G10`, and US-specific databases |
+
+   Do not search databases outside the confirmed dblist, and do not re-search the same database with different query variations.
+
+H1b. **Search.** Run `haver_catalog_search.py search "<query>" --database <DB>` for each database in the confirmed dblist. The `--database` flag is required — haver.db has 12M+ rows and unscoped searches are very slow. The output includes `aggtype` and `datatype` for every candidate.
+
+H2. **Present results with variant choices.** Group all candidates by country. For each candidate, show `code`, `name`, `aggtype`, `datatype`, and `frequency`. Ask the user to:
+   1. Select the countries they want.
+   2. Confirm the variant (aggtype and datatype) if multiple variants exist for the same country.
+
+   Do not pre-filter by aggtype or datatype — surface all variants so the user can choose.
+
+H3. **Hand off.** Once the user selects specific codes, produce a `codes: ["CODE@DB", ...]` list and pass to `imf-ra-data`. There is no `dimension_name` in a Haver handoff — the `CODE@DATABASE` format is the complete identifier.
 
 ## Helper Responsibility
 
 Before writing temporary Python for any catalog lookup, you MUST check this command map and run the most specific helper command that fits the task.
 
-`scripts/catalog_search.py` is the catalog capability map. Consult it during task classification before writing temporary Python.
+Two separate helper CLIs exist — one for iData sources, one for Haver. Pick the right one based on source routing before running any command.
 
-Helper implementation is split by responsibility:
+**iData sources** (`scripts/catalog_search.py`):
 
 | File | Role |
 |---|---|
@@ -114,7 +177,13 @@ Helper implementation is split by responsibility:
 | `scripts/catalog_routing.py` | Source routing, WEO live/vintage handling, IFS migration routing, database classification. |
 | `scripts/catalog_lookup.py` | Candidate selection, scoring, exact code lookup, ambiguity handling, and handoff payloads. |
 
+**Haver** (`scripts/Haver/haver_catalog_search.py`):
+
+Searches the local `haver.db` SQLite database using FTS5 full-text search and synonym-aware scoring. Returns: `score`, `database_name`, `dimension_name`, `code`, `name`, `frequency`, `aggtype`, `datatype`, `coverage`, `source`. Note: `dimension_name` is always `N/A` for Haver — Haver uses `CODE@DATABASE` format, not iData dimensions. Use `aggtype` (EOP/AVG/SUM/NST/NDF) and `datatype` (LocCur/US$/%/INDEX/etc.) to identify and present variant choices to the user.
+
 ### Core Navigation Map
+
+**iData (use `python scripts/catalog_search.py <command>`):**
 
 | If the user wants to... | Use this helper command | Key input |
 |---|---|---|
@@ -127,6 +196,16 @@ Helper implementation is split by responsibility:
 | Compare known indicator variants | `compare-codes <code_a> <code_b> --database <db>` | codes, optional database |
 | List WEO vintages or datasets | `datasets <query> --vintage-only` | dataset query |
 | Get default WEO Live database | `latest-weo` | none |
+
+**Haver (use `python scripts/Haver/haver_catalog_search.py <command>`):**
+
+| If the user wants to... | Use this helper command | Key input |
+|---|---|---|
+| Search Haver indicators by plain-English keywords | `search "<query>"` | natural-language metric request |
+| Filter to a specific Haver database | `search "<query>" --database USECON` | query + Haver DB code |
+| Look up an exact Haver code | `code <code>` | Haver series code |
+| List available Haver databases | `databases` | none |
+| Show SQLite build metadata | `info` | none |
 
 ### Detailed Helper Capabilities
 
@@ -182,11 +261,12 @@ Helper implementation is split by responsibility:
 
 1. **No code guessing:** Do not invent `database`, `dimension_name`, or `code`; validate through CSVs or helper output.
 2. **No redundant snippets:** Do not write temporary Python that reimplements routing, fuzzy ranking, exact code lookup, dimension discovery, or code comparison.
-3. **Resolve before handoff:** Pass only `resolve --json` output with `status=resolved` and a `handoff` object to `imf-ra-data`.
+3. **Resolve before handoff:** For iData sources, pass only `resolve --json` output with `status=resolved` and a `handoff` object to `imf-ra-data`. For Haver sources, pass only a confirmed `codes: ["CODE@DB", ...]` list produced after completing the full Haver Lookup Path (H1–H3). Do not hand off from either path until confirmation is complete.
 4. **Preserve dimensions:** Never assume the code dimension is `INDICATOR`; carry the returned `dimension_name`.
 5. **Use direct references only for small exact checks:** CSV/Markdown inspection is fine for one-row confirmation or schema guidance; use helper commands for fuzzy, routed, comparative, vintage, or handoff workflows.
 6. **Promote repeated gaps:** Write temporary code only when no helper command covers the task; if the same pattern repeats, add it to `catalog_search.py`.
 7. **Keep responsibilities separate:** Catalog helpers do not fetch data, expand country groups, choose country membership, choose date ranges, transform series, or build charts.
+8. **Never query haver.db with ad-hoc SQL LIKE patterns.** The `indicators` table has 12M+ rows and no index on `descriptor` — unscoped `LIKE '%...%'` queries do full-table scans and are very slow. Always use `haver_catalog_search.py` (FTS5) for Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
 
 ## Ambiguity and Uncertainty
 
@@ -198,19 +278,29 @@ Do not guess identifiers. Ask for clarification when:
 - The request implies a WEO group, panel, or region whose membership is unclear. Use `imf-ra/Country Group/weo_country_groups.py` for geography resolution or ask a framework/membership clarification before handoff.
 - The user asks for a vintage but does not specify which vintage.
 
-When presenting alternatives, include:
+When presenting **iData** alternatives, include:
 
 - `database_name`
 - `dimension_name`
-- `Code`
-- `Name`
+- `code`
+- `name`
+- A short distinction note
+
+When presenting **Haver** alternatives, include:
+
+- `database_name` (e.g. `HAVER:EMERGE`)
+- `code` (the series code)
+- `name` (the descriptor — includes country and units)
+- `aggtype` (e.g. EOP, AVG)
+- `datatype` (e.g. LocCur, US$, %)
+- `frequency`
 - A short distinction note
 
 Ask the smallest useful clarification question, usually among two to five candidates.
 
 ## Output Format
 
-For an unambiguous match, return:
+**iData — unambiguous match:**
 
 ```text
 database: <Agency ID:Resource ID>
@@ -220,10 +310,34 @@ name: <human-readable name>
 notes: <brief reason this is the best match>
 ```
 
-For ambiguous results, return a ranked candidate list with distinction notes and ask the user to confirm the intended choice.
+**Haver — confirmed selections (after Haver Lookup Path H1–H3):**
 
-If no useful match exists in the reference files, state the gap clearly and ask for one additional hint. Do not invent a dataset, dimension, or code.
+```text
+codes: ["CODE1@DB", "CODE2@DB", ...]
+frequency: <A|Q|M|W|D>
+aggtype: <EOP|AVG|SUM|...>
+datatype: <LocCur|US$|%|INDEX|...>
+notes: <brief reason these are the best matches>
+```
+
+For ambiguous results (either source), return a ranked candidate list with distinction notes and ask the user to confirm the intended choice.
+
+If no useful match exists in any source, state the gap clearly and ask for one additional hint. Do not invent a dataset, dimension, or code.
 
 ## Handoff
 
-Once the user confirms the identifier, hand off to `imf-ra-data` with the selected `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints. If geography came from a WEO group/category, hand off member `countrycode` values from `imf-ra/Country Group/weo_country_groups.py`, not the group/category column name.
+Once the user confirms the identifier, hand off to `imf-ra-data`:
+
+- **iData:** pass `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints. If geography came from a WEO group/category, hand off member `countrycode` values from `imf-ra/Country Group/weo_country_groups.py`, not the group/category column name.
+- **Haver:** see format below.
+
+**Haver handoff format:**
+
+Each confirmed selection is a `CODE@DATABASE` string. The handoff passes a list:
+
+```text
+codes: ["CODE1@DB", "CODE2@DB", ...]    e.g. ["n186xnr@EMERGE", "n199xnr@EMERGE"]
+frequency: <A|Q|M|W|D>                 from the confirmed series metadata
+```
+
+`imf-ra-data` detects the `codes` field in the handoff and routes to `fetch_haver.py` instead of `fetch_idata.py`. Codes may span multiple Haver databases in a single call if needed.
