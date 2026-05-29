@@ -218,5 +218,3 @@ CSV catalogs remain the source of truth for identifiers. Metadata fields here ar
 12. **US regional:** Selected regional indicators (`REGIONAL`, `REGIONW`), regional demographics (`USPOP`), gross state product (`GSP`), mortgage delinquencies by state (`MBAMTG`), state government finance (`GOVFIN`), and regional employment by state and county (`EMPLR`, `EMPLC`, `CEWR`).
 
 13. **FX rates:** Monthly FX rates for conversion (`FXRATES`).
-
-14. **Archives:** Discontinued and pre-revision vintages for US national accounts, Euro area series, CANSIM (Canada), and annual US press release archives from 2004–2024 (`USARC04`–`USARC24`, `EUARC`, `EUARC18`, `CANSIM`, `CANSIMR`, `GLARC`, `USNA09`, `USNA92`, `USNA96`, `USNA13`).
