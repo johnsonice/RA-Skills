@@ -181,6 +181,8 @@ Two separate helper CLIs exist — one for iData sources, one for Haver. Pick th
 
 Searches the local `haver.db` SQLite database using FTS5 full-text search and synonym-aware scoring. Returns: `score`, `database_name`, `dimension_name`, `code`, `name`, `frequency`, `aggtype`, `datatype`, `coverage`, `source`. Note: `dimension_name` is always `N/A` for Haver — Haver uses `CODE@DATABASE` format, not iData dimensions. Use `aggtype` (EOP/AVG/SUM/NST/NDF) and `datatype` (LocCur/US$/%/INDEX/etc.) to identify and present variant choices to the user.
 
+**`HAVER:` prefix note:** `database_name` in search output is display-only (e.g. `HAVER:EMERGECW`). When building `CODE@DB` handoff strings or passing `--database` to any command, use the short code without the prefix (e.g. `EMERGECW`, `INTDAILY`, `USECON`). Both `haver_catalog_search.py` and `fetch_haver.py` accept either form, but `CODE@EMERGECW` is the canonical handoff format.
+
 ### Core Navigation Map
 
 **iData (use `python scripts/catalog_search.py <command>`):**
