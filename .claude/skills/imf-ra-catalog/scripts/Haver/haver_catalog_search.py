@@ -376,7 +376,9 @@ def write_rows(rows: list[dict[str, object]]) -> None:
 
 
 def cmd_search(args: argparse.Namespace) -> None:
-    write_rows(search_indicators(args.query, database=args.database, limit=args.limit))
+    databases = args.databases if args.databases else ([args.database] if args.database else [None])
+    for db in databases:
+        write_rows(search_indicators(args.query, database=db, limit=args.limit))
 
 
 def cmd_code(args: argparse.Namespace) -> None:
@@ -444,7 +446,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("search", help="Search Haver indicators by plain-English keywords")
     p.add_argument("query")
-    p.add_argument("--database", "--db", dest="database", help="Filter to a Haver DB code, e.g. USECON")
+    p.add_argument("--database", "--db", dest="database", help="Filter to a single Haver DB code, e.g. USECON")
+    p.add_argument("--databases", "--dbs", dest="databases", nargs="+", metavar="DB",
+                   help="Filter to multiple Haver DB codes in one call, e.g. --databases EMERGE EMERGELA EMERGEPR")
     p.add_argument("--limit", type=int, default=20)
     p.set_defaults(func=cmd_search)
 
