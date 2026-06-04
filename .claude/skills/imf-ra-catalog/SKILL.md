@@ -152,7 +152,18 @@ H1a. **Build target database list.** Read the Haver Analytics section of `databa
 
    Do not search databases outside the confirmed dblist, and do not re-search the same database with different query variations.
 
-H1b. **Search.** Run `haver_catalog_search.py search "<query>" --database <DB>` for each database in the confirmed dblist. The `--database` flag is required — haver.db has 12M+ rows and unscoped searches are very slow. The output includes `aggtype` and `datatype` for every candidate.
+H1b. **Search.** Choose ONE query string, then run a **single Bash call** covering all databases in the confirmed dblist using `--databases`. Do not issue separate Bash calls per database — each separate call triggers its own permission prompt.
+
+```bash
+python .claude/skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py \
+  search "<query>" --databases DB1 DB2 DB3 ... --limit 300
+```
+
+The `--databases` flag is required (haver.db has 12M+ rows and unscoped searches are very slow). The output includes `aggtype` and `datatype` for every candidate.
+
+**Set `--limit` to at least 300 for any multi-country or multi-database search.** The default limit is small and silently truncates results, which causes missed matches and forces re-runs that each trigger a permission prompt. Use `--limit 300` (or higher) whenever the confirmed dblist has 3+ databases or the concept plausibly matches many countries.
+
+**One query, one pass.** Decide on the best query string before running. Each database is searched exactly once. Do not re-run with alternative phrasings — the FTS5 scorer expands synonyms internally (e.g. `treasury` → `government bond yield`). Accept the first-pass results.
 
 H2. **Present results with variant choices.** Group all candidates by country. For each candidate, show `code`, `name`, `aggtype`, `datatype`, and `frequency`. Ask the user to:
    1. Select the countries they want.
@@ -204,7 +215,8 @@ Searches the local `haver.db` SQLite database using FTS5 full-text search and sy
 | If the user wants to... | Use this helper command | Key input |
 |---|---|---|
 | Search Haver indicators by plain-English keywords | `search "<query>"` | natural-language metric request |
-| Filter to a specific Haver database | `search "<query>" --database USECON` | query + Haver DB code |
+| Search across multiple Haver databases in one call | `search "<query>" --databases DB1 DB2 DB3` | query + list of DB codes |
+| Filter to a single Haver database | `search "<query>" --database USECON` | query + one Haver DB code |
 | Look up an exact Haver code | `code <code>` | Haver series code |
 | List available Haver databases | `databases` | none |
 | Show SQLite build metadata | `info` | none |
@@ -269,6 +281,9 @@ Searches the local `haver.db` SQLite database using FTS5 full-text search and sy
 6. **Promote repeated gaps:** Write temporary code only when no helper command covers the task; if the same pattern repeats, add it to `catalog_search.py`.
 7. **Keep responsibilities separate:** Catalog helpers do not fetch data, expand country groups, choose country membership, choose date ranges, transform series, or build charts.
 8. **Never query haver.db with ad-hoc SQL LIKE patterns.** The `indicators` table has 12M+ rows and no index on `descriptor` — unscoped `LIKE '%...%'` queries do full-table scans and are very slow. Always use `haver_catalog_search.py` (FTS5) for Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
+9. **Batch all Haver database searches into one Bash call.** When the confirmed dblist has multiple databases, use `--databases DB1 DB2 ...` in a single invocation — never one Bash call per database. Each separate call triggers a permission prompt.
+10. **One query per search session, no reruns.** The FTS5 scorer handles synonyms internally. Do not re-run the same database with a rephrased query to find more results — accept the first-pass output.
+11. **Always use `--limit 300` or higher for broad searches.** Never use a small limit (e.g. 15, 20, 30) for multi-country or multi-database searches. A truncated result set forces re-runs, which generate additional permission prompts. Use `--limit 300` as the default for any search covering 3+ databases or concepts that span many countries.
 
 ## Ambiguity and Uncertainty
 
