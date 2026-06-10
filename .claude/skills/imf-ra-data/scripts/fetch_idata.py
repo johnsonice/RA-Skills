@@ -22,10 +22,10 @@ Modes (use this script for all SDK interactions — never write a new Python scr
 Output formats (--format required for fetch):
   refreshable  RA enriched Excel (.xlsx). Layout auto-selected by number of indicators:
                - Single indicator → wide layout: one row per series, dates as columns.
-                 Columns: DATASET | Series_Code | [CountryName | ISO3 | IFSCODE] |
+                 Columns: DATASET | Series_Code | [COUNTRY | ISO3 | IFSCODE] |
                  [other dimension cols] | <indicator label col> | 2019 | 2020 | ...
                - Multiple indicators → long layout: one row per observation.
-                 Columns: DATASET | Series_Code | [CountryName | ISO3 | IFSCODE] |
+                 Columns: DATASET | Series_Code | [COUNTRY | ISO3 | IFSCODE] |
                  [dimension cols — indicator dim shows label] | Date | Value
                Country columns included only when a country dimension is detected.
                Always .xlsx.
@@ -86,13 +86,15 @@ from pathlib import Path
 import pandas as pd
 from imf_datatools import idata_utilities
 
+SCALE_LABELS = {0: "Units", 3: "Thousands", 6: "Millions", 9: "Billions"}
+
 # LIVE databases (WEO_LIVE, GAS_LIVE, GEE_LIVE, etc.) are private IMF datasets.
 # Safe to leave on for public databases as well.
 idata_utilities.PRIVATE = True
 
 # Country lookup: lives in the imf-ra skill, two levels up from here
 COUNTRIES_CSV = (
-    Path(__file__).parents[2] / "imf-ra" / "references" / "Country Group" / "csv" / "1. countries.csv"
+    Path(__file__).parents[2] / "imf-ra" / "Country Group" / "Country Group.csv"
 )
 
 # Candidate column names for the COUNTRY dimension (tried in order)
@@ -109,7 +111,7 @@ _INDICATOR_DIMS = (
 
 
 def load_country_lookup():
-    """Return {iso3: {name, ifs}} from the RA catalog 1. countries.csv."""
+    """Return {iso3: {name, ifs}} from the RA consolidated country-group CSV."""
     try:
         df = pd.read_csv(COUNTRIES_CSV, dtype=str)
         return {
@@ -120,6 +122,38 @@ def load_country_lookup():
     except Exception as exc:
         print(f"Warning: could not load country lookup ({exc})", file=sys.stderr)
         return {}
+
+
+_NO_METADATA_DBS = ("GEE_LIVE", "GAS_LIVE")
+
+def fetch_scale_from_metadata(db, key):
+    """Return scale int (0, 3, 6, or 9), or None if scale cannot be determined.
+
+    Returns None (not 0) when metadata is unavailable so callers can omit the
+    SCALE row entirely rather than implying scale=0 (Units).
+
+    WEO LIVE and vintage databases don't expose scale in their own metadata endpoint;
+    the base IMF.RES:WEO database must be queried instead.
+    Databases in _NO_METADATA_DBS have no metadata endpoint — returns None.
+    """
+    db_short = db.split(":")[-1]
+    if any(db_short.startswith(stub) for stub in _NO_METADATA_DBS):
+        return None
+
+    meta_db = "IMF.RES:WEO" if "WEO" in db else db
+    try:
+        meta = idata_utilities.get_idata_metadata(meta_db, key)
+        if meta is None:
+            return None
+        if hasattr(meta, "columns") and "scale" in meta.columns:
+            vals = meta["scale"].dropna().unique()
+            if len(vals) >= 1:
+                return int(vals[0])
+        if isinstance(meta, dict) and "scale" in meta:
+            return int(meta["scale"])
+    except Exception:
+        pass
+    return None
 
 
 def format_date_label(ts, freq_code):
@@ -153,10 +187,11 @@ def detect_freq(df):
 
 
 def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
-                      indicator_col, ind_map, freq_code, date_col, val_col):
+                      indicator_col, ind_map, freq_code, date_col, val_col,
+                      scale_label=None):
     """Build card format for one indicator: Label column + one column per series.
 
-    Rows: metadata labels (DATASET, Series_Code, CountryName, ISO3, IFSCODE,
+    Rows: metadata labels (DATASET, Series_Code, Scale, COUNTRY, ISO3, IFSCODE,
     other dims, indicator label) followed by date rows.
     Columns: one per unique series (named by Series_Code).
     """
@@ -167,12 +202,13 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
         series_code = ".".join(str(v) for v in series_key if pd.notna(v) and str(v) != "")
 
         row_data: dict = {"DATASET": db, "Series_Code": series_code}
+        row_data["SCALE"] = scale_label if scale_label is not None else ""
         if country_col:
             idx = id_cols.index(country_col)
             cv  = str(series_key[idx])
-            row_data["CountryName"] = country_lookup.get(cv, {}).get("name", "")
-            row_data["ISO3"]        = cv
-            row_data["IFSCODE"]     = country_lookup.get(cv, {}).get("ifs",  "")
+            row_data["COUNTRY"] = country_lookup.get(cv, {}).get("name", "")
+            row_data["ISO3"]    = cv
+            row_data["IFSCODE"] = country_lookup.get(cv, {}).get("ifs",  "")
         for i, col in enumerate(id_cols):
             if col == country_col:
                 continue
@@ -183,9 +219,9 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
             row_data[lbl] = r[val_col]
         series_data[series_code] = row_data
 
-    meta_labels = ["DATASET", "Series_Code"]
+    meta_labels = ["DATASET", "Series_Code", "SCALE"]
     if country_col:
-        meta_labels += ["CountryName", "ISO3", "IFSCODE"]
+        meta_labels += ["COUNTRY", "ISO3", "IFSCODE"]
     for col in id_cols:
         if col != country_col:
             meta_labels.append(col)
@@ -205,11 +241,13 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
 
 
 def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
-                      indicator_col, ind_map, freq_code, date_col, val_col):
+                      indicator_col, ind_map, freq_code, date_col, val_col,
+                      scale_label=None):
     """Build one wide DataFrame (dates as columns) for a single-indicator group."""
     grp = grp.reset_index(drop=True).copy()
     out = pd.DataFrame(index=grp.index)
     out["DATASET"] = db
+    out["SCALE"] = scale_label if scale_label is not None else ""
 
     if id_cols:
         out["Series_Code"] = grp[id_cols].apply(
@@ -221,9 +259,9 @@ def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
 
     if country_col:
         iso3 = grp[country_col].astype(str)
-        out["CountryName"] = iso3.map(lambda x: country_lookup.get(x, {}).get("name", ""))
-        out["ISO3"]        = iso3
-        out["IFSCODE"]     = iso3.map(lambda x: country_lookup.get(x, {}).get("ifs",  ""))
+        out["COUNTRY"] = iso3.map(lambda x: country_lookup.get(x, {}).get("name", ""))
+        out["ISO3"]    = iso3
+        out["IFSCODE"] = iso3.map(lambda x: country_lookup.get(x, {}).get("ifs",  ""))
 
     for col in id_cols:
         if col == country_col:
@@ -257,7 +295,7 @@ def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
     return pivot[non_date + date_present]
 
 
-def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None):
+def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None, scale=None):
     """Build the RA refreshable enriched format. Layout is auto-selected by data shape:
 
     1. Wide (n_indicators == 1):
@@ -300,6 +338,12 @@ def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None):
         numeric = df_long.select_dtypes(include="number").columns.tolist()
         val_col = numeric[-1] if numeric else df_long.columns[-1]
 
+    # ── 2b. Apply scale: divide values by 10^scale ───────────────────────────
+    scale_label = SCALE_LABELS.get(scale, "") if scale is not None else ""
+    if scale:
+        df_long = df_long.copy()
+        df_long[val_col] = df_long[val_col] / (10 ** scale)
+
     # ── 3. Identify dimension columns ─────────────────────────────────────────
     id_cols = [c for c in df_long.columns if c not in (date_col, val_col)]
     country_col = next((c for c in _COUNTRY_DIMS if c in id_cols), None)
@@ -325,6 +369,7 @@ def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None):
         db=db, country_lookup=country_lookup, id_cols=id_cols,
         country_col=country_col, indicator_col=indicator_col,
         ind_map=ind_map, freq_code=freq_code, date_col=date_col, val_col=val_col,
+        scale_label=scale_label,
     )
 
     # ── 6. Decide layout ──────────────────────────────────────────────────────
@@ -392,12 +437,12 @@ def _validate_wide_sheet(df, db):
         bad = bad[~bad.str.match(r"^\d+$|^$")]
         if not bad.empty:
             errors.append(f"IFSCODE has non-numeric values: {bad.unique()[:3].tolist()}")
-    if "CountryName" in df.columns:
-        if (df["CountryName"].isna() | (df["CountryName"].astype(str).str.strip() == "")).all():
-            errors.append("CountryName is empty — country lookup may have failed.")
+    if "COUNTRY" in df.columns:
+        if (df["COUNTRY"].isna() | (df["COUNTRY"].astype(str).str.strip() == "")).all():
+            errors.append("COUNTRY is empty — country lookup may have failed.")
     date_cols = [c for c in df.columns
                  if c not in _REFRESHABLE_REQUIRED_COLS
-                 and c not in ("CountryName", "ISO3", "IFSCODE")
+                 and c not in ("COUNTRY", "ISO3", "IFSCODE")
                  and _DATE_LABEL_RE.match(str(c))]
     if not date_cols:
         errors.append("No date columns found — pivot may have failed.")
@@ -592,21 +637,41 @@ def main():
         print("No data returned. Check the key, database identifier, and period.")
         sys.exit(1)
 
+    scale = fetch_scale_from_metadata(args.db, args.key)
+    scale_label = SCALE_LABELS.get(scale, "") if scale is not None else ""
+    if scale_label:
+        div_note = f" (values divided by 10^{scale})" if scale else ""
+        print(f"Scale    : {scale_label}{div_note}")
+
     if args.fmt == "long":
         out_df = df.reset_index() if isinstance(df.index, pd.DatetimeIndex) else df
+        if scale:
+            val_col = next(
+                (c for c in ("value", "values", "OBS_VALUE", "obs_value") if c in out_df.columns),
+                None,
+            )
+            if val_col:
+                out_df = out_df.copy()
+                out_df[val_col] = out_df[val_col] / (10 ** scale)
+        out_df["SCALE"] = scale_label
         saved = save_output(out_df, args.output)
         print(f"\nSaved to: {saved}")
         return
 
     if args.fmt == "wide":
         out_df = df.reset_index() if isinstance(df.index, pd.DatetimeIndex) else df
+        if scale:
+            numeric_cols = out_df.select_dtypes(include="number").columns
+            out_df = out_df.copy()
+            out_df[numeric_cols] = out_df[numeric_cols] / (10 ** scale)
+        out_df["SCALE"] = scale_label
         saved = save_output(out_df, args.output)
         print(f"\nSaved to: {saved}")
         return
 
     # refreshable
     country_lookup = load_country_lookup()
-    out = build_refreshable_output(df, args.db, country_lookup, indicator_dim=args.indicator_dim)
+    out = build_refreshable_output(df, args.db, country_lookup, indicator_dim=args.indicator_dim, scale=scale)
 
     # Validate refreshable output — hard fail so no misleading file is saved
     rf_valid, rf_errors = validate_refreshable_output(out, args.db)

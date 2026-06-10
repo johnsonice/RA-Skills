@@ -2,7 +2,7 @@
 
 Method:
 - Ran each case from a fresh stateless session.
-- Used the exact prompt text from [tests/auto_test_instructions.md](tests/auto_test_instructions.md).
+- Used the exact prompt text from [tests/auto_test_instructions.md](../auto_test_instructions.md).
 - Captured observed routing, clarification behavior, and whether retrieval was attempted.
 - Avoided large real data pulls during the test run.
 
@@ -41,8 +41,8 @@ Summary:
 
 Most important findings:
 1. The suite was stronger than the earlier static helper-based read: most catalog behaviors passed when exercised as actual agent runs.
-2. The main remaining mismatch was [CAT-05](tests/auto_test_instructions.md), where the observed agent behavior did not perform the expected LIVE-vs-vintage clarification.
-3. [DATA-04](tests/auto_test_instructions.md) and [DATA-10](tests/auto_test_instructions.md) are hard to validate exactly in a fresh session because both prompts depend on prior database context.
+2. The main remaining mismatch was [CAT-05](../auto_test_instructions.md), where the observed agent behavior did not perform the expected LIVE-vs-vintage clarification.
+3. [DATA-04](../auto_test_instructions.md) and [DATA-10](../auto_test_instructions.md) are hard to validate exactly in a fresh session because both prompts depend on prior database context.
 
 Regression checklist:
 - Pass — No skill invented database IDs, indicator codes, group codes, or dimensions.

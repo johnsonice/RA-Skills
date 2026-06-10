@@ -161,6 +161,7 @@ When a requested series fails, do not guess codes. Use metadata discovery:
 idata_utilities.get_databases(keyword="...")
 idata_utilities.get_dimensions(db)
 idata_utilities.get_dimension_values(db, dimension, keyword="...")
+idata_utilities.get_idata_metadata(db,key)
 
 # EcOS
 ecos_sdmx_utilities.get_databases(substr="...")
