@@ -1,6 +1,6 @@
 ---
 name: imf-ra-charts
-description: Use when the user wants to make a chart, plot, or visualization of IMF data using the internal charting tool. Covers chart-tool input formats, chart-type selection from data shape and intent, and source/footnote conventions. If data is not yet in scope, follow imf-ra-data to fetch it first.
+description: Use when the user wants to prepare or hand off IMF data for a chart, plot, or visualization. This skill is scaffolded until the internal charting tool is fully specified; it covers chart-ready data shape, chart-type selection, and source/footnote conventions. If data is not yet in scope, follow imf-ra-data to fetch it first.
 ---
 
 # IMF RA - Charts

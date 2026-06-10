@@ -25,48 +25,35 @@ The umbrella does not execute the full workflow by itself. Worker skills chain b
 
 ## Shared Operating Rules
 
-- Use reference CSVs as the source of truth for identifiers, codes, group membership, and catalog lookup.
+- Use reference CSVs as the source of truth for identifiers, codes, group membership, and catalog lookup. For WEO countries and groups, the single consolidated source is `Country Group/Country Group.csv`.
 - Do not rely on memory for database IDs, indicator codes, WEO groups, country membership, or iData dimensions.
 - Do not guess when there is material uncertainty. List plausible candidates and ask for confirmation.
 - For straightforward questions that can be answered by direct file inspection, answer from the files without writing code.
-- Use helper scripts only when they improve reliability for repeated filtering, fuzzy lookup, joins, aggregation, or other nontrivial processing.
 - For data pulls, confirm the time range and required unresolved dimensions in `imf-ra-data`; do not assume missing dates or dimension values.
 - Follow standard frequency codes when needed: annual `A`, quarterly `Q`, monthly `M`, and daily `D`, unless dataset metadata uses a different convention.
 
-## WEO Country And Group Rules
+## Integrated Lookup Execution Policy
 
-For WEO countries, WEO country groups, WEO aggregates, WEO regions, and informal RA group names, use [references/Country Group/weo_country_groups.md](references/Country%20Group/weo_country_groups.md).
+This policy applies across `imf-ra-catalog`, WEO country/group helpers, `imf-ra-data`, and chart handoffs.
 
-The CSV files under `references/Country Group/csv/` are the source of truth:
+1. **Classify before acting.** Decide whether the request is exact lookup, fuzzy lookup, source routing, membership expansion, comparison, validation, handoff preparation, data pull, or charting.
+2. **Use direct references only for small exact checks.** Answer from CSV/Markdown directly only when the request is a single-record lookup that needs no ranking, expansion, API call, or computation.
+3. **Check helper maps before writing code.** For fuzzy, repeated, comparative, expansion, validation, handoff, or data-pull tasks, inspect the relevant helper command map first in markdowns. Existing helper commands are the preferred action.
+4. **Use the most specific helper.** If a helper covers the core task, run it and adapt its structured output. Do not rewrite helper logic for output styling or minor formatting differences.
+5. **Resolve ambiguity before execution.** If reference data produces multiple plausible official codes, groups, databases, dimensions, or variants, show candidates and ask for confirmation before committing.
+6. **Gate temporary code strictly.** Write temporary code only when no helper command or helper combination covers the core task, or when the task requires one-off transformation, analysis, or visualization beyond the helper scope.
+7. **Validate structured outputs.** Preserve and check returned fields such as `database`, `dimension_name`, `code`, `countrycode`, date/frequency fields, and DataFrame columns before handing off downstream.
+8. **Promote repeated patterns.** If the same temporary-code pattern appears repeatedly, document it and promote it into a permanent helper command later.
 
-| File | Use |
-|---|---|
-| `1. countries.csv` | Country code, country name, and department lookup. |
-| `2. country_groups.csv` | Group code, group name, group type, and group alias lookup. |
-| `3. country_group_composition.csv` | Exact group membership and country-to-group membership lookup. |
+## WEO Country And Group Conventions
 
-Important iData pull rule: do not use `groupcode` or `groupcode_s` as the country selector in iData pulls. Resolve groups to member `countrycode` values first, or use a dataset-supported aggregate code only when metadata confirms it is valid.
+For WEO countries, WEO country groups, WEO aggregates, WEO regions, and informal RA group names, use the self-contained `Country Group/` folder:
 
-## WEO Lookup Policy
+- `Country Group/Country Group.csv` is the single consolidated country-group matrix and source of truth.
+- `Country Group/weo_country_groups.md` explains the matrix layout, aliases, EM/LIC/PRGT caveats, helper command map, and iData country-selector rules.
+- `Country Group/weo_country_groups.py` is the helper for country/group resolution, membership expansion, framework comparison, and iData-ready country-code handoff.
 
-Before using the WEO country-group helper script, normalize the user's wording to the closest supported WEO reference term.
-
-- Prefer exact `countrycode` values such as `USA`, `CHN`, and `JPN` for selected-country requests.
-- Prefer canonical WEO `groupcode` values such as `G110` or `G200` only for group lookup and membership mapping, not for iData pulls.
-- Resolve only aliases clearly supported by the WEO reference, such as `United States`, `US`, or `America` -> `USA`; `mainland China` -> `CHN`; `advanced economies` or `AE` -> `G110`.
-- If the user mentions EM, LIC, LIDC, PRGT, or developing-economy coverage without specifying WEO vs SPR, ask for clarification. WEO and SPR/PRGT group membership can differ.
-- If two or more country or group matches are plausible, list the candidates with codes and ask for confirmation before committing.
-
-## Helper Commands
-
-Use the helper only for ambiguous, repeated, or processing-heavy WEO country-group lookup.
-
-```bash
-python3 .claude/skills/imf-ra/scripts/weo_country_groups.py groups "advanced economies"
-python3 .claude/skills/imf-ra/scripts/weo_country_groups.py countries CHN
-python3 .claude/skills/imf-ra/scripts/weo_country_groups.py members G110
-python3 .claude/skills/imf-ra/scripts/weo_country_groups.py memberships USA
-```
+For WEO country/group tasks involving ambiguity, membership expansion, comparison, or iData handoff, open the WEO reference and use its helper command map before writing temporary code.
 
 ## Handoff Notes
 
