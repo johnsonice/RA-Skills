@@ -71,6 +71,8 @@ Use exact codes when available. Otherwise use documented or helper-supported ali
 
 When a user phrase is ambiguous, list the plausible `Country Group.csv` group columns before choosing one.
 
+The `G20` group in `Country Group.csv` is a country-row group with 19 countries; for official current G20 membership questions, distinguish this from the member-seat view of 19 countries plus the European Union and African Union.
+
 ## WEO vs SPR AE, EM, and LIC Caveat
 
 Clarify the source framework when a request involves advanced economies, emerging/developing economies, emerging markets, low-income countries, LICs, LIDCs, or SPR PRGT groups.
