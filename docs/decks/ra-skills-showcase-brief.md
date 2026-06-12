@@ -72,18 +72,19 @@ A 10-slide brief feeding the ppt-master skill. Audience is mixed (RAs, technical
 
 ---
 
-## Slide 6 — Design Principle: CSVs Are the Source of Truth
+## Slide 6 — Database & Indicator Coverage
 
-**Takeaway:** The agent answers from files, not from memory. No identifier hallucinations.
+**Takeaway:** Broad coverage across iData catalogs and adjacent sources.
 
 **Bullets:**
-- Dataset and indicator truth lives in CSVs the agent reads directly — `imf-ra-catalog/databases/non_vintage_datasets.csv`, `imf-ra-catalog/databases/vintage_datasets.csv`, and `imf-ra-catalog/indicators/*.csv`.
-- WEO country-group memberships (Advanced Economies, EMDE, G7, ASEAN-5, ...) live in `imf-ra/Country Group/Country Group.csv` — *exact* membership truth.
-- Same pattern for conventions, SDK reference, retired endpoints. Markdown for prose, CSV for structured truth.
-- Result: **no model drift on identifiers**, **reproducible answers**, **auditable provenance** — every claim points to a file.
-- *Policy:* if a CSV answers the question, read it directly. Write code only for aggregation, joins, repeated filtering.
+- One workflow routes across many sources: source routing, identifier discovery, country/group resolution, and data fetching are separated but chained.
+- **Macro and WEO:** WEO Live, WEO vintages, GAS, GEE, and related macro projection / assumptions datasets.
+- **IMF statistics:** BOP, CPI, GFS, MFS, EER, ER, IIP, FSI, and other iData topic databases.
+- **Markets and adjacent sources:** Bloomberg iData selected coverage and Haver daily / weekly / monthly databases.
+- **Development and trade:** World Bank WDI and WTO-IMF Tariff Tracker.
+- **Country and group intelligence:** WEO-based research country-group matrix, IMF member scopes, PRGT groups, and common RA group panels.
 
-**Visual:** Three stacked rows — dataset catalogs, indicator catalogs, country groups. Each row points to a CSV icon. A small "no hallucination" stamp.
+**Visual:** Coverage map titled "What RA-Skills Covers." Use five source bands: Macro & WEO, IMF Statistics, Markets & Haver/Bloomberg, Development & Trade, Country/Group Intelligence. Bottom caption: "One workflow, many sources."
 
 ---
 
@@ -126,7 +127,7 @@ The agent resolves to:
   - **Wide** CSV/Excel — dates as rows, countries as columns (raw API shape).
   - **Long** CSV/Excel — one observation per row (analytics-ready).
 - **Data stays local.** The SDK runs on the analyst's machine; no cloud round-trip for IMF data.
-- EcOS retired — iData is the exclusive pathway.
+- EcOS retired — iData is the supported IMF data path.
 
 **Visual:** Vertical pipeline: `(database, indicator, freq, geo)` → `fetch_idata.py` → three output icons (Excel, wide CSV, long CSV). Caption: "data never leaves your laptop."
 
@@ -160,13 +161,13 @@ The agent resolves to:
 **Takeaway:** This is Phase 1. The roadmap turns the same chain into a full RA cockpit.
 
 **Bullets:**
-- **`imf-ra-charts` wiring.** Connect to the internal chart tool — close the discovery → fetch → chart loop end-to-end.
-- **More sources beyond iData.** Haver (priority), Bloomberg, Datastream, EDSS — add as additional `imf-ra-*` workers, no rework of the chain.
-- **Curated routing.** Institutional knowledge as data — legacy IFS routing, WEO LIVE/vintage rules, and source-specific indicator catalogs — captured in `database_overview.md` and the catalog helper modules so the agent stops re-learning it.
-- **Downstream automation.** Notebook templates, reusable modules, scheduled refresh pipelines.
+- **Now: iData-based indicator search and fetch.** Finds, validates, and pulls research data within the supported iData workflow.
+- **Next: `imf-ra-charts` wiring.** Connect to the internal chart tool — close the discovery → fetch → chart loop end-to-end.
+- **Then: more source workers beyond iData.** Datastream and Dealogic can be added as new `imf-ra-*` workers without reworking the core chain.
+- **Future: downstream automation.** Notebook templates, reusable modules, scheduled refresh pipelines.
 - **Closing line:** *From chatbot to colleague — and the colleague keeps getting better.*
 
-**Visual:** Roadmap timeline — Phase 1 (done: catalog + data), Phase 2 (charts + more sources), Phase 3 (overlays + automation). End slide also doubles as the closer.
+**Visual:** Roadmap timeline with four states: Now (DONE), Next (COMING SOON), Then (PLANNED), Future (FUTURE). Keep the chart block scaffolded/WIP, not red.
 
 ---
 
