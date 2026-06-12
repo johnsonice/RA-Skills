@@ -99,7 +99,7 @@ Use this when the system does not crash, but the user still cannot get a useful 
 Offer a report when one of these occurs:
 
 - The user asks the same or very similar query repeatedly and still does not get a useful answer.
-- The user says the answer is wrong, unsatisfactory, not ideal, or not what they need after 3 attempts or revisions.
+- The user says the answer is wrong, unsatisfactory, not ideal, or not what they need after 5 attempts or revisions.
 - The agent has tried several self-corrections on the same topic without progress after 3 attempts.
 - The agent keeps asking the same clarification question and does not move the task forward.
 
