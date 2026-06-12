@@ -77,12 +77,13 @@ A 10-slide brief feeding the ppt-master skill. Audience is mixed (RAs, technical
 **Takeaway:** Broad coverage across iData catalogs and adjacent sources.
 
 **Bullets:**
-- One workflow routes across many sources: source routing, identifier discovery, country/group resolution, and data fetching are separated but chained.
+- One workflow routes across many sources: source routing, country/group resolution, identifier discovery,  and data fetching are separated but chained.
+- **Country and group intelligence:** WEO-based research country-group matrix, IMF member scopes, PRGT groups, and common RA group panels.
 - **Macro and WEO:** WEO Live, WEO vintages, GAS, GEE, and related macro projection / assumptions datasets.
 - **IMF statistics:** BOP, CPI, GFS, MFS, EER, ER, IIP, FSI, and other iData topic databases.
 - **Markets and adjacent sources:** Bloomberg iData selected coverage and Haver daily / weekly / monthly databases.
 - **Development and trade:** World Bank WDI and WTO-IMF Tariff Tracker.
-- **Country and group intelligence:** WEO-based research country-group matrix, IMF member scopes, PRGT groups, and common RA group panels.
+
 
 **Visual:** Coverage map titled "What RA-Skills Covers." Use five source bands: Macro & WEO, IMF Statistics, Markets & Haver/Bloomberg, Development & Trade, Country/Group Intelligence. Bottom caption: "One workflow, many sources."
 
@@ -162,8 +163,8 @@ The agent resolves to:
 
 **Bullets:**
 - **Now: iData-based indicator search and fetch.** Finds, validates, and pulls research data within the supported iData workflow.
-- **Next: `imf-ra-charts` wiring.** Connect to the internal chart tool — close the discovery → fetch → chart loop end-to-end.
-- **Then: more source workers beyond iData.** Datastream and Dealogic can be added as new `imf-ra-*` workers without reworking the core chain.
+- **Next: more source workers beyond iData.** Datastream and Dealogic can be added as new `imf-ra-*` workers without reworking the core chain.
+- **Then: `imf-ra-charts` wiring.** Connect to the internal chart tool — close the discovery → fetch → chart loop end-to-end.
 - **Future: downstream automation.** Notebook templates, reusable modules, scheduled refresh pipelines.
 - **Closing line:** *From chatbot to colleague — and the colleague keeps getting better.*
 
