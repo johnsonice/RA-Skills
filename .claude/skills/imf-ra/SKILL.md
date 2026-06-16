@@ -1,6 +1,6 @@
 ---
 name: imf-ra
-description: Use when working as an IMF Research Assistant or doing any task involving IMF data, IMF charts, or IMF databases. Orients you to the imf-ra-catalog, imf-ra-data, and imf-ra-charts skills and loads shared conventions for country codes, WEO country groups, frequencies, dates, units, and SDK setup.
+description: Use when working as an IMF Research Assistant or doing any task involving IMF data, IMF charts, IMF databases, or user-visible RA-Skills failures. Orients you to the imf-ra-catalog, imf-ra-data, imf-ra-charts, and imf-ra-error-report skills and loads shared conventions for country codes, WEO country groups, frequencies, dates, units, SDK setup, and local failure-report routing.
 ---
 
 # IMF RA
@@ -20,8 +20,11 @@ imf-ra -> imf-ra-catalog -> imf-ra-data -> imf-ra-charts
 | `imf-ra-catalog` | The user needs the right dataset, dimension, indicator, variable, commodity, or ticker code. |
 | `imf-ra-data` | The user wants to fetch, pull, download, load, or prepare data from a confirmed identifier. |
 | `imf-ra-charts` | The user wants to plot, chart, or visualize tidy data. |
+| `imf-ra-error-report` | The user wants to report a user-visible RA-Skills system/execution failure or an unsatisfactory answer after repeated attempts. |
 
 The umbrella does not execute the full workflow by itself. Worker skills chain by referencing each other directly.
+
+`imf-ra-error-report` is a support side skill, not a step in the normal catalog/data/chart chain. Use it only for local, consent-based failure reports.
 
 ## Shared Operating Rules
 
@@ -31,6 +34,7 @@ The umbrella does not execute the full workflow by itself. Worker skills chain b
 - For straightforward questions that can be answered by direct file inspection, answer from the files without writing code.
 - For data pulls, confirm the time range and required unresolved dimensions in `imf-ra-data`; do not assume missing dates or dimension values.
 - Follow standard frequency codes when needed: annual `A`, quarterly `Q`, monthly `M`, and daily `D`, unless dataset metadata uses a different convention.
+- For user-visible RA-Skills failures, use `imf-ra-error-report` only after the user consents or explicitly asks to report the issue. Normal clarification behavior is not reportable by default.
 
 ## Integrated Lookup Execution Policy
 
@@ -61,3 +65,4 @@ For WEO country/group tasks involving ambiguity, membership expansion, compariso
 - When the identifier is confirmed, route to `imf-ra-data` and preserve confirmed `database`, `dimension_name`, `code`, geography, frequency, date range, and vintage constraints.
 - When the user asks for charts, route to `imf-ra-charts` after data are available or after `imf-ra-data` produces tidy output.
 - When the catalog returns several plausible matches, present the candidates with distinction notes and ask for confirmation before fetching.
+- When a system/execution error blocks the RA workflow, or the user remains unsatisfied after repeated attempts and wants to report it, route to `imf-ra-error-report`. Reports are local JSON files under `tests/user_error_report/`; do not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.

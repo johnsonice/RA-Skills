@@ -27,7 +27,7 @@ The first five columns identify countries. Every later column is a WEO, regional
 | WEO/regional/analytical groups | all columns after `department` | Each column is a group/category name. A row value of `1` means that country belongs to that group; blank means it does not. |
 | SPR/PRGT framework groups | columns such as `SPR-Emerging Market and Middle-Income Economies(EM)` and `SPR-Low-Income Developing Countries (LIC)` | Use these only when the user asks for SPR/PRGT coverage or confirms that framework. |
 
-The file is intentionally a single matrix, not three normalized CSVs. To list members of a group, filter the group column to rows marked `1`. To list groups containing a country, inspect the marked group columns on that country row.
+The file is intentionally a single matrix. To list members of a group, filter the group column to rows marked `1`. To list groups containing a country, inspect the marked group columns on that country row.
 
 ## Column Systems
 
@@ -71,6 +71,8 @@ Use exact codes when available. Otherwise use documented or helper-supported ali
 
 When a user phrase is ambiguous, list the plausible `Country Group.csv` group columns before choosing one.
 
+The `G20` group in `Country Group.csv` is a country-row group with 19 countries; for official current G20 membership questions, distinguish this from the member-seat view of 19 countries plus the European Union and African Union.
+
 ## WEO vs SPR AE, EM, and LIC Caveat
 
 Clarify the source framework when a request involves advanced economies, emerging/developing economies, emerging markets, low-income countries, LICs, LIDCs, or SPR PRGT groups.
@@ -91,6 +93,30 @@ WEO World = SPR World = WEO AE + SPR EM + SPR LIC.
 
 
 If the user asks for EM, EMDE, LIC, LIDC, PRGT, or developing-economy coverage without specifying WEO vs SPR/PRGT, ask which framework they mean before committing to a group. This distinction is important because both frameworks are IMF frameworks, but membership can differ by framework.
+
+## IMF Member Countries vs Countries And Territories Caveat
+
+Clarify scope when a request mentions IMF member countries, all IMF members, IMF economies, territories, or full WEO coverage.
+
+`Country Group.csv` contains two related IMF-member group columns:
+
+| Concept | Group column | Count | Meaning |
+|---|---|---:|---|
+| IMF member countries | `IMF member Countries(191)` | 191 | Sovereign IMF member countries only. |
+| IMF member countries and territories | `IMF member Countries and Territories(198)` | 198 | The 191 IMF member countries plus seven WEO-covered territories/economies. |
+
+If the user asks for "IMF member countries", "all IMF members", "IMF economies", or similar wording without specifying scope, ask whether they mean:
+
+1. `IMF member Countries(191)` - sovereign IMF member countries only.
+2. `IMF member Countries and Territories(198)` - the 191 IMF member countries plus seven WEO-covered territories/economies.
+
+Do not commit to either group until the user confirms the intended scope.
+
+For difference or coverage questions, know that `IMF member Countries and Territories(198)` adds Anguilla, Aruba, Curaçao, Hong Kong SAR, Macao SAR, Montserrat, and Sint Maarten to `IMF member Countries(191)`. The full WEO country-table scope has 201 rows: those 198 plus Puerto Rico, Taiwan Province of China, and West Bank and Gaza.
+
+Use `weo_country_groups.py compare` or `members` when the exact membership list is needed.
+
+For iData pulls, do not pass either group column name directly as the country selector. Expand the chosen group to member `countrycode` values first unless dataset metadata explicitly confirms a supported aggregate.
 
 ## Helper Script Usage
 

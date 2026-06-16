@@ -60,6 +60,14 @@ GROUP_ALIASES = {
     "mena": "Middle East and North Africa (MENA)",
 }
 
+AMBIGUOUS_GROUP_ALIASES = {
+    "all imf economies": ["IMF member Countries(191)", "IMF member Countries and Territories(198)"],
+    "all imf members": ["IMF member Countries(191)", "IMF member Countries and Territories(198)"],
+    "imf economies": ["IMF member Countries(191)", "IMF member Countries and Territories(198)"],
+    "imf member countries": ["IMF member Countries(191)", "IMF member Countries and Territories(198)"],
+    "imf members": ["IMF member Countries(191)", "IMF member Countries and Territories(198)"],
+}
+
 COUNTRY_ALIASES = {
     "america": "USA",
     "usa": "USA",
@@ -220,6 +228,56 @@ TERM_EXPLANATIONS = {
             ("SPR/PRGT", "SPR-Low-Income Developing Countries (LIC)"),
         ],
     },
+    "g20": {
+        "title": "G20",
+        "note": "The Country Group.csv G20 column is a country-row group with 19 countries. For official current G20 membership questions, distinguish it from the member-seat view of 19 countries plus the European Union and African Union.",
+        "groups": [("Country Group.csv", "G20")],
+    },
+    "all imf economies": {
+        "title": "IMF member countries scope",
+        "note": "IMF-member wording is scope-sensitive. Clarify whether the user wants sovereign IMF member countries only or the broader IMF member countries-and-territories group before committing.",
+        "groups": [
+            ("Sovereign members", "IMF member Countries(191)"),
+            ("Members and territories", "IMF member Countries and Territories(198)"),
+        ],
+    },
+    "all imf members": {
+        "title": "IMF member countries scope",
+        "note": "IMF-member wording is scope-sensitive. Clarify whether the user wants sovereign IMF member countries only or the broader IMF member countries-and-territories group before committing.",
+        "groups": [
+            ("Sovereign members", "IMF member Countries(191)"),
+            ("Members and territories", "IMF member Countries and Territories(198)"),
+        ],
+    },
+    "imf economies": {
+        "title": "IMF member countries scope",
+        "note": "IMF-member wording is scope-sensitive. Clarify whether the user wants sovereign IMF member countries only or the broader IMF member countries-and-territories group before committing.",
+        "groups": [
+            ("Sovereign members", "IMF member Countries(191)"),
+            ("Members and territories", "IMF member Countries and Territories(198)"),
+        ],
+    },
+    "imf member countries": {
+        "title": "IMF member countries scope",
+        "note": "IMF-member wording is scope-sensitive. Clarify whether the user wants sovereign IMF member countries only or the broader IMF member countries-and-territories group before committing.",
+        "groups": [
+            ("Sovereign members", "IMF member Countries(191)"),
+            ("Members and territories", "IMF member Countries and Territories(198)"),
+        ],
+    },
+    "imf member countries and territories": {
+        "title": "IMF member countries and territories",
+        "note": "This broader group includes the 191 sovereign IMF member countries plus seven WEO-covered territories/economies. Full WEO country-table scope is 201 rows after adding Puerto Rico, Taiwan Province of China, and West Bank and Gaza.",
+        "groups": [("Members and territories", "IMF member Countries and Territories(198)")],
+    },
+    "imf members": {
+        "title": "IMF member countries scope",
+        "note": "IMF-member wording is scope-sensitive. Clarify whether the user wants sovereign IMF member countries only or the broader IMF member countries-and-territories group before committing.",
+        "groups": [
+            ("Sovereign members", "IMF member Countries(191)"),
+            ("Members and territories", "IMF member Countries and Territories(198)"),
+        ],
+    },
 }
 
 
@@ -350,14 +408,6 @@ def _unique_rows(rows: Iterable[dict[str, str]], key_fields: list[str]) -> list[
     return out
 
 
-def _group_rows_from_composition(rows: Iterable[dict[str, str]]) -> list[dict[str, str]]:
-    """Extract unique group descriptors from composition rows."""
-    return _unique_rows(
-        [{"group": row.get("group", ""), "groupname": row.get("groupname", "")} for row in rows],
-        ["group"],
-    )
-
-
 def group_members(tables: CsvTables, group: str) -> list[dict[str, str]]:
     """Return member countries for a WEO or SPR/PRGT group column."""
     group_rows = resolve_group_rows(tables, group, exact_only=True)
@@ -377,14 +427,16 @@ def _group_summary(rows: list[dict[str, str]], fallback: str) -> str:
 
 def resolve_group_rows(tables: CsvTables, query: str, exact_only: bool = False) -> list[dict[str, str]]:
     """Resolve a user group term to candidate consolidated CSV group rows."""
-    groups = tables.rows("groups")
-    composition_groups = _group_rows_from_composition(tables.rows("composition"))
-    all_groups = _unique_rows([*groups, *composition_groups], ["group"])
+    all_groups = tables.rows("groups")
     alias = group_alias(query)
     if alias:
         exact = [row for row in all_groups if row.get("group") == alias]
         if exact:
             return exact
+    ambiguous_aliases = AMBIGUOUS_GROUP_ALIASES.get(_norm(query))
+    if ambiguous_aliases and not exact_only:
+        rows_by_group = {row.get("group"): row for row in all_groups}
+        return [rows_by_group[group] for group in ambiguous_aliases if group in rows_by_group]
     exact = [row for row in all_groups if _exact_matches(row, query, ["group", "groupname"])]
     if exact or exact_only:
         return exact
@@ -424,11 +476,7 @@ def cmd_groups(tables: CsvTables, args: argparse.Namespace) -> None:
     """CLI handler for listing or searching group reference rows."""
     rows = tables.rows("groups")
     if args.query:
-        alias = group_alias(args.query)
-        if alias:
-            rows = [r for r in rows if r.get("group") == alias]
-        else:
-            rows = [r for r in rows if _matches(r, args.query, ["group", "groupname"])]
+        rows = resolve_group_rows(tables, args.query)
     write_rows(rows, ["group", "groupname"])
 
 
@@ -632,9 +680,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser(
         "explain",
-        help="Explain common RA shorthand such as AE, EM, EMDE, LIC, or LIDC.",
+        help="Explain common RA shorthand such as AE, EM, EMDE, LIC, LIDC, G20, or IMF-member scope.",
         description="Explain common RA shorthand and show the relevant consolidated CSV group columns when applicable.",
-        epilog="Examples: weo_country_groups.py explain EM; weo_country_groups.py explain LIC",
+        epilog='Examples: weo_country_groups.py explain EM; weo_country_groups.py explain G20; weo_country_groups.py explain "IMF member countries"',
     )
     p.add_argument("term")
     p.set_defaults(func=cmd_explain)
