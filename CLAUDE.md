@@ -10,8 +10,11 @@ A family of Claude Code skills for IMF Research Assistant workflows, project-loc
 - `imf-ra-catalog` — natural-language → `(database, dimension_name, code, frequency, geo)` lookup
 - `imf-ra-data` — pull series via internal Python SDK
 - `imf-ra-charts` — chart handoff (**not yet implemented**)
+- `imf-ra-error-report` — side skill for consent-based local JSON reports after user-visible RA-Skills failures
 
 Skill chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-charts`.
+
+Support side path: `imf-ra-error-report` is not part of the normal data pipeline. Use it only when the user wants to report a system/execution failure or an unsatisfactory RA-Skills answer after repeated attempts.
 
 ## Commands
 
@@ -52,6 +55,7 @@ Run records and templates: `tests/results/`. Issues and audit notes: `tests/issu
 docs/specs/   # design docs
 docs/plans/   # implementation history
 tests/        # YAML auto-test cases, reviewer catalog, results, issue tracking
+tests/user_error_report/  # local JSON reports created by imf-ra-error-report
 ```
 
 ## Conventions Claude must follow
@@ -60,6 +64,7 @@ tests/        # YAML auto-test cases, reviewer catalog, results, issue tracking
 - **Prefer existing helpers.** For catalog indicator/code discovery, routing, exact code lookup, dimension discovery, database classification, and code comparison, run the relevant `catalog_search.py` command before writing temporary Python. Use direct CSV reads for exact confirmation; use new code only when no helper command covers the task.
 - **Don't guess identifiers.** Database codes, variable codes, country groups, dimensions — never invent. If multiple plausible matches exist, list candidates and ask for confirmation.
 - **LIVE vs vintage data must be honored explicitly** — see `imf-ra-data/SKILL.md`.
+- **Error reporting is consent-based and local.** Use `imf-ra-error-report` only for user-visible failures, never for normal clarification behavior. Manual report requests count as consent. Reports go to `tests/user_error_report/`.
 - **Skill family is project-local.** Edits to `.claude/skills/` only affect work in this repo. No global install.
 
 ## Editing skills
@@ -85,3 +90,4 @@ Observed in remote: `<author>_<MMDD>_<topic>`, e.g. `bella_0504_add_skills`, `fe
 
 - `imf-ra-charts` is referenced but not implemented — don't route chart requests there yet; surface that gap to the user.
 - The umbrella `imf-ra` does **not** orchestrate. Worker skills chain by referencing each other directly (e.g. `imf-ra-charts` loads `imf-ra-data` in the same turn).
+- `imf-ra-error-report` is a side skill, not core infrastructure: no telemetry, remote upload, GitHub issue creation, dashboard, Python logging wrapper, or report lifecycle workflow belongs in v1.
