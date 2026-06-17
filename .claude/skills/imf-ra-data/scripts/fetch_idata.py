@@ -17,7 +17,11 @@ Modes (use this script for all SDK interactions — never write a new Python scr
 
   3. Fetch data:
      --db DB --key KEY --start START --end END --format {refreshable,wide,long}
-     [--indicator-dim DIM] [--excel] [--output FILE]
+     [--indicator-dim DIM] [--excel] [--output FILE] [--chunk-size N]
+
+     --chunk-size N  Split any dimension with more than N values into batches (default 25).
+                     Use this when fetching large country panels that exceed the API key
+                     length limit. Results from all chunks are merged automatically.
 
 Output formats (--format required for fetch):
   refreshable  RA enriched Excel (.xlsx). Layout auto-selected by number of indicators:
@@ -109,6 +113,10 @@ _INDICATOR_DIMS = (
     "SUBJECT", "subject",
 )
 
+# Maximum number of values in any single dimension per API request before chunking.
+# IMF API rejects very long keys (many countries joined with +); 25 is a safe default.
+DEFAULT_CHUNK_SIZE = 25
+
 
 def load_country_lookup():
     """Return {iso3: {name, ifs}} from the RA consolidated country-group CSV."""
@@ -154,6 +162,66 @@ def fetch_scale_from_metadata(db, key):
     except Exception:
         pass
     return None
+
+
+def _chunk_key(key, chunk_size):
+    """Split a key whose largest dimension exceeds chunk_size values into multiple keys.
+
+    Finds whichever dot-separated dimension has the most +-joined values and splits
+    that dimension into batches. Returns [key] unchanged when no dimension exceeds
+    chunk_size.
+    """
+    parts = key.split(".")
+    max_idx = max(range(len(parts)), key=lambda i: len(parts[i].split("+")))
+    values = parts[max_idx].split("+")
+    if len(values) <= chunk_size:
+        return [key]
+    chunks = []
+    for i in range(0, len(values), chunk_size):
+        chunk_parts = parts[:]
+        chunk_parts[max_idx] = "+".join(values[i:i + chunk_size])
+        chunks.append(".".join(chunk_parts))
+    return chunks
+
+
+def _fetch_data(db, key, start, end, use_long, chunk_size):
+    """Fetch data with automatic chunking for large keys.
+
+    Splits the key into batches when the largest dimension exceeds chunk_size,
+    fetches each batch, and concatenates results. Prints progress for multi-chunk
+    requests. Skips failed chunks with a warning rather than aborting entirely.
+    """
+    keys = _chunk_key(key, chunk_size)
+    if len(keys) == 1:
+        return idata_utilities.get_idata_data(
+            db, key, start=start, end=end, longformat=use_long, debug=False
+        )
+
+    print(f"Key split into {len(keys)} chunks of up to {chunk_size} values each.")
+    frames = []
+    for i, ck in enumerate(keys, 1):
+        print(f"  Chunk {i}/{len(keys)}: fetching...", end=" ", flush=True)
+        try:
+            chunk_df = idata_utilities.get_idata_data(
+                db, ck, start=start, end=end, longformat=use_long, debug=False
+            )
+            if chunk_df is not None and not chunk_df.empty:
+                frames.append(chunk_df)
+                print(f"OK ({len(chunk_df)} rows)")
+            else:
+                print("empty")
+        except Exception as exc:
+            print(f"FAILED: {exc}")
+
+    if not frames:
+        return None
+    if use_long:
+        return pd.concat(frames, ignore_index=True)
+    # Wide format: DatetimeIndex rows, series as columns — outer-join on index
+    result = frames[0]
+    for f in frames[1:]:
+        result = result.join(f, how="outer")
+    return result
 
 
 def format_date_label(ts, freq_code):
@@ -560,6 +628,9 @@ def main():
                         help="Save wide/long output as .xlsx instead of .csv (ignored for refreshable)")
     parser.add_argument("--output", default=None,
                         help="Output file path (auto-named if omitted)")
+    parser.add_argument("--chunk-size", type=int, default=DEFAULT_CHUNK_SIZE, dest="chunk_size",
+                        help=f"Max values per dimension per API request (default {DEFAULT_CHUNK_SIZE}). "
+                             "Larger requests are split into chunks and merged automatically.")
     args = parser.parse_args()
 
     # ── Explore mode ──────────────────────────────────────────────────────────
@@ -622,12 +693,12 @@ def main():
     use_long = args.fmt != "wide"
 
     try:
-        df = idata_utilities.get_idata_data(
+        df = _fetch_data(
             args.db, args.key,
             start=args.start,
             end=args.end,
-            longformat=use_long,
-            debug=False,
+            use_long=use_long,
+            chunk_size=args.chunk_size,
         )
     except Exception as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -637,7 +708,9 @@ def main():
         print("No data returned. Check the key, database identifier, and period.")
         sys.exit(1)
 
-    scale = fetch_scale_from_metadata(args.db, args.key)
+    # Use a single-chunk representative key for metadata (avoids long-key rejections)
+    meta_key = _chunk_key(args.key, args.chunk_size)[0]
+    scale = fetch_scale_from_metadata(args.db, meta_key)
     scale_label = SCALE_LABELS.get(scale, "") if scale is not None else ""
     if scale_label:
         div_note = f" (values divided by 10^{scale})" if scale else ""
