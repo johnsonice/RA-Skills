@@ -84,6 +84,7 @@ Key format notes:
 import argparse
 import re
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -184,12 +185,15 @@ def _chunk_key(key, chunk_size):
     return chunks
 
 
+_CHUNK_RETRY_DELAYS = (5, 15)  # seconds to wait before retry 1, then retry 2
+
+
 def _fetch_data(db, key, start, end, use_long, chunk_size):
-    """Fetch data with automatic chunking for large keys.
+    """Fetch data with automatic chunking and per-chunk retries for large keys.
 
     Splits the key into batches when the largest dimension exceeds chunk_size,
-    fetches each batch, and concatenates results. Prints progress for multi-chunk
-    requests. Skips failed chunks with a warning rather than aborting entirely.
+    fetches each batch with up to 2 retries on transient failures, and concatenates
+    results. Prints a clear warning if any chunks could not be retrieved.
     """
     keys = _chunk_key(key, chunk_size)
     if len(keys) == 1:
@@ -199,19 +203,39 @@ def _fetch_data(db, key, start, end, use_long, chunk_size):
 
     print(f"Key split into {len(keys)} chunks of up to {chunk_size} values each.")
     frames = []
+    failed_chunks = []
     for i, ck in enumerate(keys, 1):
         print(f"  Chunk {i}/{len(keys)}: fetching...", end=" ", flush=True)
-        try:
-            chunk_df = idata_utilities.get_idata_data(
-                db, ck, start=start, end=end, longformat=use_long, debug=False
-            )
-            if chunk_df is not None and not chunk_df.empty:
-                frames.append(chunk_df)
-                print(f"OK ({len(chunk_df)} rows)")
-            else:
-                print("empty")
-        except Exception as exc:
-            print(f"FAILED: {exc}")
+        chunk_df = None
+        last_exc = None
+        for attempt, delay in enumerate([0] + list(_CHUNK_RETRY_DELAYS), 1):
+            if attempt > 1:
+                print(f"retry {attempt-1} (waiting {delay}s)...", end=" ", flush=True)
+                time.sleep(delay)
+            try:
+                chunk_df = idata_utilities.get_idata_data(
+                    db, ck, start=start, end=end, longformat=use_long, debug=False
+                )
+                last_exc = None
+                break
+            except Exception as exc:
+                last_exc = exc
+
+        if last_exc is not None:
+            print(f"FAILED after {len(_CHUNK_RETRY_DELAYS) + 1} attempts: {last_exc}")
+            failed_chunks.append(i)
+        elif chunk_df is not None and not chunk_df.empty:
+            frames.append(chunk_df)
+            print(f"OK ({len(chunk_df)} rows)")
+        else:
+            print("empty")
+
+    if failed_chunks:
+        print(
+            f"\nWARNING: {len(failed_chunks)}/{len(keys)} chunks failed "
+            f"(chunks {failed_chunks}) — output may be incomplete.",
+            file=sys.stderr,
+        )
 
     if not frames:
         return None
