@@ -211,6 +211,7 @@ Refreshable output layout is auto-selected by data shape (indicators × countrie
 | `DATASET` | Always | The `--db` argument |
 | `Series_Code` | Always | All dimension values joined with `.` in key order |
 | `SCALE` | Always present | Human-readable scale label: `Units` / `Thousands` / `Millions` / `Billions`; empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
+| `UNIT` | Always present | Unit string from metadata (e.g. `National currency`, `Percent`); empty when unavailable |
 | `COUNTRY` | Country dimension detected | Human-readable name looked up from `imf-ra` `Country Group.csv` |
 | `ISO3` | Country dimension detected | Raw ISO3 code from the data |
 | `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `Country Group.csv` (`countrycode_s`) |
@@ -227,6 +228,7 @@ One tab per indicator (named by indicator label, max 31 chars). Within each tab:
 | `DATASET` | Database identifier |
 | `Series_Code` | Dot-separated dimension values for that series |
 | `SCALE` | Human-readable scale label (`Units` / `Thousands` / `Millions` / `Billions`); empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
+| `UNIT` | Unit string from metadata (e.g. `National currency`, `Percent`); empty when unavailable |
 | `COUNTRY` | Human-readable country name (when country dimension present) |
 | `ISO3` | Raw ISO3 code (when country dimension present) |
 | `IFSCODE` | IFS code (when country dimension present) |
@@ -322,6 +324,6 @@ See [references/imf_datatools_agent_api_reference.md § 9](references/imf_datato
 ## Safe query policy
 
 - Avoid broad `ALL` pulls unless explicitly requested.
-- For large requests, iterate over countries/indicators/frequencies and merge results.
+- For large country panels (e.g. all EMDE), pass the full `+`-joined country list — `fetch_idata.py` automatically chunks requests into batches of 25 and merges results. Use `--chunk-size N` to override the default.
 - Validate dimension names and values with metadata calls before retrieval.
 - For iData dimensions, always use the exact dimension names returned by `--explore` — do not assume names like `COUNTRY`, `INDICATOR`, or `FREQUENCY`, as they vary by database (e.g. `REF_AREA`, `SERIES`, `FREQ`, `TICKER`).

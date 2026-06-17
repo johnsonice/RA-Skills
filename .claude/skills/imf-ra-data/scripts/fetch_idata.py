@@ -133,36 +133,42 @@ def load_country_lookup():
         return {}
 
 
-_NO_METADATA_DBS = ("GEE_LIVE", "GAS_LIVE")
+def fetch_metadata(db, key):
+    """Return (scale, unit_label) from iData metadata.
 
-def fetch_scale_from_metadata(db, key):
-    """Return scale int (0, 3, 6, or 9), or None if scale cannot be determined.
+    scale: int (0, 3, 6, or 9) or None if unavailable
+    unit_label: str or "" if unavailable
 
-    Returns None (not 0) when metadata is unavailable so callers can omit the
-    SCALE row entirely rather than implying scale=0 (Units).
-
-    WEO LIVE and vintage databases don't expose scale in their own metadata endpoint;
-    the base IMF.RES:WEO database must be queried instead.
-    Databases in _NO_METADATA_DBS have no metadata endpoint — returns None.
+    Calls get_idata_metadata directly — no database substitution or exclusion
+    list needed; the SDK handles LIVE, vintage, and all other databases uniformly.
     """
-    db_short = db.split(":")[-1]
-    if any(db_short.startswith(stub) for stub in _NO_METADATA_DBS):
-        return None
-
-    meta_db = "IMF.RES:WEO" if "WEO" in db else db
     try:
-        meta = idata_utilities.get_idata_metadata(meta_db, key)
+        meta = idata_utilities.get_idata_metadata(db, key)
         if meta is None:
-            return None
-        if hasattr(meta, "columns") and "scale" in meta.columns:
-            vals = meta["scale"].dropna().unique()
-            if len(vals) >= 1:
-                return int(vals[0])
-        if isinstance(meta, dict) and "scale" in meta:
-            return int(meta["scale"])
+            return None, ""
+        scale = None
+        unit_label = ""
+        if hasattr(meta, "columns"):
+            if "scale" in meta.columns:
+                vals = meta["scale"].dropna().unique()
+                if len(vals) >= 1:
+                    scale = int(vals[0])
+            for col in ("unit", "UNIT", "units", "UNITS"):
+                if col in meta.columns:
+                    vals = meta[col].dropna().unique()
+                    if len(vals) >= 1:
+                        unit_label = str(vals[0])
+                    break
+        elif isinstance(meta, dict):
+            if "scale" in meta:
+                scale = int(meta["scale"])
+            for col in ("unit", "UNIT", "units", "UNITS"):
+                if col in meta:
+                    unit_label = str(meta[col])
+                    break
+        return scale, unit_label
     except Exception:
-        pass
-    return None
+        return None, ""
 
 
 def _chunk_key(key, chunk_size):
@@ -280,10 +286,10 @@ def detect_freq(df):
 
 def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
                       indicator_col, ind_map, freq_code, date_col, val_col,
-                      scale_label=None):
+                      scale_label=None, unit_label=None):
     """Build card format for one indicator: Label column + one column per series.
 
-    Rows: metadata labels (DATASET, Series_Code, Scale, COUNTRY, ISO3, IFSCODE,
+    Rows: metadata labels (DATASET, Series_Code, Scale, Unit, COUNTRY, ISO3, IFSCODE,
     other dims, indicator label) followed by date rows.
     Columns: one per unique series (named by Series_Code).
     """
@@ -295,6 +301,7 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
 
         row_data: dict = {"DATASET": db, "Series_Code": series_code}
         row_data["SCALE"] = scale_label if scale_label is not None else ""
+        row_data["UNIT"] = unit_label if unit_label is not None else ""
         if country_col:
             idx = id_cols.index(country_col)
             cv  = str(series_key[idx])
@@ -311,7 +318,7 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
             row_data[lbl] = r[val_col]
         series_data[series_code] = row_data
 
-    meta_labels = ["DATASET", "Series_Code", "SCALE"]
+    meta_labels = ["DATASET", "Series_Code", "SCALE", "UNIT"]
     if country_col:
         meta_labels += ["COUNTRY", "ISO3", "IFSCODE"]
     for col in id_cols:
@@ -334,12 +341,13 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
 
 def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
                       indicator_col, ind_map, freq_code, date_col, val_col,
-                      scale_label=None):
+                      scale_label=None, unit_label=None):
     """Build one wide DataFrame (dates as columns) for a single-indicator group."""
     grp = grp.reset_index(drop=True).copy()
     out = pd.DataFrame(index=grp.index)
     out["DATASET"] = db
     out["SCALE"] = scale_label if scale_label is not None else ""
+    out["UNIT"] = unit_label if unit_label is not None else ""
 
     if id_cols:
         out["Series_Code"] = grp[id_cols].apply(
@@ -387,7 +395,7 @@ def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
     return pivot[non_date + date_present]
 
 
-def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None, scale=None):
+def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None, scale=None, unit=None):
     """Build the RA refreshable enriched format. Layout is auto-selected by data shape:
 
     1. Wide (n_indicators == 1):
@@ -432,6 +440,7 @@ def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None, sc
 
     # ── 2b. Apply scale: divide values by 10^scale ───────────────────────────
     scale_label = SCALE_LABELS.get(scale, "") if scale is not None else ""
+    unit_label = unit if unit is not None else ""
     if scale:
         df_long = df_long.copy()
         df_long[val_col] = df_long[val_col] / (10 ** scale)
@@ -461,7 +470,7 @@ def build_refreshable_output(df_long, db, country_lookup, indicator_dim=None, sc
         db=db, country_lookup=country_lookup, id_cols=id_cols,
         country_col=country_col, indicator_col=indicator_col,
         ind_map=ind_map, freq_code=freq_code, date_col=date_col, val_col=val_col,
-        scale_label=scale_label,
+        scale_label=scale_label, unit_label=unit_label,
     )
 
     # ── 6. Decide layout ──────────────────────────────────────────────────────
@@ -734,11 +743,13 @@ def main():
 
     # Use a single-chunk representative key for metadata (avoids long-key rejections)
     meta_key = _chunk_key(args.key, args.chunk_size)[0]
-    scale = fetch_scale_from_metadata(args.db, meta_key)
+    scale, unit_label = fetch_metadata(args.db, meta_key)
     scale_label = SCALE_LABELS.get(scale, "") if scale is not None else ""
     if scale_label:
         div_note = f" (values divided by 10^{scale})" if scale else ""
         print(f"Scale    : {scale_label}{div_note}")
+    if unit_label:
+        print(f"Unit     : {unit_label}")
 
     if args.fmt == "long":
         out_df = df.reset_index() if isinstance(df.index, pd.DatetimeIndex) else df
@@ -751,6 +762,7 @@ def main():
                 out_df = out_df.copy()
                 out_df[val_col] = out_df[val_col] / (10 ** scale)
         out_df["SCALE"] = scale_label
+        out_df["UNIT"] = unit_label
         saved = save_output(out_df, args.output)
         print(f"\nSaved to: {saved}")
         return
@@ -762,13 +774,14 @@ def main():
             out_df = out_df.copy()
             out_df[numeric_cols] = out_df[numeric_cols] / (10 ** scale)
         out_df["SCALE"] = scale_label
+        out_df["UNIT"] = unit_label
         saved = save_output(out_df, args.output)
         print(f"\nSaved to: {saved}")
         return
 
     # refreshable
     country_lookup = load_country_lookup()
-    out = build_refreshable_output(df, args.db, country_lookup, indicator_dim=args.indicator_dim, scale=scale)
+    out = build_refreshable_output(df, args.db, country_lookup, indicator_dim=args.indicator_dim, scale=scale, unit=unit_label)
 
     # Validate refreshable output — hard fail so no misleading file is saved
     rf_valid, rf_errors = validate_refreshable_output(out, args.db)
