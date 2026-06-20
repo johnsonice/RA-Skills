@@ -2,9 +2,8 @@
 """
 Fetch Haver series via imf_datatools.haver_utilities.
 
-Usage:
-  python fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" \\
-      --start 2000 --end 2024 --format refreshable
+Usage (on Windows use `python` or `py -3` in place of `python3`):
+  python3 fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" --start 2000 --end 2024 --format refreshable
 
 CODE@DB format: use the short Haver database code without the HAVER: prefix
 (e.g. EMERGECW, INTDAILY, USECON — not HAVER:EMERGECW).
@@ -22,16 +21,40 @@ Output formats:
 from __future__ import annotations
 
 import argparse
+import os
 import sqlite3
 import sys
 from pathlib import Path
 
 import pandas as pd
 
-# haver.db lives one level above the RA-Skills repo root.
-# Mac local:  /Users/jamieyang/haver.db
-# Windows:    Q:\DATA\SPRAI\Jie Yang\haver.db
-_DB_PATH = Path(__file__).resolve().parents[5] / "haver.db"
+
+def _resolve_haver_db() -> Path:
+    """Locate haver.db across environments (Windows/macOS/Linux/cloud).
+
+    Resolution order:
+      1. HAVER_DB_PATH environment variable (the only reliable option when the
+         skill is installed into a global dir, e.g. ~/.copilot/skills).
+      2. An upward search from this script: haver.db beside any ancestor
+         directory. Covers the conventional "one level above the repo root"
+         placement and works when scripts run from a mirrored skills dir.
+      3. Fallback to a sensible path so the .exists() check downstream can emit
+         a clear error if haver.db is found nowhere.
+
+    Common locations:  macOS  ~/haver.db   Windows  Q:\\DATA\\SPRAI\\...\\haver.db
+    """
+    env = os.environ.get("HAVER_DB_PATH")
+    if env:
+        return Path(env).expanduser()
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        candidate = parent / "haver.db"
+        if candidate.exists():
+            return candidate
+    return here.parents[2] / "haver.db"
+
+
+_DB_PATH = _resolve_haver_db()
 
 _FREQ_LABELS = {"A": "Annual", "Q": "Quarterly", "M": "Monthly", "W": "Weekly", "D": "Daily"}
 _AGG_LABELS = {"AVG": "Average", "EOP": "End of Period", "SUM": "Sum", "NST": "Not Specified", "NDF": "Non-Disaggregated Flow"}

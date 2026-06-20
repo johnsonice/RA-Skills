@@ -180,11 +180,11 @@ Implementation file:
 Examples:
 
 ```bash
-python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" resolve Congo
-python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" explain EM
-python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
-python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
-python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+python3 "skills/imf-ra/Country Group/weo_country_groups.py" resolve Congo
+python3 "skills/imf-ra/Country Group/weo_country_groups.py" explain EM
+python3 "skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
+python3 "skills/imf-ra/Country Group/weo_country_groups.py" compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
+python3 "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
 ```
 
 ### Anti-Patterns & Enforcement Rules

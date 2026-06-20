@@ -155,8 +155,7 @@ H1a. **Build target database list.** Read the Haver Analytics section of `databa
 H1b. **Search.** Choose ONE query string, then run a **single Bash call** covering all databases in the confirmed dblist using `--databases`. Do not issue separate Bash calls per database — each separate call triggers its own permission prompt.
 
 ```bash
-python .claude/skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py \
-  search "<query>" --databases DB1 DB2 DB3 ... --limit 300
+python3 skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search "<query>" --databases DB1 DB2 DB3 ... --limit 300
 ```
 
 The `--databases` flag is required (haver.db has 12M+ rows and unscoped searches are very slow). The output includes `aggtype` and `datatype` for every candidate.
@@ -196,7 +195,7 @@ Searches the local `haver.db` SQLite database using FTS5 full-text search and sy
 
 ### Core Navigation Map
 
-**iData (use `python scripts/catalog_search.py <command>`):**
+**iData (use `python3 scripts/catalog_search.py <command>`):**
 
 | If the user wants to... | Use this helper command | Key input |
 |---|---|---|
@@ -210,7 +209,7 @@ Searches the local `haver.db` SQLite database using FTS5 full-text search and sy
 | List WEO vintages or datasets | `datasets <query> --vintage-only` | dataset query |
 | Get default WEO Live database | `latest-weo` | none |
 
-**Haver (use `python scripts/Haver/haver_catalog_search.py <command>`):**
+**Haver (use `python3 scripts/Haver/haver_catalog_search.py <command>`):**
 
 | If the user wants to... | Use this helper command | Key input |
 |---|---|---|
