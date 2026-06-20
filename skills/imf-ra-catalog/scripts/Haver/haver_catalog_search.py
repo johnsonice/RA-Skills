@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import os
 import re
 import sqlite3
 import sys
@@ -12,10 +13,28 @@ from pathlib import Path
 from typing import Iterable
 
 
-# haver.db lives one level above the RA-Skills repo root.
-# Mac local:  /Users/jamieyang/haver.db
-# Windows:    Q:\DATA\SPRAI\Jie Yang\haver.db
-DEFAULT_DB_PATH = Path(__file__).resolve().parents[6] / "haver.db"
+def _resolve_haver_db() -> Path:
+    """Locate haver.db across environments (Windows/macOS/Linux/cloud).
+
+    Resolution order: HAVER_DB_PATH env var, then an upward search for haver.db
+    beside any ancestor directory (covers the conventional placement one level
+    above the repo root and mirrored skills dirs), then a fallback path so a
+    clear error can surface if it is found nowhere.
+
+    Common locations:  macOS  ~/haver.db   Windows  Q:\\DATA\\SPRAI\\...\\haver.db
+    """
+    env = os.environ.get("HAVER_DB_PATH")
+    if env:
+        return Path(env).expanduser()
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        candidate = parent / "haver.db"
+        if candidate.exists():
+            return candidate
+    return here.parents[2] / "haver.db"
+
+
+DEFAULT_DB_PATH = _resolve_haver_db()
 
 QUERY_SYNONYMS = {
     "ca": ["current", "account"],
