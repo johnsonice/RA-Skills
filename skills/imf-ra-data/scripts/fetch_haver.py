@@ -2,8 +2,8 @@
 """
 Fetch Haver series via imf_datatools.haver_utilities.
 
-Usage (on Windows use `python` or `py -3` in place of `python3`):
-  python3 fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" --start 2000 --end 2024 --format refreshable
+Usage:
+  python fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" --start 2000 --end 2024 --format refreshable
 
 CODE@DB format: use the short Haver database code without the HAVER: prefix
 (e.g. EMERGECW, INTDAILY, USECON — not HAVER:EMERGECW).

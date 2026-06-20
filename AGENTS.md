@@ -29,40 +29,40 @@ Skills run at three capability tiers. Pick commands the current environment can 
 - `haver.db` is **not** in the repo (SQLite, 12M+ rows). Resolution order: `HAVER_DB_PATH` env var → an upward search for `haver.db` beside any ancestor of the script (conventionally one directory above the repo root) → a clear "not found" error. Set `HAVER_DB_PATH` when installed into a global skills dir.
 - The internal `imf_datatools` SDK is IMF-only (installed from an internal location; see `skills/imf-ra-data/references/imf_datatools_agent_api_reference.md`). It is not pip-installable. Catalog lookup and WEO group helpers work without it.
 
-## Interpreter note (Windows)
+## Interpreter note
 
-Commands below use `python3` (the interpreter present on macOS, Linux, cloud agents, and CI, where bare `python` is often absent). **On Windows, if `python3` is not recognized, use `python` or `py -3` instead** — the script arguments are identical.
+Commands use `python`. If your machine only exposes `python3` (some macOS/Linux setups), use `python3` instead — the arguments are identical.
 
 ## Commands
 
 ```bash
 # WEO country-group helpers (use only for ambiguous/repeated/heavy lookups)
-python3 "skills/imf-ra/Country Group/weo_country_groups.py" groups "advanced economies"
-python3 "skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
-python3 "skills/imf-ra/Country Group/weo_country_groups.py" memberships USA
-python3 "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+python "skills/imf-ra/Country Group/weo_country_groups.py" groups "advanced economies"
+python "skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
+python "skills/imf-ra/Country Group/weo_country_groups.py" memberships USA
+python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
 
 # iData catalog indicator/code discovery (use before writing temporary lookup code)
-python3 skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
-python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth"
-python3 skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States"
-python3 skills/imf-ra-catalog/scripts/catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE
-python3 skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
-python3 skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
-python3 skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
-python3 skills/imf-ra-catalog/scripts/catalog_search.py search "GDP per capita" --database WB:WDI
-python3 skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
+python skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
+python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth"
+python skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States"
+python skills/imf-ra-catalog/scripts/catalog_search.py code NGDP_RPCH --database IMF.RES.WEO:WEO_LIVE
+python skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+python skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+python skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+python skills/imf-ra-catalog/scripts/catalog_search.py search "GDP per capita" --database WB:WDI
+python skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
 
 # Haver catalog lookup (FTS5 over haver.db — never ad-hoc SQL LIKE; batch DBs in ONE call, --limit 300+)
-python3 skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search "10 year government bond yield" --databases G10 INTDAILY --limit 300
-python3 skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py code GDP --db USECON
-python3 skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py databases
+python skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search "10 year government bond yield" --databases G10 INTDAILY --limit 300
+python skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py code GDP --db USECON
+python skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py databases
 
 # Pre-built fetch utilities (never write new retrieval scripts)
-python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
-python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "USA"
-python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA+GBR.NGDP_RPCH..A" --start 2000 --end 2026 --format refreshable
-python3 skills/imf-ra-data/scripts/fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" --start 2000 --end 2024 --format refreshable
+python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
+python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "USA"
+python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA+GBR.NGDP_RPCH..A" --start 2000 --end 2026 --format refreshable
+python skills/imf-ra-data/scripts/fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" --start 2000 --end 2024 --format refreshable
 ```
 
 After editing any `SKILL.md` or reference path, run the relevant helper command contracts and a Markdown link/path check.
@@ -93,7 +93,7 @@ tests/        # YAML auto-test cases, reviewer catalog, results, issue tracking
 tests/user_error_report/   # local JSON reports created by imf-ra-error-report
 ```
 
-`skills/` is the single source of truth. For in-repo local discovery on every host, `python3 scripts/sync_skills.py` mirrors `skills/` into `.claude/skills/` (Claude Code) and `.agents/skills/` (Copilot/Codex). Those mirrors are generated and gitignored — **never edit them; edit `skills/`**.
+`skills/` is the single source of truth. For in-repo local discovery on every host, `python scripts/sync_skills.py` mirrors `skills/` into `.claude/skills/` (Claude Code) and `.agents/skills/` (Copilot/Codex). Those mirrors are generated and gitignored — **never edit them; edit `skills/`**.
 
 ## Conventions agents must follow
 
@@ -109,7 +109,7 @@ tests/user_error_report/   # local JSON reports created by imf-ra-error-report
 ## Editing skills
 
 - A skill = directory with `SKILL.md` (YAML frontmatter `name` + `description` + body), optionally `scripts/`, `references/`, and data files. The folder name is the skill name.
-- To work on a skill locally, edit under `skills/`, then run `python3 scripts/sync_skills.py` so every host re-discovers it.
+- To work on a skill locally, edit under `skills/`, then run `python scripts/sync_skills.py` so every host re-discovers it.
 
 ## Branch / commit conventions
 

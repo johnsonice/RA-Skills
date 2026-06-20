@@ -27,7 +27,7 @@ cases:
     - "skills/imf-ra-data/SKILL.md"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
   assertions:
     required:
     - start_data_retrieval_flow
@@ -70,7 +70,7 @@ cases:
     - "skills/imf-ra/Country Group/weo_country_groups.md"
     - "skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 "skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
+    - python "skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
   assertions:
     required:
     - use_weo_group_reference
@@ -92,7 +92,7 @@ cases:
     - "skills/imf-ra/Country Group/weo_country_groups.md"
     - "skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 "skills/imf-ra/Country Group/weo_country_groups.py" explain EMDE
+    - python "skills/imf-ra/Country Group/weo_country_groups.py" explain EMDE
   expected_outputs:
     weo_group_column: Emerging Market and Developing Economies(EMDE)
     spr_prgt_group_columns:
@@ -123,7 +123,7 @@ cases:
     - "skills/imf-ra-catalog/SKILL.md"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "inflation CPI" --all-databases
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "inflation CPI" --all-databases
   assertions:
     required:
     - ask_clarification
@@ -147,7 +147,7 @@ cases:
     - "skills/imf-ra-catalog/scripts/catalog_search.py"
     - "skills/imf-ra-catalog/scripts/catalog_lookup.py"
     required_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+    - python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
   expected_outputs:
     status: resolved
     database: IMF.RES.WEO:WEO_LIVE
@@ -155,7 +155,7 @@ cases:
     code: NGDP_RPCH
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
       stdout_contains:
       - '"status": "resolved"'
       - '"database": "IMF.RES.WEO:WEO_LIVE"'
@@ -192,14 +192,14 @@ cases:
     - "skills/imf-ra-catalog/SKILL.md"
     - "skills/imf-ra-catalog/scripts/catalog_routing.py"
     required_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
+    - python skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "IFS CPI for the United States"
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "IFS CPI for the United States"
   expected_outputs:
     database: IMF.STA:CPI
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
       stdout_contains:
       - '"status": "routed"'
       - '"database": "IMF.STA:CPI"'
@@ -234,14 +234,14 @@ cases:
     - "skills/imf-ra-catalog/scripts/catalog_lookup.py"
     - "skills/imf-ra-catalog/indicators/3. wdi_variable_list.csv"
     required_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
+    - python skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
   expected_outputs:
     status: ambiguous
     database: WB:WDI
     dimension_name: SERIES
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
       stdout_contains:
       - '"status": "ambiguous"'
       - '"handoff": null'
@@ -278,13 +278,13 @@ cases:
     - "skills/imf-ra-catalog/SKILL.md"
     - "skills/imf-ra-catalog/scripts/catalog_search.py"
     required_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+    - python skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
   expected_outputs:
     database: IMF.STA:CPI
     dimension_name: INDEX_TYPE
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
       stdout_contains:
       - IMF.STA:CPI
       - INDEX_TYPE
@@ -314,10 +314,10 @@ cases:
     - "skills/imf-ra-catalog/SKILL.md"
     - "skills/imf-ra-catalog/scripts/catalog_search.py"
     required_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+    - python skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
       stdout_contains:
       - 'same_database: True'
       - Period average, percent change
@@ -352,7 +352,7 @@ cases:
     - "skills/imf-ra-catalog/scripts/catalog_routing.py"
     - "skills/imf-ra-catalog/scripts/catalog_lookup.py"
     required_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
+    - python skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
   expected_outputs:
     status: resolved
     database: IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
@@ -361,7 +361,7 @@ cases:
     code: NGDPD
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
       stdout_contains:
       - '"status": "resolved"'
       - '"database": "IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE"'
@@ -397,8 +397,8 @@ cases:
     - "skills/imf-ra-catalog/SKILL.md"
     - "skills/imf-ra/Country Group/weo_country_groups.md"
     required_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
-    - python3 "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+    - python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+    - python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_outputs:
     database: IMF.RES.WEO:WEO_LIVE
     dimension_name: INDICATOR
@@ -408,11 +408,11 @@ cases:
     end: '2024'
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
       stdout_contains:
       - '"code": "NGDP_RPCH"'
       - '"database": "IMF.RES.WEO:WEO_LIVE"'
-    - command: python3 "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+    - command: python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
       stdout_contains:
       - AFG
       - CHN
@@ -448,7 +448,7 @@ cases:
     - "skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "quarterly inflation" --all-databases
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "quarterly inflation" --all-databases
   assertions:
     required:
     - verify_frequency_support_or_flag_mismatch
@@ -471,7 +471,7 @@ cases:
     - "skills/imf-ra-catalog/databases/database_overview.md"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "financial soundness regulatory capital risk weighted assets" --all-databases
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "financial soundness regulatory capital risk weighted assets" --all-databases
   assertions:
     required:
     - expand_beyond_weo
@@ -494,14 +494,14 @@ cases:
     - "skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
   expected_outputs:
     database: IMF.RES.WEO:WEO_LIVE
     dimension_name: INDICATOR
     code: NGDPD
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP USD"
       stdout_contains:
       - NGDPD
       - IMF.RES.WEO:WEO_LIVE
@@ -588,7 +588,7 @@ cases:
     - "skills/imf-ra-data/SKILL.md"
     - "skills/imf-ra-data/scripts/fetch_idata.py"
     optional_commands:
-    - python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
+    - python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
   expected_outputs:
     database: IMF.RES.WEO:WEO_LIVE
     dimension_name: INDICATOR
@@ -599,7 +599,7 @@ cases:
     end: '2024'
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
+    - command: python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
       stdout_contains:
       - IMF.RES.WEO:WEO_LIVE
     final_response_must_include:
@@ -761,7 +761,7 @@ cases:
     - "skills/imf-ra/Country Group/weo_country_groups.md"
     - "skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 "skills/imf-ra/Country Group/weo_country_groups.py" resolve Congo
+    - python "skills/imf-ra/Country Group/weo_country_groups.py" resolve Congo
   expected_outputs:
     candidates:
     - COG
@@ -791,7 +791,7 @@ cases:
     - "skills/imf-ra/Country Group/weo_country_groups.md"
     - "skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 "skills/imf-ra/Country Group/weo_country_groups.py" compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
+    - python "skills/imf-ra/Country Group/weo_country_groups.py" compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
   expected_outputs:
     weo_group_column: Low-Income Developing Countries (LIDC)
     spr_prgt_group_column: SPR-Low-Income Developing Countries (LIC)
@@ -824,7 +824,7 @@ cases:
     - "skills/imf-ra-catalog/databases/vintage_datasets.csv"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
+    - python skills/imf-ra-catalog/scripts/catalog_search.py datasets WEO --vintage-only
   assertions:
     required:
     - ask_which_vintage
@@ -848,7 +848,7 @@ cases:
     - "skills/imf-ra-catalog/databases/vintage_datasets.csv"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO data nominal GDP" --json
+    - python skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO data nominal GDP" --json
   expected_outputs:
     database: IMF.RES.WEO:WEO_LIVE
   assertions:
@@ -873,7 +873,7 @@ cases:
     - "skills/imf-ra-catalog/databases/vintage_datasets.csv"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO vintage nominal GDP" --json
+    - python skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO vintage nominal GDP" --json
   assertions:
     required:
     - recognize_explicit_latest_vintage_request
@@ -899,8 +899,8 @@ cases:
     - "skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py datasets IMF.RES:WEO
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP" --database IMF.RES:WEO
+    - python skills/imf-ra-catalog/scripts/catalog_search.py datasets IMF.RES:WEO
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "nominal GDP" --database IMF.RES:WEO
   expected_outputs:
     database: IMF.RES:WEO
     dimension_name: INDICATOR
@@ -1012,10 +1012,10 @@ cases:
     - "skills/imf-ra-data/SKILL.md"
     - "skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
+    - python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
+    - command: python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
       stdout_must_not_contain:
       - Atlantis
     final_response_must_include:
@@ -1051,11 +1051,11 @@ cases:
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     - "skills/imf-ra/Country Group/Country Group.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan" --database IMF.STA:ER
+    - python skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan" --database IMF.STA:ER
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
       stdout_contains:
       - '"status": "routed"'
       - IMF.STA:ER
@@ -1094,14 +1094,14 @@ cases:
     - "skills/imf-ra-data/SKILL.md"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
     optional_commands:
-    - python3 skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
+    - python skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
   expected_outputs:
     database: IMF.RES.WEO:WEO_LIVE
     dimension_name: INDICATOR
     code: NGDP_RPCH
   machine_checks:
     required_command_evidence:
-    - command: python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+    - command: python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
       stdout_contains:
       - '"status": "resolved"'
       - '"code": "NGDP_RPCH"'
@@ -1129,7 +1129,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: WEO iData handoff expansion
-  command: python3 "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+  command: python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_exit_codes:
   - 0
   expected_behavior: 'Expands EMDE to comma-separated WEO member countrycode values suitable for iData country selection, rather than returning the group/category column alone.
@@ -1150,7 +1150,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: Catalog source routing - legacy IFS
-  command: python3 skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
+  command: python skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json
   expected_exit_codes:
   - 0
   expected_behavior: 'Classifies a legacy IFS request as a source-routing task and maps CPI to the replacement iData CPI database before indicator search.
@@ -1170,7 +1170,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: Catalog strict resolve - unambiguous WEO concept
-  command: python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
+  command: python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
   expected_exit_codes:
   - 0
   expected_behavior: 'Runs the fuzzy ranking pipeline and returns one handoff-ready identifier only because the top WEO Live real GDP growth candidate is sufficiently clear.
@@ -1194,7 +1194,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: Catalog strict resolve - ambiguity preserved
-  command: python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
+  command: python skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json
   expected_exit_codes:
   - 0
   expected_behavior: 'Runs a source-specific WDI lookup but refuses to commit because current US dollars, constant US dollars, local currency, PPP, and growth variants are all plausible.
@@ -1217,7 +1217,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: Catalog dimension discovery
-  command: python3 skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
+  command: python skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI
   expected_exit_codes:
   - 0
   expected_behavior: 'Returns dimension names, row counts, and example codes for the selected database so the agent does not infer that every database uses INDICATOR.
@@ -1237,7 +1237,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: Catalog database classification
-  command: python3 skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
+  command: python skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE
   expected_exit_codes:
   - 0
   expected_behavior: 'Classifies a dated WEO Live resource as a vintage database, not the default WEO Live database.
@@ -1257,7 +1257,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: Catalog code comparison
-  command: python3 skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
+  command: python skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE
   expected_exit_codes:
   - 0
   expected_behavior: 'Compares two known WEO inflation codes and returns answer-ready distinctions in timing basis rather than raw rows only.
@@ -1278,7 +1278,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: Catalog WEO vintage handoff assembly
-  command: python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
+  command: python skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json
   expected_exit_codes:
   - 0
   expected_behavior: 'Resolves a dated WEO vintage request into a handoff-ready tuple, using WEO Live indicator metadata while preserving the requested vintage database in the result and handoff object.
@@ -1303,7 +1303,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: Catalog split-module import contract
-  command: 'python3 -c ''import sys; sys.path.insert(0, "skills/imf-ra-catalog/scripts"); import catalog_data, catalog_routing, catalog_lookup, catalog_search; assert catalog_data.WEO_LIVE_DB == "IMF.RES.WEO:WEO_LIVE"; assert catalog_routing.route_query("IFS CPI")["database"] == "IMF.STA:CPI"; assert catalog_lookup.exact_code_matches("NGDP_RPCH", "IMF.RES.WEO:WEO_LIVE"); assert catalog_search.classify_database("IMF.RES.WEO:WEO_LIVE")["status"] == "found"; print("OK: catalog split modules import and expose expected helpers")''
+  command: 'python -c ''import sys; sys.path.insert(0, "skills/imf-ra-catalog/scripts"); import catalog_data, catalog_routing, catalog_lookup, catalog_search; assert catalog_data.WEO_LIVE_DB == "IMF.RES.WEO:WEO_LIVE"; assert catalog_routing.route_query("IFS CPI")["database"] == "IMF.STA:CPI"; assert catalog_lookup.exact_code_matches("NGDP_RPCH", "IMF.RES.WEO:WEO_LIVE"); assert catalog_search.classify_database("IMF.RES.WEO:WEO_LIVE")["status"] == "found"; print("OK: catalog split modules import and expose expected helpers")''
 
 '
   expected_exit_codes:

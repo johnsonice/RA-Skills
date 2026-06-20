@@ -90,11 +90,11 @@ npx skills add johnsonice/RA-Skills
 ```bash
 git clone https://github.com/johnsonice/RA-Skills.git
 cd RA-Skills
-python3 scripts/sync_skills.py   # mirror skills/ into .claude/skills + .agents/skills for discovery
+python scripts/sync_skills.py   # mirror skills/ into .claude/skills + .agents/skills for discovery
 claude                           # or open Copilot CLI / Codex with cwd = this repo
 ```
 
-> On Windows, use `python` or `py -3` in place of `python3`. For a global install that needs the Haver data tier, point `HAVER_DB_PATH` at your `haver.db`.
+> Commands use `python`; if your machine only has `python3`, use that instead. For a global install that needs the Haver data tier, point `HAVER_DB_PATH` at your `haver.db`.
 
 ### Dependency tiers
 

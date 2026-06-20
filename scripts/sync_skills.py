@@ -11,11 +11,11 @@ Symlinks (live, no re-sync needed) are used where the OS allows; otherwise the
 script falls back to a copy (re-run after each edit). On Windows without Developer
 Mode, expect copies.
 
-Usage (on Windows use ``python`` or ``py -3`` in place of ``python3``):
-  python3 scripts/sync_skills.py            # sync: symlink where possible, else copy
-  python3 scripts/sync_skills.py --mode copy   # force copy (no symlinks)
-  python3 scripts/sync_skills.py --mode link   # symlink only (error if unsupported)
-  python3 scripts/sync_skills.py --clean       # remove generated mirrors
+Usage:
+  python scripts/sync_skills.py            # sync: symlink where possible, else copy
+  python scripts/sync_skills.py --mode copy   # force copy (no symlinks)
+  python scripts/sync_skills.py --mode link   # symlink only (error if unsupported)
+  python scripts/sync_skills.py --clean       # remove generated mirrors
 """
 
 from __future__ import annotations

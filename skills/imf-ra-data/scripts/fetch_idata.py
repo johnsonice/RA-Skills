@@ -38,30 +38,30 @@ Output formats (--format required for fetch):
   long         Raw API long format (one row per observation).
                Use --excel for .xlsx; omit for .csv.
 
-Examples (on Windows use `python` or `py -3` in place of `python3`):
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
+Examples:
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
 
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values FREQUENCY
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values FREQUENCY
 
   # WEO uses ISO3 codes for COUNTRY; WDI uses REF_AREA with region labels — use the
   # appropriate dimension name and keyword style for the database.
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "USA"
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "USA"
 
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "WB:WDI" --dimension-values REF_AREA --keyword "Africa"
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "WB:WDI" --dimension-values REF_AREA --keyword "Africa"
 
   # Single indicator, multi-country → refreshable produces wide layout (dates as columns)
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE" --key "USA+GBR.NGDP_RPCH..A" --start 2000 --end 2026 --format refreshable
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE" --key "USA+GBR.NGDP_RPCH..A" --start 2000 --end 2026 --format refreshable
 
   # Bloomberg (no country dim, single series)
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.CSF:BBGDL" --key "JPAYIELD_INDEX.PX_LAST.D" --start 2015 --end 2026 --format refreshable --indicator-dim TICKER
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.CSF:BBGDL" --key "JPAYIELD_INDEX.PX_LAST.D" --start 2015 --end 2026 --format refreshable --indicator-dim TICKER
 
   # WDI — indicator dim is SERIES
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "WB:WDI" --key "A.AG_CON_FERT_PT_ZS.AFE" --start 2000 --end 2023 --format refreshable --indicator-dim SERIES
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "WB:WDI" --key "A.AG_CON_FERT_PT_ZS.AFE" --start 2000 --end 2023 --format refreshable --indicator-dim SERIES
 
   # Multi-indicator → refreshable produces long layout (one row per observation)
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA.NGDP_RPCH+NGDP_D.A" --start 2000 --end 2026 --format refreshable
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA.NGDP_RPCH+NGDP_D.A" --start 2000 --end 2026 --format refreshable
 
-  python3 skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.STA:CPI" --key "USA+JPN.CPI._T.IX.M" --start 2010 --end 2026 --format long
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.STA:CPI" --key "USA+JPN.CPI._T.IX.M" --start 2010 --end 2026 --format long
 
 Key format notes:
   Dot-separated dimension values in the order shown by --explore.

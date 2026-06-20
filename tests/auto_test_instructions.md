@@ -156,15 +156,15 @@ the prompt cases depend on.
 
 | ID | Command | Purpose |
 |---|---|---|
-| CONTRACT-28 | `python3 -c 'import ... catalog_data, catalog_routing, catalog_lookup, catalog_search ...'` | Split catalog helper modules import cleanly and preserve public helper exports. |
-| CONTRACT-11 | `python3 skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json` | Legacy IFS CPI routes to `IMF.STA:CPI`. |
-| CONTRACT-15 | `python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json` | Strict resolve returns WEO Live `NGDP_RPCH`. |
-| CONTRACT-16 | `python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json` | Strict resolve preserves WDI variant ambiguity. |
-| CONTRACT-23 | `python3 skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI` | Dimension discovery returns `INDEX_TYPE` examples. |
-| CONTRACT-24 | `python3 skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE` | Database classification identifies a WEO vintage. |
-| CONTRACT-25 | `python3 skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE` | Code comparison distinguishes period-average vs end-of-period CPI inflation. |
-| CONTRACT-26 | `python3 skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json` | WEO vintage resolution returns the vintage database, the matched WEO Live indicator source, and `NGDPD`. |
-| CONTRACT-09 | `python3 "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only` | Group expansion returns iData-ready member country codes. |
+| CONTRACT-28 | `python -c 'import ... catalog_data, catalog_routing, catalog_lookup, catalog_search ...'` | Split catalog helper modules import cleanly and preserve public helper exports. |
+| CONTRACT-11 | `python skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json` | Legacy IFS CPI routes to `IMF.STA:CPI`. |
+| CONTRACT-15 | `python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json` | Strict resolve returns WEO Live `NGDP_RPCH`. |
+| CONTRACT-16 | `python skills/imf-ra-catalog/scripts/catalog_search.py resolve "GDP per capita" --database WB:WDI --json` | Strict resolve preserves WDI variant ambiguity. |
+| CONTRACT-23 | `python skills/imf-ra-catalog/scripts/catalog_search.py dimensions IMF.STA:CPI` | Dimension discovery returns `INDEX_TYPE` examples. |
+| CONTRACT-24 | `python skills/imf-ra-catalog/scripts/catalog_search.py classify-database IMF.RES.WEO:WEO_LIVE_2024_APR_VINTAGE` | Database classification identifies a WEO vintage. |
+| CONTRACT-25 | `python skills/imf-ra-catalog/scripts/catalog_search.py compare-codes PCPI_PCH PCPIE_PCH --database IMF.RES.WEO:WEO_LIVE` | Code comparison distinguishes period-average vs end-of-period CPI inflation. |
+| CONTRACT-26 | `python skills/imf-ra-catalog/scripts/catalog_search.py resolve "April 2024 WEO vintage nominal GDP in US dollars" --json` | WEO vintage resolution returns the vintage database, the matched WEO Live indicator source, and `NGDPD`. |
+| CONTRACT-09 | `python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only` | Group expansion returns iData-ready member country codes. |
 
 ## Result Outputs
 
