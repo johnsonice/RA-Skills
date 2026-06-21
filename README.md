@@ -62,6 +62,14 @@ More patterns live in the YAML-first auto-test pack:
 
 RA-Skills uses the open **Agent Skills** format; the canonical source is the top-level `skills/` directory.
 
+### Quickest: ask your agent
+
+Send this to your coding agent (GitHub Copilot, Claude Code, Codex, …) — it will read the steps below and pick the right one for its environment:
+
+> Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment.
+
+### Install manually
+
 **GitHub Copilot** (CLI or cloud agent, incl. Windows) — install into your personal skills dir with GitHub CLI ≥ 2.90:
 
 ```bash
