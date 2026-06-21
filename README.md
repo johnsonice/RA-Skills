@@ -76,7 +76,7 @@ Manual alternative (no extra CLI): copy the skill folder(s) from `skills/` into 
 
 ```text
 /plugin marketplace add johnsonice/RA-Skills
-/plugin install imf-ra
+/plugin install imf-ra-skills
 ```
 
 **Any Agent Skills host** (`skills.sh`):
