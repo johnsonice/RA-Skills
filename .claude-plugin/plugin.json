@@ -1,5 +1,5 @@
 {
-  "name": "imf-ra",
+  "name": "imf-ra-skills",
   "version": "1.0.0",
   "description": "IMF Research Assistant skill family: natural-language catalog lookup, iData/Haver data fetch, chart handoff, and consent-based local error reporting. Bundles five Agent Skills (imf-ra, imf-ra-catalog, imf-ra-data, imf-ra-charts, imf-ra-error-report).",
   "author": {

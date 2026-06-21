@@ -84,7 +84,7 @@ skills/imf-ra-data/scripts/         # fetch_idata.py + fetch_haver.py — the on
 skills/imf-ra-data/references/      # imf_datatools_agent_api_reference.md (SDK recipes)
 skills/imf-ra/Country Group/        # Country Group.csv (WEO country/group truth) + weo_country_groups.py helper + .md guide
 skills/imf-ra-error-report/SKILL.md # consent-based local failure-report skill (no scripts)
-.claude-plugin/                     # Claude Code plugin + marketplace manifests (one plugin: imf-ra)
+.claude-plugin/                     # Claude Code plugin + marketplace manifests (one plugin: imf-ra-skills)
 scripts/                            # sync_skills.py (mirror skills/ into host dirs for local discovery)
 docs/specs/   # design + distribution docs
 docs/plans/   # implementation history (ERROR_REPORTING_plan.md, family plan)
