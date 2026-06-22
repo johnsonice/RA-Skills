@@ -89,7 +89,7 @@ def _format_date_label(ts: pd.Timestamp, freq: str) -> str:
     if f == "Q":
         return f"{ts.year}Q{ts.quarter}"
     if f == "M":
-        return f"{ts.year}M{ts.month}"
+        return f"{ts.year}{ts.month:02d}"
     return ts.strftime("%Y-%m-%d")
 
 

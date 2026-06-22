@@ -292,9 +292,9 @@ The catalog handoff pre-confirms all series-selection decisions. The only remain
 Ask the user which format they want:
 
 > **Output format** — which would you like?
-> - **Refreshable** — Card-format `.xlsx`: metadata rows (`.DESC`, `.T1`, `.TN`, `.LSOURCE`, `.AGG`, `.FRQ`, `.DATA_TYPE`, `.MAG`) followed by date rows; one column per series.
-> - **Wide** — Dates as rows, one column per series. CSV or Excel.
-> - **Long** — One row per observation: `Date`, `Ticker`, `Value`. CSV or Excel.
+> - **Refreshable** — Card-format `.xlsx`: metadata rows (`.DESC`, `.T1`, `.TN`, `.LSOURCE`, `.AGG`, `.FRQ`, `.DATA_TYPE`, `.MAG`) followed by date rows; one column per series. **Haver date format note:** Monthly date row labels use `YYYYMM` format with no zero-padding (e.g. `202101`, `202102`, …, `202112`).
+> - **Wide** — Dates as rows, one column per series. CSV or Excel. Monthly dates appear as `YYYY-MM-DD` (e.g. `2021-01-01`).
+> - **Long** — One row per observation: `Date`, `Ticker`, `Value`. CSV or Excel. Monthly dates appear as `YYYY-MM-DD` (e.g. `2021-01-01`).
 
 ### Step 3 — Execute with fetch_haver.py
 
