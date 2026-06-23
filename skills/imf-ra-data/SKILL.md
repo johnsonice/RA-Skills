@@ -83,7 +83,7 @@ If you are arriving from a confirmed catalog handoff, check its shape: `database
 Once the database is confirmed, list its dimensions in key order:
 
 ```bash
-python .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --explore
+python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --explore
 ```
 
 This prints the dimension names in the order they appear in the iData key. The indicator code (`code` from the catalog handoff) slots into the position matching the catalog's `dimension_name` field.
@@ -125,7 +125,7 @@ Example structure:
 If the user asks "what options are there for X?", run:
 
 ```bash
-python .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --dimension-values <DIM>
+python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --dimension-values <DIM>
 ```
 
 Present the results in readable form (e.g. "Annual (A), Quarterly (Q), Monthly (M)"), then ask again.
@@ -168,30 +168,15 @@ If the user has already stated a format preference earlier in the conversation, 
 Once all dimensions, time range, and output format are confirmed, call `fetch_idata.py` with the appropriate `--format` flag:
 
 ```bash
-# Refreshable RA Excel (layout auto-selected by number of indicators)
-python .claude/skills/imf-ra-data/scripts/fetch_idata.py \
-    --db "<database_id>" \
-    --key "<dot.separated.key>" \
-    --start "<YYYY>" \
-    --end "<YYYY>" \
-    --format refreshable \
-    --indicator-dim "<dimension_name>"   # from catalog handoff; omit if INDICATOR
+# Refreshable RA Excel (layout auto-selected by number of indicators).
+# --indicator-dim comes from the catalog handoff; omit it if the dimension is INDICATOR.
+python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --key "<dot.separated.key>" --start "<YYYY>" --end "<YYYY>" --format refreshable --indicator-dim "<dimension_name>"
 
-# Wide (omit --excel for CSV, add --excel for Excel)
-python .claude/skills/imf-ra-data/scripts/fetch_idata.py \
-    --db "<database_id>" \
-    --key "<dot.separated.key>" \
-    --start "<YYYY>" \
-    --end "<YYYY>" \
-    --format wide
+# Wide (CSV by default; add --excel for Excel)
+python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --key "<dot.separated.key>" --start "<YYYY>" --end "<YYYY>" --format wide
 
-# Long (omit --excel for CSV, add --excel for Excel)
-python .claude/skills/imf-ra-data/scripts/fetch_idata.py \
-    --db "<database_id>" \
-    --key "<dot.separated.key>" \
-    --start "<YYYY>" \
-    --end "<YYYY>" \
-    --format long
+# Long (CSV by default; add --excel for Excel)
+python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --key "<dot.separated.key>" --start "<YYYY>" --end "<YYYY>" --format long
 ```
 
 Add `--excel` to save Wide or Long output as `.xlsx` instead of `.csv`. Add `--output <filename>` to specify the output path.
@@ -300,23 +285,13 @@ Ask the user which format they want:
 
 ```bash
 # Refreshable
-python .claude/skills/imf-ra-data/scripts/fetch_haver.py \
-    --codes "GDP@USECON" "UNRATE@USECON" \
-    --start "<YYYY>" --end "<YYYY>" \
-    --format refreshable \
-    --output <filename>.xlsx
+python skills/imf-ra-data/scripts/fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" --start "<YYYY>" --end "<YYYY>" --format refreshable --output <filename>.xlsx
 
-# Wide
-python .claude/skills/imf-ra-data/scripts/fetch_haver.py \
-    --codes "GDP@USECON" \
-    --start "<YYYY>" --end "<YYYY>" \
-    --format wide          # add --excel for .xlsx, default is .csv
+# Wide (add --excel for .xlsx; default is .csv)
+python skills/imf-ra-data/scripts/fetch_haver.py --codes "GDP@USECON" --start "<YYYY>" --end "<YYYY>" --format wide
 
-# Long
-python .claude/skills/imf-ra-data/scripts/fetch_haver.py \
-    --codes "GDP@USECON" \
-    --start "<YYYY>" --end "<YYYY>" \
-    --format long          # add --excel for .xlsx, default is .csv
+# Long (add --excel for .xlsx; default is .csv)
+python skills/imf-ra-data/scripts/fetch_haver.py --codes "GDP@USECON" --start "<YYYY>" --end "<YYYY>" --format long
 ```
 
 See [references/imf_datatools_agent_api_reference.md § 9](references/imf_datatools_agent_api_reference.md) for the full `haver_utilities` API reference.
