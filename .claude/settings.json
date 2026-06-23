@@ -9,8 +9,8 @@
       "Bash(python3 skills/imf-ra-data/scripts/fetch_idata.py:*)",
       "Bash(python skills/imf-ra-data/scripts/fetch_haver.py:*)",
       "Bash(python3 skills/imf-ra-data/scripts/fetch_haver.py:*)",
-      "Bash(python \"skills/imf-ra/Country Group/weo_country_groups.py\":*)",
-      "Bash(python3 \"skills/imf-ra/Country Group/weo_country_groups.py\":*)",
+      "Bash(python skills/imf-ra/country_group/country_groups_helper.py:*)",
+      "Bash(python3 skills/imf-ra/country_group/country_groups_helper.py:*)",
       "Bash(python scripts/sync_skills.py:*)",
       "Bash(python3 scripts/sync_skills.py:*)"
     ]
