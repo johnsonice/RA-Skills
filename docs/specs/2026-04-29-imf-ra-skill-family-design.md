@@ -8,7 +8,7 @@
 
 A family of Claude Code skills that helps IMF Research Assistants do day-to-day work. The skills are knowledge-and-glue layers that teach Claude how to use existing internal tools — they do not reimplement data access or charting.
 
-**Current implementation note:** this document records the original April 2026 scaffold design. The live repository now keeps skills project-local under `.claude/skills/`, uses CSV catalogs plus helper scripts instead of placeholder Markdown templates, and consolidates WEO country/group truth under `.claude/skills/imf-ra/Country Group/`.
+**Current implementation note:** this document records the original April 2026 scaffold design. The live repository now keeps skills project-local under `.claude/skills/`, uses CSV catalogs plus helper scripts instead of placeholder Markdown templates, and consolidates WEO country/group truth under `.claude/skills/imf-ra/country_group/`.
 
 ## 2. Scope
 
@@ -44,10 +44,10 @@ Four sibling skill folders under project-local `.claude/skills/`:
 .claude/skills/
 ├── imf-ra/                          # Umbrella — broad activation, family map, shared conventions
 │   ├── SKILL.md
-│   └── Country Group/
-│       ├── Country Group.csv
-│       ├── weo_country_groups.md
-│       └── weo_country_groups.py
+│   └── country_group/
+│       ├── country_group.csv
+│       ├── country_groups_instruction.md
+│       └── country_groups_helper.py
 ├── imf-ra-data/                     # Worker — fetching via internal Python SDK
 │   ├── SKILL.md
 │   ├── references/

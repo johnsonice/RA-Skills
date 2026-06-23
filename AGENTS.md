@@ -22,7 +22,7 @@ Skills run at three capability tiers. Pick commands the current environment can 
 
 | Tier | Skills / commands | Requires | Runs where |
 |------|-------------------|----------|------------|
-| **Catalog** (discovery) | `imf-ra-catalog` (`catalog_search.py`), WEO `weo_country_groups.py` | Python 3.9+ only (stdlib + bundled CSVs) | Anywhere — laptops, CI, cloud agents, off-network |
+| **Catalog** (discovery) | `imf-ra-catalog` (`catalog_search.py`), WEO `country_groups_helper.py` | Python 3.9+ only (stdlib + bundled CSVs) | Anywhere — laptops, CI, cloud agents, off-network |
 | **Data – iData** | `imf-ra-data` `fetch_idata.py` | Internal `imf_datatools` SDK + `pandas` | IMF-managed Windows / cloud only |
 | **Data – Haver** | `imf-ra-data` `fetch_haver.py`, `haver_catalog_search.py` lookups | `haver.db` (SQLite) + `pandas` (metadata for fetch) | IMF machines with `haver.db` access |
 
@@ -37,10 +37,10 @@ Commands use `python`. If your machine only exposes `python3` (some macOS/Linux 
 
 ```bash
 # WEO country-group helpers (use only for ambiguous/repeated/heavy lookups)
-python "skills/imf-ra/Country Group/weo_country_groups.py" groups "advanced economies"
-python "skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
-python "skills/imf-ra/Country Group/weo_country_groups.py" memberships USA
-python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+python skills/imf-ra/country_group/country_groups_helper.py groups "advanced economies"
+python skills/imf-ra/country_group/country_groups_helper.py members "Advanced Economies(AE)"
+python skills/imf-ra/country_group/country_groups_helper.py memberships USA
+python skills/imf-ra/country_group/country_groups_helper.py expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
 
 # iData catalog indicator/code discovery (use before writing temporary lookup code)
 python skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
@@ -82,7 +82,7 @@ skills/imf-ra-catalog/indicators/   # variable truth: 1. non_vintage, 2. bbg, 3.
 skills/imf-ra-catalog/scripts/      # catalog_search.py CLI + catalog_data/routing/lookup modules; Haver/haver_catalog_search.py
 skills/imf-ra-data/scripts/         # fetch_idata.py + fetch_haver.py — the only supported retrieval paths
 skills/imf-ra-data/references/      # imf_datatools_agent_api_reference.md (SDK recipes)
-skills/imf-ra/Country Group/        # Country Group.csv (WEO country/group truth) + weo_country_groups.py helper + .md guide
+skills/imf-ra/country_group/        # country_group.csv (WEO country/group truth) + country_groups_helper.py helper + .md guide
 skills/imf-ra-error-report/SKILL.md # consent-based local failure-report skill (no scripts)
 .claude-plugin/                     # Claude Code plugin + marketplace manifests (one plugin: imf-ra-skills)
 scripts/                            # sync_skills.py (mirror skills/ into host dirs for local discovery)

@@ -29,12 +29,12 @@ Recommended chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-c
 
 Support side path: use `imf-ra-error-report` only when a user wants to report a visible RA-Skills failure. It is not part of the normal data workflow and does not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
 
-Reference truth lives in CSVs (`imf-ra-catalog/databases/`, `imf-ra-catalog/indicators/`, and the consolidated WEO country-group file at `imf-ra/Country Group/Country Group.csv`) so the agent answers from data rather than memory.
+Reference truth lives in CSVs (`imf-ra-catalog/databases/`, `imf-ra-catalog/indicators/`, and the consolidated WEO country-group file at `imf-ra/country_group/country_group.csv`) so the agent answers from data rather than memory.
 
 Key guardrails:
 
 - For catalog indicator/code discovery, source routing, exact code lookup, dimension discovery, database classification, and code comparison, the agent should use the relevant `imf-ra-catalog/scripts/catalog_search.py` command before writing temporary code. Direct CSV/Markdown inspection is still appropriate for exact one-row confirmation and curated guidance.
-- WEO country groups are resolved through the self-contained `imf-ra/Country Group/` folder: `weo_country_groups.md` for guidance, `Country Group.csv` for the unified reference matrix, and `weo_country_groups.py` for lookup/expansion commands.
+- WEO country groups are resolved through the self-contained `imf-ra/country_group/` folder: `country_groups_instruction.md` for guidance, `country_group.csv` for the unified reference matrix, and `country_groups_helper.py` for lookup/expansion commands.
 - WEO group/category columns such as `Advanced Economies(AE)` are for group lookup and membership mapping. They should not be used directly as iData country selectors; resolve groups to member `countrycode` values first unless dataset metadata confirms a supported aggregate code.
 - For EM/LIC/PRGT requests, the agent should clarify WEO vs SPR/PRGT coverage because the group definitions can differ.
 - Error reports are local and consent-based: use `imf-ra-error-report` only after a user-visible failure, and write reports to `tests/user_error_report/` in the structured JSON format defined by the skill.
@@ -122,7 +122,7 @@ Behavioral test pack: [`tests/auto_test_cases.yaml`](tests/auto_test_cases.yaml)
 RA-Skills/
 ├── skills/                  # CANONICAL source of truth (one folder per skill)
 │   ├── imf-ra/              # umbrella + shared conventions
-│   │   └── Country Group/   # unified WEO country-group CSV, guide, and helper
+│   │   └── country_group/   # unified WEO country-group CSV, guide, and helper
 │   ├── imf-ra-catalog/      # database / variable-code discovery
 │   ├── imf-ra-data/         # SDK-based data fetch
 │   ├── imf-ra-charts/       # chart handoff (scaffold)
