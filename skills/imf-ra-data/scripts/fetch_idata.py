@@ -39,41 +39,29 @@ Output formats (--format required for fetch):
                Use --excel for .xlsx; omit for .csv.
 
 Examples:
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
 
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "IMF.RES.WEO:WEO_LIVE" --dimension-values FREQUENCY
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values FREQUENCY
 
   # WEO uses ISO3 codes for COUNTRY; WDI uses REF_AREA with region labels — use the
   # appropriate dimension name and keyword style for the database.
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "USA"
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "USA"
 
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "WB:WDI" --dimension-values REF_AREA --keyword "Africa"
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "WB:WDI" --dimension-values REF_AREA --keyword "Africa"
 
   # Single indicator, multi-country → refreshable produces wide layout (dates as columns)
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE" --key "USA+GBR.NGDP_RPCH..A" \\
-      --start 2000 --end 2026 --format refreshable
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE" --key "USA+GBR.NGDP_RPCH..A" --start 2000 --end 2026 --format refreshable
 
   # Bloomberg (no country dim, single series)
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "IMF.CSF:BBGDL" --key "JPAYIELD_INDEX.PX_LAST.D" \\
-      --start 2015 --end 2026 --format refreshable --indicator-dim TICKER
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.CSF:BBGDL" --key "JPAYIELD_INDEX.PX_LAST.D" --start 2015 --end 2026 --format refreshable --indicator-dim TICKER
 
   # WDI — indicator dim is SERIES
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "WB:WDI" --key "A.AG_CON_FERT_PT_ZS.AFE" \\
-      --start 2000 --end 2023 --format refreshable --indicator-dim SERIES
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "WB:WDI" --key "A.AG_CON_FERT_PT_ZS.AFE" --start 2000 --end 2023 --format refreshable --indicator-dim SERIES
 
   # Multi-indicator → refreshable produces long layout (one row per observation)
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "IMF.RES.WEO:WEO_LIVE" --key "USA.NGDP_RPCH+NGDP_D.A" \\
-      --start 2000 --end 2026 --format refreshable
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA.NGDP_RPCH+NGDP_D.A" --start 2000 --end 2026 --format refreshable
 
-  python .claude/skills/imf-ra-data/scripts/fetch_idata.py \\
-      --db "IMF.STA:CPI" --key "USA+JPN.CPI._T.IX.M" --start 2010 --end 2026 --format long
+  python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.STA:CPI" --key "USA+JPN.CPI._T.IX.M" --start 2010 --end 2026 --format long
 
 Key format notes:
   Dot-separated dimension values in the order shown by --explore.
@@ -82,6 +70,7 @@ Key format notes:
 """
 
 import argparse
+import os
 import re
 import sys
 import time
@@ -97,10 +86,31 @@ SCALE_LABELS = {0: "Units", 3: "Thousands", 6: "Millions", 9: "Billions"}
 # Safe to leave on for public databases as well.
 idata_utilities.PRIVATE = True
 
-# Country lookup: lives in the imf-ra skill, two levels up from here
-COUNTRIES_CSV = (
-    Path(__file__).parents[2] / "imf-ra" / "Country Group" / "Country Group.csv"
-)
+# Country lookup lives in the sibling imf-ra skill. Resolve it robustly so the
+# data tier still works when skills are co-located (canonical skills/ layout or a
+# mirrored dir) or installed individually into a global skills dir.
+_COUNTRY_GROUP_REL = Path("imf-ra") / "Country Group" / "Country Group.csv"
+
+
+def _resolve_countries_csv() -> Path:
+    """Locate the WEO Country Group CSV across layouts.
+
+    Order: RA_SKILLS_HOME env var (skills-root override for global installs),
+    then an upward search for imf-ra/Country Group/Country Group.csv beside any
+    ancestor of this script, then the canonical sibling-skill fallback.
+    """
+    env = os.environ.get("RA_SKILLS_HOME")
+    if env:
+        return Path(env).expanduser() / _COUNTRY_GROUP_REL
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        candidate = parent / _COUNTRY_GROUP_REL
+        if candidate.exists():
+            return candidate
+    return here.parents[2] / _COUNTRY_GROUP_REL
+
+
+COUNTRIES_CSV = _resolve_countries_csv()
 
 # Candidate column names for the COUNTRY dimension (tried in order)
 _COUNTRY_DIMS = ("COUNTRY", "country", "GEO", "geo", "REF_AREA", "COUNTERPART_AREA")

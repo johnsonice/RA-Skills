@@ -239,6 +239,11 @@ temp/
 .claude/settings.local.json
 .claude/worktrees/
 
+# Generated skill mirrors for local multi-host discovery (source of truth is skills/).
+# Produced by scripts/sync_skills.py — never edit or commit these.
+.claude/skills/
+.agents/skills/
+
 # ppt-master local project workspace (intermediate SVGs, exports, backups)
 projects/
 

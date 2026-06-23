@@ -48,7 +48,7 @@ A 10-slide brief feeding the ppt-master skill. Audience is mixed (RAs, technical
 **Takeaway:** A family of project-local Claude Code skills for IMF Research Assistants — plain English in, real iData out.
 
 **Bullets:**
-- Lives under `.claude/skills/` in the analyst's repo. **Project-local**, not a global install — auto-loaded only inside RA-Skills.
+- Lives under `skills/` in the analyst's repo. **Project-local**, not a global install — auto-loaded only inside RA-Skills.
 - Built on Anthropic Claude Code + Claude Skills. No new app to learn; the analyst's existing Claude Code becomes the workspace.
 - **Input:** natural language. *"Pull WEO real GDP growth for advanced economies, 2010–present."*
 - **Output:** a refreshable Excel, a wide/long CSV, or (soon) a chart — produced by the agent, sitting in the analyst's working directory.
