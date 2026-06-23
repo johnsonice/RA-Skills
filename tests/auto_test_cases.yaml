@@ -67,10 +67,10 @@ cases:
 '
   evidence_sources:
     required_files:
-    - "skills/imf-ra/Country Group/weo_country_groups.md"
-    - "skills/imf-ra/Country Group/Country Group.csv"
+    - "skills/imf-ra/country_group/country_groups_instruction.md"
+    - "skills/imf-ra/country_group/country_group.csv"
     optional_commands:
-    - python "skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
+    - python skills/imf-ra/country_group/country_groups_helper.py members "Advanced Economies(AE)"
   assertions:
     required:
     - use_weo_group_reference
@@ -89,10 +89,10 @@ cases:
 '
   evidence_sources:
     required_files:
-    - "skills/imf-ra/Country Group/weo_country_groups.md"
-    - "skills/imf-ra/Country Group/Country Group.csv"
+    - "skills/imf-ra/country_group/country_groups_instruction.md"
+    - "skills/imf-ra/country_group/country_group.csv"
     optional_commands:
-    - python "skills/imf-ra/Country Group/weo_country_groups.py" explain EMDE
+    - python skills/imf-ra/country_group/country_groups_helper.py explain EMDE
   expected_outputs:
     weo_group_column: Emerging Market and Developing Economies(EMDE)
     spr_prgt_group_columns:
@@ -395,10 +395,10 @@ cases:
     required_files:
     - "skills/imf-ra/SKILL.md"
     - "skills/imf-ra-catalog/SKILL.md"
-    - "skills/imf-ra/Country Group/weo_country_groups.md"
+    - "skills/imf-ra/country_group/country_groups_instruction.md"
     required_commands:
     - python skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
-    - python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+    - python skills/imf-ra/country_group/country_groups_helper.py expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_outputs:
     database: IMF.RES.WEO:WEO_LIVE
     dimension_name: INDICATOR
@@ -412,7 +412,7 @@ cases:
       stdout_contains:
       - '"code": "NGDP_RPCH"'
       - '"database": "IMF.RES.WEO:WEO_LIVE"'
-    - command: python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+    - command: python skills/imf-ra/country_group/country_groups_helper.py expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
       stdout_contains:
       - AFG
       - CHN
@@ -714,8 +714,8 @@ cases:
   evidence_sources:
     required_files:
     - "skills/imf-ra/SKILL.md"
-    - "skills/imf-ra/Country Group/weo_country_groups.md"
-    - "skills/imf-ra/Country Group/Country Group.csv"
+    - "skills/imf-ra/country_group/country_groups_instruction.md"
+    - "skills/imf-ra/country_group/country_group.csv"
   assertions:
     required:
     - ask_group_definition_clarification
@@ -735,8 +735,8 @@ cases:
   evidence_sources:
     required_files:
     - "skills/imf-ra/SKILL.md"
-    - "skills/imf-ra/Country Group/weo_country_groups.md"
-    - "skills/imf-ra/Country Group/Country Group.csv"
+    - "skills/imf-ra/country_group/country_groups_instruction.md"
+    - "skills/imf-ra/country_group/country_group.csv"
   expected_outputs:
     group_column: Advanced Economies(AE)
   assertions:
@@ -758,10 +758,10 @@ cases:
   evidence_sources:
     required_files:
     - "skills/imf-ra/SKILL.md"
-    - "skills/imf-ra/Country Group/weo_country_groups.md"
-    - "skills/imf-ra/Country Group/Country Group.csv"
+    - "skills/imf-ra/country_group/country_groups_instruction.md"
+    - "skills/imf-ra/country_group/country_group.csv"
     optional_commands:
-    - python "skills/imf-ra/Country Group/weo_country_groups.py" resolve Congo
+    - python skills/imf-ra/country_group/country_groups_helper.py resolve Congo
   expected_outputs:
     candidates:
     - COG
@@ -788,10 +788,10 @@ cases:
   evidence_sources:
     required_files:
     - "skills/imf-ra/SKILL.md"
-    - "skills/imf-ra/Country Group/weo_country_groups.md"
-    - "skills/imf-ra/Country Group/Country Group.csv"
+    - "skills/imf-ra/country_group/country_groups_instruction.md"
+    - "skills/imf-ra/country_group/country_group.csv"
     optional_commands:
-    - python "skills/imf-ra/Country Group/weo_country_groups.py" compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
+    - python skills/imf-ra/country_group/country_groups_helper.py compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
   expected_outputs:
     weo_group_column: Low-Income Developing Countries (LIDC)
     spr_prgt_group_column: SPR-Low-Income Developing Countries (LIC)
@@ -1010,7 +1010,7 @@ cases:
     required_files:
     - "skills/imf-ra/SKILL.md"
     - "skills/imf-ra-data/SKILL.md"
-    - "skills/imf-ra/Country Group/Country Group.csv"
+    - "skills/imf-ra/country_group/country_group.csv"
     optional_commands:
     - python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
   machine_checks:
@@ -1049,7 +1049,7 @@ cases:
     - "skills/imf-ra-catalog/SKILL.md"
     - "skills/imf-ra-data/SKILL.md"
     - "skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
-    - "skills/imf-ra/Country Group/Country Group.csv"
+    - "skills/imf-ra/country_group/country_group.csv"
     optional_commands:
     - python skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
     - python skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan" --database IMF.STA:ER
@@ -1129,7 +1129,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: WEO iData handoff expansion
-  command: python "skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+  command: python skills/imf-ra/country_group/country_groups_helper.py expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_exit_codes:
   - 0
   expected_behavior: 'Expands EMDE to comma-separated WEO member countrycode values suitable for iData country selection, rather than returning the group/category column alone.

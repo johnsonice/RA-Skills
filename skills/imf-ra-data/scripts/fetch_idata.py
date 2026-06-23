@@ -89,14 +89,14 @@ idata_utilities.PRIVATE = True
 # Country lookup lives in the sibling imf-ra skill. Resolve it robustly so the
 # data tier still works when skills are co-located (canonical skills/ layout or a
 # mirrored dir) or installed individually into a global skills dir.
-_COUNTRY_GROUP_REL = Path("imf-ra") / "Country Group" / "Country Group.csv"
+_COUNTRY_GROUP_REL = Path("imf-ra") / "country_group" / "country_group.csv"
 
 
 def _resolve_countries_csv() -> Path:
     """Locate the WEO Country Group CSV across layouts.
 
     Order: RA_SKILLS_HOME env var (skills-root override for global installs),
-    then an upward search for imf-ra/Country Group/Country Group.csv beside any
+    then an upward search for imf-ra/country_group/country_group.csv beside any
     ancestor of this script, then the canonical sibling-skill fallback.
     """
     env = os.environ.get("RA_SKILLS_HOME")

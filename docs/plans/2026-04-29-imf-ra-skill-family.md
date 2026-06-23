@@ -1,6 +1,6 @@
 # IMF RA Skill Family Implementation Plan
 
-> **Historical scaffold plan.** This plan records the original April 2026 global-skill scaffold and is no longer the current implementation reference. The live repo now uses project-local `.claude/skills/`, CSV-backed catalog references, `catalog_search.py` helper modules, `fetch_idata.py`, and the consolidated `imf-ra/Country Group/` folder. Use `README.md`, `CLAUDE.md`, and `docs/specs/2026-04-29-imf-ra-skill-family-design.md` for the current layout.
+> **Historical scaffold plan.** This plan records the original April 2026 global-skill scaffold and is no longer the current implementation reference. The live repo now uses project-local `.claude/skills/`, CSV-backed catalog references, `catalog_search.py` helper modules, `fetch_idata.py`, and the consolidated `imf-ra/country_group/` folder. Use `README.md`, `CLAUDE.md`, and `docs/specs/2026-04-29-imf-ra-skill-family-design.md` for the current layout.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
