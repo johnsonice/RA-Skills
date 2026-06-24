@@ -1,7 +1,7 @@
 <h1 align="center">RA-Skills</h1>
 
 <p align="center">
-  <a href="https://docs.claude.com/en/docs/claude-code">Claude Code</a> skills for IMF Research Assistant workflows — natural-language data discovery, country/group resolution, retrieval, chart handoff, and local error reporting.
+  Cross-platform <a href="https://docs.claude.com/en/docs/claude-code">Agent Skills</a> for IMF Research Assistant workflows — natural-language data discovery, country/group resolution, retrieval, chart handoff, and local error reporting. Installs on GitHub Copilot (CLI &amp; cloud agent, incl. Windows), Claude Code, and other Agent Skills hosts.
 </p>
 
 <p align="center">
@@ -29,12 +29,12 @@ Recommended chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-c
 
 Support side path: use `imf-ra-error-report` only when a user wants to report a visible RA-Skills failure. It is not part of the normal data workflow and does not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
 
-Reference truth lives in CSVs (`imf-ra-catalog/databases/`, `imf-ra-catalog/indicators/`, and the consolidated WEO country-group file at `imf-ra/Country Group/Country Group.csv`) so the agent answers from data rather than memory.
+Reference truth lives in CSVs (`imf-ra-catalog/databases/`, `imf-ra-catalog/indicators/`, and the consolidated WEO country-group file at `imf-ra/country_group/country_group.csv`) so the agent answers from data rather than memory.
 
 Key guardrails:
 
 - For catalog indicator/code discovery, source routing, exact code lookup, dimension discovery, database classification, and code comparison, the agent should use the relevant `imf-ra-catalog/scripts/catalog_search.py` command before writing temporary code. Direct CSV/Markdown inspection is still appropriate for exact one-row confirmation and curated guidance.
-- WEO country groups are resolved through the self-contained `imf-ra/Country Group/` folder: `weo_country_groups.md` for guidance, `Country Group.csv` for the unified reference matrix, and `weo_country_groups.py` for lookup/expansion commands.
+- WEO country groups are resolved through the self-contained `imf-ra/country_group/` folder: `country_groups_instruction.md` for guidance, `country_group.csv` for the unified reference matrix, and `country_groups_helper.py` for lookup/expansion commands.
 - WEO group/category columns such as `Advanced Economies(AE)` are for group lookup and membership mapping. They should not be used directly as iData country selectors; resolve groups to member `countrycode` values first unless dataset metadata confirms a supported aggregate code.
 - For EM/LIC/PRGT requests, the agent should clarify WEO vs SPR/PRGT coverage because the group definitions can differ.
 - Error reports are local and consent-based: use `imf-ra-error-report` only after a user-visible failure, and write reports to `tests/user_error_report/` in the structured JSON format defined by the skill.
@@ -58,15 +58,61 @@ More patterns live in the YAML-first auto-test pack:
 [`tests/auto_test_cases.yaml`](tests/auto_test_cases.yaml) is the machine-readable source of truth, and
 [`tests/auto_test_instructions.md`](tests/auto_test_instructions.md) is the reviewer-facing catalog.
 
-## Quick start
+## Install
+
+RA-Skills uses the open **Agent Skills** format; the canonical source is the top-level `skills/` directory.
+
+### Quickest: ask your agent
+
+Send this to your coding agent (GitHub Copilot, Claude Code, Codex, …) — it will read the steps below and pick the right one for its environment:
+
+> Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment.
+
+### Install manually
+
+**GitHub Copilot** (CLI or cloud agent, incl. Windows) — install into your personal skills dir with GitHub CLI ≥ 2.90:
 
 ```bash
-git clone git@github.com:johnsonice/RA-Skills.git   # or HTTPS: https://github.com/johnsonice/RA-Skills.git
-cd RA-Skills
-claude   # or open Claude Code with cwd = this repo
+gh skills install johnsonice/RA-Skills imf-ra-catalog
+# repeat for imf-ra, imf-ra-data, imf-ra-charts, imf-ra-error-report as needed
+# (the subcommand is `gh skill` on some CLI versions — see GitHub's "Adding agent skills" docs)
 ```
 
-Skills live under `.claude/skills/` and are **project-local** — Claude Code auto-loads them only when working in this repo. Nothing is installed globally.
+Manual alternative (no extra CLI): copy the skill folder(s) from `skills/` into `~/.copilot/skills/` (or `~/.agents/skills/`).
+
+**Claude Code** — install the whole family as one plugin:
+
+```text
+/plugin marketplace add johnsonice/RA-Skills
+/plugin install imf-ra-skills
+```
+
+**Any Agent Skills host** (`skills.sh`):
+
+```bash
+npx skills add johnsonice/RA-Skills
+```
+
+**Local development** — clone and work in-repo on any host:
+
+```bash
+git clone https://github.com/johnsonice/RA-Skills.git
+cd RA-Skills
+python scripts/sync_skills.py   # mirror skills/ into .claude/skills + .agents/skills for discovery
+claude                           # or open Copilot CLI / Codex with cwd = this repo
+```
+
+> Commands use `python`; if your machine only has `python3`, use that instead. For a global install that needs the Haver data tier, point `HAVER_DB_PATH` at your `haver.db`.
+
+### Dependency tiers
+
+| Tier | Commands | Needs | Runs where |
+|---|---|---|---|
+| **Catalog** | discovery, WEO groups | Python 3.9+ (stdlib + bundled CSVs) | anywhere — laptops, CI, cloud, off-network |
+| **Data – iData** | `fetch_idata.py` | internal `imf_datatools` SDK + pandas | IMF-managed Windows / cloud |
+| **Data – Haver** | `fetch_haver.py` | `haver.db` (+ pandas) | IMF machines with Haver access |
+
+The catalog tier works everywhere; the data tiers require IMF-internal infrastructure. See [AGENTS.md](AGENTS.md) → *Dependencies & environments*.
 
 Behavioral test pack: [`tests/auto_test_cases.yaml`](tests/auto_test_cases.yaml) defines prompts, fixtures, evidence files, and assertions for routing, catalog, data workflow, helper-contract, and end-to-end checks. [`tests/auto_test_instructions.md`](tests/auto_test_instructions.md) mirrors the same cases for human review. Run records and templates live under [`tests/results/`](tests/results/); issue notes live under [`tests/issue_tracking/`](tests/issue_tracking/).
 
@@ -74,15 +120,20 @@ Behavioral test pack: [`tests/auto_test_cases.yaml`](tests/auto_test_cases.yaml)
 
 ```
 RA-Skills/
-├── .claude/skills/
-│   ├── imf-ra/             # umbrella + shared conventions
-│   │   └── Country Group/  # unified WEO country-group CSV, guide, and helper
-│   ├── imf-ra-catalog/     # database / variable-code discovery
-│   ├── imf-ra-data/        # SDK-based data fetch
-│   ├── imf-ra-charts/      # chart handoff (scaffold)
+├── skills/                  # CANONICAL source of truth (one folder per skill)
+│   ├── imf-ra/              # umbrella + shared conventions
+│   │   └── country_group/   # unified WEO country-group CSV, guide, and helper
+│   ├── imf-ra-catalog/      # database / variable-code discovery
+│   ├── imf-ra-data/         # SDK-based data fetch
+│   ├── imf-ra-charts/       # chart handoff (scaffold)
 │   └── imf-ra-error-report/ # local consent-based failure reports
-├── docs/specs/             # design docs
-├── docs/plans/             # implementation history
-├── tests/                  # YAML auto-test cases, reviewer catalog, results, issue tracking
-└── CLAUDE.md               # agent conventions for this repo
+├── .claude-plugin/          # Claude Code plugin + marketplace manifests
+├── scripts/                 # sync_skills.py (local-discovery mirror)
+├── AGENTS.md                # cross-tool agent guidance (CLAUDE.md imports it)
+├── requirements.txt         # data-tier deps (pandas, openpyxl)
+├── docs/specs/              # design + distribution docs
+├── docs/plans/              # implementation history
+└── tests/                   # YAML auto-test cases, reviewer catalog, results, issue tracking
 ```
+
+The `.claude/skills/` and `.agents/skills/` directories are **generated mirrors** for local discovery (Claude Code / Copilot+Codex respectively) — produced by `scripts/sync_skills.py` and gitignored. Edit `skills/`, never the mirrors.

@@ -13,7 +13,7 @@ from typing import Iterable
 
 
 COUNTRY_GROUP_DIR = Path(__file__).resolve().parent
-DEFAULT_COUNTRY_GROUP_CSV = COUNTRY_GROUP_DIR / "Country Group.csv"
+DEFAULT_COUNTRY_GROUP_CSV = COUNTRY_GROUP_DIR / "country_group.csv"
 DEFAULT_CSV_DIR = DEFAULT_COUNTRY_GROUP_CSV
 COUNTRY_COLUMNS = ("countrycode", "countryname", "countrycode_s", "countryname_s", "department")
 
@@ -230,8 +230,8 @@ TERM_EXPLANATIONS = {
     },
     "g20": {
         "title": "G20",
-        "note": "The Country Group.csv G20 column is a country-row group with 19 countries. For official current G20 membership questions, distinguish it from the member-seat view of 19 countries plus the European Union and African Union.",
-        "groups": [("Country Group.csv", "G20")],
+        "note": "The country_group.csv G20 column is a country-row group with 19 countries. For official current G20 membership questions, distinguish it from the member-seat view of 19 countries plus the European Union and African Union.",
+        "groups": [("country_group.csv", "G20")],
     },
     "all imf economies": {
         "title": "IMF member countries scope",
@@ -282,7 +282,7 @@ TERM_EXPLANATIONS = {
 
 
 class CsvTables:
-    """Read the single Country Group.csv and expose logical lookup views."""
+    """Read the single country_group.csv and expose logical lookup views."""
 
     def __init__(self, country_group_csv: Path) -> None:
         self.country_group_csv = self._resolve_path(country_group_csv)
@@ -290,9 +290,9 @@ class CsvTables:
 
     @staticmethod
     def _resolve_path(path: Path) -> Path:
-        """Return the consolidated Country Group.csv path."""
+        """Return the consolidated country_group.csv path."""
         if path.is_dir():
-            candidates = [path / "Country Group.csv", path.parent / "Country Group.csv"]
+            candidates = [path / "country_group.csv", path.parent / "country_group.csv"]
             for candidate in candidates:
                 if candidate.exists():
                     return candidate
@@ -499,6 +499,9 @@ def cmd_countries(tables: CsvTables, args: argparse.Namespace) -> None:
 def cmd_members(tables: CsvTables, args: argparse.Namespace) -> None:
     """CLI handler for listing countries in one group."""
     rows = group_members(tables, args.group)
+    if args.codes_only:
+        print(",".join(row["countrycode"] for row in rows))
+        return
     write_rows(rows, ["group", "groupname", "countrycode", "countryname", "countrycode_s", "countryname_s"])
 
 
@@ -539,7 +542,7 @@ def cmd_resolve(tables: CsvTables, args: argparse.Namespace) -> None:
                 "kind": "group",
                 "identifier": row.get("group", ""),
                 "name": row.get("groupname", ""),
-                "note": "Country Group.csv column",
+                "note": "country_group.csv column",
             }
         )
     for row in resolve_country_rows(tables, args.query):
@@ -613,14 +616,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--csv-dir",
         type=Path,
         default=DEFAULT_CSV_DIR,
-        help="Path to the consolidated Country Group.csv file, or a directory containing it.",
+        help="Path to the consolidated country_group.csv file, or a directory containing it.",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser(
         "groups",
         help="Find group columns by name or alias.",
-        epilog='Example: weo_country_groups.py groups "advanced economies"',
+        epilog='Example: country_groups_helper.py groups "advanced economies"',
     )
     p.add_argument("query", nargs="?")
     p.set_defaults(func=cmd_groups)
@@ -628,7 +631,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser(
         "countries",
         help="Find country rows by code, name, alias, or department.",
-        epilog='Example: weo_country_groups.py countries "South Korea"',
+        epilog='Example: country_groups_helper.py countries "South Korea"',
     )
     p.add_argument("query", nargs="?")
     p.set_defaults(func=cmd_countries)
@@ -636,15 +639,16 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser(
         "members",
         help="List member countries for a WEO or SPR/PRGT group column.",
-        epilog='Example: weo_country_groups.py members "Advanced Economies(AE)"',
+        epilog='Example: country_groups_helper.py members "Advanced Economies(AE)"',
     )
     p.add_argument("group")
+    p.add_argument("--codes-only", action="store_true", help="Print only comma-separated countrycode values.")
     p.set_defaults(func=cmd_members)
 
     p = sub.add_parser(
         "memberships",
         help="List group columns that include a country.",
-        epilog="Example: weo_country_groups.py memberships USA",
+        epilog="Example: country_groups_helper.py memberships USA",
     )
     p.add_argument("country")
     p.set_defaults(func=cmd_memberships)
@@ -653,7 +657,7 @@ def build_parser() -> argparse.ArgumentParser:
         "resolve",
         help="Resolve an ambiguous term to matching countries and group columns.",
         description="Resolve a user term to country and group candidates before committing to a reference row/column.",
-        epilog="Example: weo_country_groups.py resolve Congo",
+        epilog="Example: country_groups_helper.py resolve Congo",
     )
     p.add_argument("query")
     p.set_defaults(func=cmd_resolve)
@@ -662,7 +666,7 @@ def build_parser() -> argparse.ArgumentParser:
         "expand-for-idata",
         help="Expand a group column to member country codes for iData handoff.",
         description="Expand a WEO or SPR/PRGT group column to member countrycode values.",
-        epilog='Example: weo_country_groups.py expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only',
+        epilog='Example: country_groups_helper.py expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only',
     )
     p.add_argument("group")
     p.add_argument("--codes-only", action="store_true", help="Print only comma-separated countrycode values.")
@@ -672,7 +676,7 @@ def build_parser() -> argparse.ArgumentParser:
         "compare",
         help="Compare membership of two WEO or SPR/PRGT group columns.",
         description="Return answer-ready membership counts, overlap, and only-in-each-group country rows.",
-        epilog='Example: weo_country_groups.py compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"',
+        epilog='Example: country_groups_helper.py compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"',
     )
     p.add_argument("group_a")
     p.add_argument("group_b")
@@ -682,7 +686,7 @@ def build_parser() -> argparse.ArgumentParser:
         "explain",
         help="Explain common RA shorthand such as AE, EM, EMDE, LIC, LIDC, G20, or IMF-member scope.",
         description="Explain common RA shorthand and show the relevant consolidated CSV group columns when applicable.",
-        epilog='Examples: weo_country_groups.py explain EM; weo_country_groups.py explain G20; weo_country_groups.py explain "IMF member countries"',
+        epilog='Examples: country_groups_helper.py explain EM; country_groups_helper.py explain G20; country_groups_helper.py explain "IMF member countries"',
     )
     p.add_argument("term")
     p.set_defaults(func=cmd_explain)

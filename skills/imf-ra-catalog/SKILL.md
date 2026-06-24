@@ -31,9 +31,9 @@ Before lookup, load shared RA conventions from the umbrella `imf-ra` skill when 
 
 For WEO regions, country groups, aggregates, and informal country names, normalize geography through the umbrella `imf-ra` country-group folder before selecting variables or handing off to `imf-ra-data`:
 
-- `imf-ra/Country Group/Country Group.csv` is the single consolidated country-group matrix.
-- `imf-ra/Country Group/weo_country_groups.md` explains the matrix layout, aliases, WEO vs SPR/PRGT caveats, and iData country-selector rules.
-- `imf-ra/Country Group/weo_country_groups.py` resolves country/group wording, expands groups to member `countrycode` values, and compares WEO vs SPR/PRGT framework coverage.
+- `imf-ra/country_group/country_group.csv` is the single consolidated country-group matrix.
+- `imf-ra/country_group/country_groups_instruction.md` explains the matrix layout, aliases, WEO vs SPR/PRGT caveats, and iData country-selector rules.
+- `imf-ra/country_group/country_groups_helper.py` resolves country/group wording, expands groups to member `countrycode` values, and compares WEO vs SPR/PRGT framework coverage.
 
 Catalog helpers still own dataset and indicator discovery only. They must not expand country groups, choose country membership, or use a group/category column as an iData country selector.
 
@@ -155,8 +155,7 @@ H1a. **Build target database list.** Read the Haver Analytics section of `databa
 H1b. **Search.** Choose ONE query string, then run a **single Bash call** covering all databases in the confirmed dblist using `--databases`. Do not issue separate Bash calls per database — each separate call triggers its own permission prompt.
 
 ```bash
-python .claude/skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py \
-  search "<query>" --databases DB1 DB2 DB3 ... --limit 300
+python skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search "<query>" --databases DB1 DB2 DB3 ... --limit 300
 ```
 
 The `--databases` flag is required (haver.db has 12M+ rows and unscoped searches are very slow). The output includes `aggtype` and `datatype` for every candidate.
@@ -292,7 +291,7 @@ Do not guess identifiers. Ask for clarification when:
 - Several variables match the same concept but differ by unit, transformation, valuation, or price basis.
 - Multiple databases plausibly cover the request and WEO Live is not clearly preferred.
 - Frequency is required but unclear or incompatible with the selected dataset.
-- The request implies a WEO group, panel, or region whose membership is unclear. Use `imf-ra/Country Group/weo_country_groups.py` for geography resolution or ask a framework/membership clarification before handoff.
+- The request implies a WEO group, panel, or region whose membership is unclear. Use `imf-ra/country_group/country_groups_helper.py` for geography resolution or ask a framework/membership clarification before handoff.
 - The user asks for a vintage but does not specify which vintage.
 
 When presenting **iData** alternatives, include:
@@ -345,7 +344,7 @@ If no useful match exists in any source, state the gap clearly and ask for one a
 
 Once the user confirms the identifier, hand off to `imf-ra-data`:
 
-- **iData:** pass `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints. If geography came from a WEO group/category, hand off member `countrycode` values from `imf-ra/Country Group/weo_country_groups.py`, not the group/category column name.
+- **iData:** pass `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints. If geography came from a WEO group/category, hand off member `countrycode` values from `imf-ra/country_group/country_groups_helper.py`, not the group/category column name.
 - **Haver:** see format below.
 
 **Haver handoff format:**

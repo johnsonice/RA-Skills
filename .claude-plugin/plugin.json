@@ -1,0 +1,12 @@
+{
+  "name": "imf-ra-skills",
+  "version": "1.0.0",
+  "description": "IMF Research Assistant skill family: natural-language catalog lookup, iData/Haver data fetch, chart handoff, and consent-based local error reporting. Bundles five Agent Skills (imf-ra, imf-ra-catalog, imf-ra-data, imf-ra-charts, imf-ra-error-report).",
+  "author": {
+    "name": "Chengyu Huang"
+  },
+  "homepage": "https://github.com/johnsonice/RA-Skills",
+  "repository": "https://github.com/johnsonice/RA-Skills",
+  "license": "MIT",
+  "keywords": ["imf", "research-assistant", "economic-data", "weo", "ifs", "haver", "catalog", "agent-skills"]
+}

@@ -28,7 +28,7 @@ The umbrella does not execute the full workflow by itself. Worker skills chain b
 
 ## Shared Operating Rules
 
-- Use reference CSVs as the source of truth for identifiers, codes, group membership, and catalog lookup. For WEO countries and groups, the single consolidated source is `Country Group/Country Group.csv`.
+- Use reference CSVs as the source of truth for identifiers, codes, group membership, and catalog lookup. For WEO countries and groups, the single consolidated source is `country_group/country_group.csv`.
 - Do not rely on memory for database IDs, indicator codes, WEO groups, country membership, or iData dimensions.
 - Do not guess when there is material uncertainty. List plausible candidates and ask for confirmation.
 - For straightforward questions that can be answered by direct file inspection, answer from the files without writing code.
@@ -51,11 +51,11 @@ This policy applies across `imf-ra-catalog`, WEO country/group helpers, `imf-ra-
 
 ## WEO Country And Group Conventions
 
-For WEO countries, WEO country groups, WEO aggregates, WEO regions, and informal RA group names, use the self-contained `Country Group/` folder:
+For WEO countries, WEO country groups, WEO aggregates, WEO regions, and informal RA group names, use the self-contained `country_group/` folder:
 
-- `Country Group/Country Group.csv` is the single consolidated country-group matrix and source of truth.
-- `Country Group/weo_country_groups.md` explains the matrix layout, aliases, EM/LIC/PRGT caveats, helper command map, and iData country-selector rules.
-- `Country Group/weo_country_groups.py` is the helper for country/group resolution, membership expansion, framework comparison, and iData-ready country-code handoff.
+- `country_group/country_group.csv` is the single consolidated country-group matrix and source of truth.
+- `country_group/country_groups_instruction.md` explains the matrix layout, aliases, EM/LIC/PRGT caveats, helper command map, and iData country-selector rules.
+- `country_group/country_groups_helper.py` is the helper for country/group resolution, membership expansion, framework comparison, and iData-ready country-code handoff.
 
 For WEO country/group tasks involving ambiguity, membership expansion, comparison, or iData handoff, open the WEO reference and use its helper command map before writing temporary code.
 

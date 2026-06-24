@@ -66,15 +66,25 @@ df = idata_utilities.get_idata_data("IMF.STA:CPI", key=key, start="2000", end="2
 
 # 1. Installation and environment
 
-## 1.1 Workstation installation
+> **Tier note.** `imf_datatools` is the **internal IMF SDK** required only by the data tier
+> (`fetch_idata.py` / `fetch_haver.py`). It is **not** pip-installable and is reachable only
+> from IMF-managed Windows workstations / cloud agents with access to the internal network
+> share below. The **catalog** tier (`catalog_search.py`, WEO group helpers) and Haver
+> *metadata* lookups need none of this — they run anywhere with Python 3.9+.
+> Off-network / non-IMF: skip this section — the catalog tier and Haver metadata
+> lookups need none of it.
 
-Install or update the Python library from Command Prompt:
+## 1.1 Workstation installation (IMF Windows only)
+
+The installer lives on an internal Windows network share (UNC path); it is unreachable
+off the IMF network and has no macOS/Linux equivalent. From a Windows Command Prompt /
+PowerShell on an IMF-managed machine:
 
 ```powershell
 python \\ecnswn12p\ems_shared\pub\datatools\installer.py
 ```
 
-Test installation:
+Test installation (any OS, once the SDK is present):
 
 ```python
 import imf_datatools
@@ -194,7 +204,7 @@ from imf_datatools import idata_utilities
 idata_utilities.PRIVATE = True
 ```
 
-The pre-built fetch utility (`.claude/skills/imf-ra-data/scripts/fetch_idata.py`) sets this flag automatically. For any other non-public dataset, set the same flag. The flag is harmless for public datasets and can remain set throughout the session.
+The pre-built fetch utility (`skills/imf-ra-data/scripts/fetch_idata.py`) sets this flag automatically. For any other non-public dataset, set the same flag. The flag is harmless for public datasets and can remain set throughout the session.
 
 This triggers browser-based token acquisition when needed. Tokens expire and may need refresh. For R:
 
