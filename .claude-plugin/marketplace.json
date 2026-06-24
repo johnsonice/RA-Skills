@@ -1,0 +1,14 @@
+{
+  "name": "ra-skills",
+  "owner": {
+    "name": "Chengyu Huang"
+  },
+  "plugins": [
+    {
+      "name": "imf-ra-skills",
+      "source": "./",
+      "description": "IMF Research Assistant skill family: catalog lookup, iData/Haver data fetch, chart handoff, and consent-based error reporting (five Agent Skills).",
+      "version": "1.0.0"
+    }
+  ]
+}

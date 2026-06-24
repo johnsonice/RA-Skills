@@ -1,0 +1,15 @@
+# Python dependencies for the RA-Skills data tier.
+#
+# The CATALOG tier (skills/imf-ra-catalog) and the WEO country-group helpers use
+# only the Python 3.9+ standard library plus the CSVs bundled in this repo — they
+# need NOTHING from this file and run anywhere.
+#
+# The DATA tier (skills/imf-ra-data: fetch_idata.py / fetch_haver.py) needs:
+pandas>=1.3
+openpyxl>=3.0      # Excel (.xlsx) engine used by the refreshable / --excel output paths
+#
+# NOT pip-installable — install separately on an IMF-managed machine:
+#   imf_datatools   internal IMF SDK; see
+#                   skills/imf-ra-data/references/imf_datatools_agent_api_reference.md (section 1.1)
+#
+# See AGENTS.md (Dependencies & environments) for which tiers run where.

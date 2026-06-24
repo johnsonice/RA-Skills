@@ -7,36 +7,16 @@ categories:
 - weo_group_helper_behavior
 - data_workflow_guardrails
 - command_contracts
+- error_handling
+- integration_failure
+- output_formats
+- error_reporting
 types:
 - single_turn
 - fixture_based
 - multi_step
 - command_contract
 cases:
-- id: SMOKE-01
-  category: core_behavior_pipeline
-  type: single_turn
-  prompt: Pull WEO real GDP growth for advanced economies, 2010-present.
-  expected_primary_skill: imf-ra-data
-  expected_behavior: 'Treats this as a direct fetch request, not a broad discovery question.
-
-'
-  evidence_sources:
-    required_files:
-    - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra-data/SKILL.md"
-    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
-    optional_commands:
-    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "real GDP growth"
-  assertions:
-    required:
-    - start_data_retrieval_flow
-    - preserve_direct_fetch_intent
-    - identify_missing_fetch_inputs
-    forbidden:
-    - treat_as_broad_orientation
-    - invent_identifier
-    - fetch_without_output_format
 - id: SMOKE-02
   category: core_behavior_pipeline
   type: single_turn
@@ -67,10 +47,10 @@ cases:
 '
   evidence_sources:
     required_files:
-    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
+    - ".claude/skills/imf-ra/country_group/country_groups_instruction.md"
+    - ".claude/skills/imf-ra/country_group/country_group.csv"
     optional_commands:
-    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" members "Advanced Economies(AE)"
+    - python3 ".claude/skills/imf-ra/country_group/country_groups_helper.py" members "Advanced Economies(AE)"
   assertions:
     required:
     - use_weo_group_reference
@@ -78,40 +58,10 @@ cases:
     forbidden:
     - write_new_script
     - guess_group_membership
-- id: CONV-02
-  category: weo_group_helper_behavior
-  type: single_turn
-  area: Country-group translation
-  prompt: For IMF purposes, what does EMDE mean here?
-  expected_primary_skill: imf-ra
-  expected_behavior: 'Uses the WEO group reference instead of guessing from memory, but treats "IMF purposes" as framework-ambiguous because both WEO and SPR/PRGT are IMF frameworks. The agent should explain that WEO EMDE maps to Emerging Market and Developing Economies(EMDE), SPR/PRGT EMDE is represented by SPR-Emerging Market and Middle-Income Economies(EM) plus SPR-Low-Income Developing Countries (LIC), and ask the user to choose WEO or SPR/PRGT before committing to a group.
-
-'
-  evidence_sources:
-    required_files:
-    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
-    optional_commands:
-    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" explain EMDE
-  expected_outputs:
-    weo_group_column: Emerging Market and Developing Economies(EMDE)
-    spr_prgt_group_columns:
-    - SPR-Emerging Market and Middle-Income Economies(EM)
-    - SPR-Low-Income Developing Countries (LIC)
-  assertions:
-    required:
-    - use_weo_group_reference
-    - include_group_column_Emerging Market and Developing Economies(EMDE)
-    - include_spr_prgt_group_columns
-    - ask_framework_clarification
-    forbidden:
-    - answer_from_memory_only
-    - invent_group_definition
-    - commit_to_weo_without_framework_confirmation
 - id: CONV-03
-  category: core_behavior_pipeline
+  category: catalog_helper_behavior
   type: single_turn
-  area: Uncertainty policy
+  area: Ambiguity gating
   prompt: Get me the IMF inflation series.
   expected_primary_skill: imf-ra
   expected_behavior: 'Does not guess; asks a clarifying question because multiple plausible indicators or databases exist.
@@ -383,7 +333,7 @@ cases:
     - ask_which_vintage_when_explicit
     - write_temporary_vintage_mapping_code
 - id: HPIPE-07
-  category: weo_group_helper_behavior
+  category: integration_failure
   type: multi_step
   area: Catalog plus country-group helper composition
   prompt: Prepare WEO real GDP growth for EMDEs, 2010-2024, for an iData pull.
@@ -395,10 +345,10 @@ cases:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
     - ".claude/skills/imf-ra-catalog/SKILL.md"
-    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
+    - ".claude/skills/imf-ra/country_group/country_groups_instruction.md"
     required_commands:
     - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json
-    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+    - python3 ".claude/skills/imf-ra/country_group/country_groups_helper.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_outputs:
     database: IMF.RES.WEO:WEO_LIVE
     dimension_name: INDICATOR
@@ -412,7 +362,7 @@ cases:
       stdout_contains:
       - '"code": "NGDP_RPCH"'
       - '"database": "IMF.RES.WEO:WEO_LIVE"'
-    - command: python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+    - command: python3 ".claude/skills/imf-ra/country_group/country_groups_helper.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
       stdout_contains:
       - AFG
       - CHN
@@ -714,8 +664,8 @@ cases:
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
+    - ".claude/skills/imf-ra/country_group/country_groups_instruction.md"
+    - ".claude/skills/imf-ra/country_group/country_group.csv"
   assertions:
     required:
     - ask_group_definition_clarification
@@ -735,8 +685,8 @@ cases:
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
+    - ".claude/skills/imf-ra/country_group/country_groups_instruction.md"
+    - ".claude/skills/imf-ra/country_group/country_group.csv"
   expected_outputs:
     group_column: Advanced Economies(AE)
   assertions:
@@ -758,10 +708,10 @@ cases:
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
+    - ".claude/skills/imf-ra/country_group/country_groups_instruction.md"
+    - ".claude/skills/imf-ra/country_group/country_group.csv"
     optional_commands:
-    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" resolve Congo
+    - python3 ".claude/skills/imf-ra/country_group/country_groups_helper.py" resolve Congo
   expected_outputs:
     candidates:
     - COG
@@ -788,10 +738,10 @@ cases:
   evidence_sources:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
-    - ".claude/skills/imf-ra/Country Group/weo_country_groups.md"
-    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
+    - ".claude/skills/imf-ra/country_group/country_groups_instruction.md"
+    - ".claude/skills/imf-ra/country_group/country_group.csv"
     optional_commands:
-    - python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
+    - python3 ".claude/skills/imf-ra/country_group/country_groups_helper.py" compare "Low-Income Developing Countries (LIDC)" "SPR-Low-Income Developing Countries (LIC)"
   expected_outputs:
     weo_group_column: Low-Income Developing Countries (LIDC)
     spr_prgt_group_column: SPR-Low-Income Developing Countries (LIC)
@@ -832,32 +782,6 @@ cases:
     forbidden:
     - choose_latest_vintage_without_confirmation
     - substitute_live_database
-- id: VINTAGE-02
-  category: catalog_helper_behavior
-  type: single_turn
-  area: Latest live versus latest vintage
-  prompt: Use the latest WEO data for nominal GDP.
-  expected_primary_skill: imf-ra-catalog
-  expected_behavior: 'Treats latest WEO data as WEO Live by default or clarifies if the user means latest historical vintage, without silently substituting a dated vintage.
-
-'
-  evidence_sources:
-    required_files:
-    - ".claude/skills/imf-ra-catalog/SKILL.md"
-    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
-    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
-    - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
-    optional_commands:
-    - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "latest WEO data nominal GDP" --json
-  expected_outputs:
-    database: IMF.RES.WEO:WEO_LIVE
-  assertions:
-    required:
-    - prefer_weo_live_or_clarify_latest_vintage
-    - preserve_nominal_gdp_intent
-    forbidden:
-    - silently_choose_dated_vintage
-    - invent_identifier
 - id: VINTAGE-04
   category: catalog_helper_behavior
   type: single_turn
@@ -1010,7 +934,7 @@ cases:
     required_files:
     - ".claude/skills/imf-ra/SKILL.md"
     - ".claude/skills/imf-ra-data/SKILL.md"
-    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
+    - ".claude/skills/imf-ra/country_group/country_group.csv"
     optional_commands:
     - python3 .claude/skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "Atlantis"
   machine_checks:
@@ -1035,7 +959,7 @@ cases:
     - invent_country_code_for_atlantis
     - fetch_with_unvalidated_dimension_value
 - id: E2E-01
-  category: core_behavior_pipeline
+  category: integration_failure
   type: multi_step
   area: Discovery to fetch
   prompt: Find the correct IMF series for monthly exchange rates for Japan, then download it for 2018-2024 in long CSV format.
@@ -1049,7 +973,7 @@ cases:
     - ".claude/skills/imf-ra-catalog/SKILL.md"
     - ".claude/skills/imf-ra-data/SKILL.md"
     - ".claude/skills/imf-ra-catalog/indicators/1. non_vintage_variable_list.csv"
-    - ".claude/skills/imf-ra/Country Group/Country Group.csv"
+    - ".claude/skills/imf-ra/country_group/country_group.csv"
     optional_commands:
     - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "monthly exchange rate Japan" --json
     - python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py search "monthly exchange rate Japan" --database IMF.STA:ER
@@ -1079,7 +1003,7 @@ cases:
     - drop_output_format
     - invent_identifier
 - id: E2E-02
-  category: core_behavior_pipeline
+  category: integration_failure
   type: multi_step
   area: Catalog boundary before fetch
   prompt: Find the code for real GDP growth and download it immediately.
@@ -1129,7 +1053,7 @@ cases:
   category: command_contracts
   type: command_contract
   area: WEO iData handoff expansion
-  command: python3 ".claude/skills/imf-ra/Country Group/weo_country_groups.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
+  command: python3 ".claude/skills/imf-ra/country_group/country_groups_helper.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_exit_codes:
   - 0
   expected_behavior: 'Expands EMDE to comma-separated WEO member countrycode values suitable for iData country selection, rather than returning the group/category column alone.
@@ -1319,3 +1243,333 @@ cases:
     - catalog_search_preserves_public_helper_exports
     forbidden:
     - catalog_split_breaks_import_compatibility
+- id: ERR-01
+  category: error_handling
+  type: single_turn
+  area: Network timeout handling
+  prompt: Pull WEO data but simulate a network timeout during fetch. How does the agent handle this?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Treats network timeout as transient_retry. Retries the fetch automatically with brief explanation, then after 3 failed attempts, offers to create an error report for the development team. Follows imf-ra-error-report classification: transient_retry → no immediate report, transient_exhausted → offer report.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-error-report/SKILL.md"
+  assertions:
+    required:
+    - classify_as_transient_retry
+    - retry_automatically_up_to_3_times
+    - offer_error_report_after_exhausted_retries
+    - suggest_user_friendly_workaround
+    forbidden:
+    - fail_silently
+    - give_up_on_first_timeout
+    - create_report_without_consent
+- id: ERR-02
+  category: error_handling
+  type: single_turn
+  area: Database corruption detection
+  prompt: Fetch WEO data but the database returns corrupted or inconsistent records. How should the agent respond?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Classifies as database_corruption (high severity). Immediately offers to create an error report for the development team after explaining the symptom. Does not retry. Suggests manual data verification or alternative vintage/database if available.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-error-report/SKILL.md"
+  assertions:
+    required:
+    - detect_data_inconsistency
+    - classify_as_database_corruption
+    - offer_error_report_immediately
+    - suggest_alternative_source_or_vintage
+    - ask_for_consent_before_reporting
+    forbidden:
+    - return_corrupted_data
+    - retry_corrupted_fetch
+    - create_report_without_consent
+- id: ERR-03
+  category: error_handling
+  type: single_turn
+  area: Query timeout and scope reduction
+  prompt: User requests 30 years of daily data for 150 countries across multiple indicators. The query times out. How should the agent recover?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Treats initial timeout as transient_retry. Retries up to 3 times. After exhaustion, suggests splitting the query: reduce time range, reduce country count, or reduce indicators. Does not create a report; guides the user to a narrower scope that will succeed.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-error-report/SKILL.md"
+  assertions:
+    required:
+    - classify_as_transient_retry
+    - retry_up_to_3_times
+    - suggest_scope_reduction
+    - provide_concrete_narrowing_examples
+    - warn_before_large_query_attempted
+    forbidden:
+    - fail_without_retry
+    - offer_incomplete_partial_data
+    - create_error_report_for_user_scope_error
+- id: ERR-04
+  category: error_handling
+  type: single_turn
+  area: Invalid geography validation
+  prompt: User requests WEO data for "Atlantis" which is not a valid WEO country. When should this be caught?
+  expected_primary_skill: imf-ra
+  expected_behavior: 'Validates geography in TWO places (defensive strategy). First, during the catalog step: imf-ra-catalog should alert that "Atlantis" is not in the WEO country reference and ask for correction. If it slips through, imf-ra-data should validate against dimension values in step 3 of fetch protocol and reject before API call. Both validation points refuse the invalid geography.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra/country_group/country_group.csv"
+  assertions:
+    required:
+    - validate_geography_in_catalog_step
+    - validate_geography_in_data_step
+    - reject_invalid_geography_before_api_call
+    - alert_user_with_valid_options
+    forbidden:
+    - skip_validation
+    - allow_invalid_country_to_api
+    - invent_country_code
+- id: INT-01
+  category: integration_failure
+  type: single_turn
+  area: Catalog returns multiple candidates
+  prompt: User asks for "GDP growth" and catalog returns 5 plausible codes (WEO, IFS, WDI, DOTS, GFS variants). How does the agent proceed?
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: 'Stops at ambiguity. Presents the 5 candidates with distinguishing metadata (database, dimension, frequency, last update). Offers the top candidate as "recommended" with reasons, then lists alternatives. Does NOT fetch yet. Asks user to pick or confirm.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/scripts/catalog_search.py"
+  assertions:
+    required:
+    - list_all_plausible_candidates
+    - include_distinguishing_metadata
+    - mark_recommended_option
+    - ask_for_confirmation
+    - block_fetch_until_confirmed
+    forbidden:
+    - silently_pick_first_match
+    - fetch_all_candidates
+    - invent_disambiguation
+- id: INT-02
+  category: integration_failure
+  type: single_turn
+  area: LIVE vs vintage database decision
+  prompt: User requests WEO GDP for 2024 with historical data back to 1980. Should the agent use WEO Live or a vintage database?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Explains the LIVE vs vintage tradeoff to the user. Recommends WEO Live as primary (has 2024 forecast/latest projection) but notes that some historical years may differ from archived vintages. Offers both WEO Live and the most recent historical vintage (e.g., April 2024 vintage) and asks user to choose based on consistency needs. Preserves the choice in the fetch.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+  assertions:
+    required:
+    - explain_live_vs_vintage_tradeoff
+    - recommend_weo_live_for_latest
+    - offer_both_live_and_vintage_options
+    - ask_for_user_preference
+    - preserve_choice_in_fetch
+    forbidden:
+    - choose_silently_without_explanation
+    - ignore_vintage_constraints
+    - fetch_both_databases_without_asking
+- id: INT-03
+  category: integration_failure
+  type: single_turn
+  area: Partial data availability alert
+  prompt: User requests WEO data for all countries in the "Low-Income Developing Countries" group, but only 60 of 160 countries in the group have recent data. How does the agent alert the user?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'During fetch, discovers that the requested country set has partial coverage. Before returning data, alerts the user: "Data is available for 60 of 160 countries in the LIC group. The remaining 100 have missing values or are not in the WEO database." Offers to return what is available, refine the country set, or use a different country grouping. Allows user to proceed or revise.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra/SKILL.md"
+  assertions:
+    required:
+    - detect_partial_country_coverage
+    - alert_user_with_coverage_ratio
+    - offer_proceed_or_refine_options
+    - allow_user_to_adjust_country_set
+    forbidden:
+    - silently_return_subset_without_alert
+    - raise_error_for_partial_data
+    - drop_missing_countries_without_notice
+- id: INT-04
+  category: integration_failure
+  type: single_turn
+  area: Dimension name auto-correction
+  prompt: User supplies a typo in the dimension name (e.g., "FREQUNCY" instead of "FREQUENCY"). How does the agent recover?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'During step 3 of the data fetch protocol (dimension validation), detects the typo via fuzzy matching or known dimension names. Auto-corrects to the valid dimension name, alerts the user of the correction, and retries the fetch with the corrected dimension. Does not fail; resolves via correction + retry.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+    - ".claude/skills/imf-ra-catalog/SKILL.md"
+  assertions:
+    required:
+    - detect_dimension_name_typo
+    - apply_fuzzy_matching_or_suggestion
+    - auto_correct_with_user_alert
+    - retry_fetch_with_correction
+    forbidden:
+    - fail_on_typo_without_suggestion
+    - silently_accept_invalid_dimension
+    - ask_user_to_retype
+- id: OUT-02
+  category: output_formats
+  type: single_turn
+  area: Character encoding handling
+  prompt: Dataset contains non-ASCII characters (Chinese country names, special symbols in indicator names). What encoding should the agent use and how should it communicate this?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Defaults to UTF-8 encoding for all output formats (CSV, Excel, JSON). If the dataset contains non-ASCII characters, warns the user before saving: "Data contains non-ASCII characters and will be saved as UTF-8 encoded. Ensure your application supports UTF-8." Preserves the characters correctly in the output file.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+  assertions:
+    required:
+    - use_utf8_encoding_by_default
+    - detect_non_ascii_characters
+    - warn_user_about_encoding
+    - preserve_characters_correctly
+    - document_encoding_in_output_metadata
+    forbidden:
+    - drop_non_ascii_characters
+    - use_lossy_encoding
+    - save_silently_without_encoding_warning
+- id: OUT-03
+  category: output_formats
+  type: single_turn
+  area: Refreshable Excel with dynamic links
+  prompt: User requests a "refreshable" Excel file where cells are linked to the live IMF API so they auto-update. Is this supported?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Explains that manual linking is required because API authentication and endpoint configuration cannot be embedded in Excel without security risk. Returns static Excel with the fetched data and suggests manual setup: "To create a refreshable link, you can use Excel''s Data > From Web feature and supply the API endpoint directly. However, this requires manual setup and API credentials." Provides the API endpoint reference or link for users who want to set up manual links.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+  assertions:
+    required:
+    - explain_refreshable_excel_limitation
+    - return_static_excel_instead
+    - provide_manual_link_setup_guidance
+    - reference_api_endpoint_documentation
+    - warn_about_security_implications
+    forbidden:
+    - attempt_embedded_api_credentials
+    - create_broken_dynamic_links
+    - refuse_static_excel_without_explanation
+- id: OUT-04
+  category: output_formats
+  type: single_turn
+  area: Oversized query warning
+  prompt: User requests 50 years of daily data for all 195 countries and 500+ indicators. This will result in millions of rows. How should the agent respond?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Before fetching, warns the user about the query size: "This query will produce approximately X million rows and Y MB of data, which may be slow to fetch and difficult to process. Would you like to reduce the scope? Suggestions: (1) Reduce to annual frequency, (2) Select 20 key countries, (3) Select 10 top indicators." Asks user to confirm before proceeding. Does NOT silently fetch a huge dataset.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+  assertions:
+    required:
+    - estimate_query_size_before_fetch
+    - warn_user_about_oversized_query
+    - suggest_scope_reduction_options
+    - ask_for_confirmation_before_proceeding
+    - provide_concrete_narrowing_examples
+    forbidden:
+    - fetch_silently_without_warning
+    - underestimate_data_size
+    - fail_without_suggesting_alternatives
+- id: OUT-05
+  category: output_formats
+  type: single_turn
+  area: Invalid output path handling
+  prompt: User specifies an output path that does not exist or is not writable (e.g., "Z:/nonexistent/folder/data.csv"). How should the agent respond?
+  expected_primary_skill: imf-ra-data
+  expected_behavior: 'Validates the output path before fetching. If the path is invalid or nonexistent, suggests the user specify a valid path or use the current directory. Examples: "The path Z:/nonexistent/folder/ does not exist. Would you like to save to [current_directory] instead? Or provide a valid existing folder path." Re-asks for output path without silently changing the destination.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-data/SKILL.md"
+  assertions:
+    required:
+    - validate_output_path_before_fetch
+    - detect_nonexistent_or_unwritable_path
+    - suggest_alternative_paths
+    - ask_for_user_confirmation
+    - prevent_silent_path_substitution
+    forbidden:
+    - write_to_random_location_without_notice
+    - fail_silently_at_write_time
+    - hardcode_fallback_path_without_asking
+- id: ERRREPORT-01
+  category: error_reporting
+  type: single_turn
+  area: Error report consent flow
+  prompt: A system error occurs during data fetch. Describe the exact consent flow the agent should follow before creating an error report.
+  expected_primary_skill: imf-ra-error-report
+  expected_behavior: 'After classifying the error as a high-severity category (logic_bug, database_corruption, subprocess_failure, data_format, or transient_exhausted), the agent offers to create a local error report: "It seems like we encountered a system error. Would you like me to prepare a local error report so the development team can improve this workflow?" Waits for user consent (yes/no/clarification) before creating the JSON report file. Never creates a report silently.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-error-report/SKILL.md"
+  assertions:
+    required:
+    - classify_error_severity_first
+    - offer_error_report_only_after_classification
+    - ask_for_explicit_consent
+    - wait_for_user_response
+    - create_report_only_after_consent
+    - save_to_tests/user_error_report/
+    forbidden:
+    - create_report_silently
+    - assume_consent_without_asking
+    - create_multiple_reports_per_session_without_limit
+- id: ERRREPORT-02
+  category: error_reporting
+  type: single_turn
+  area: Error report JSON schema
+  prompt: Verify that the error report JSON schema is fully designed and documented.
+  expected_primary_skill: imf-ra-error-report
+  expected_behavior: 'The JSON schema for error reports is fully specified in the imf-ra-error-report SKILL.md file (lines 213-279). The schema includes: report_id (timestamp-based unique ID), timestamp (ISO 8601), username, report_number, status, fingerprint, scenario (system_error or unsatisfactory_answer), category (14 taxonomy values), severity (high/medium/low), area (multi-select from 11 areas), original_request, failure_summary, expected_behavior, observed_behavior, evidence (command_attempts, raw_output, answer_attempts, files_involved, retry status), reproduction_notes, environment, likely_cause, suggested_development_action, and proposed_regression_test. The schema is complete and ready for implementation.
+
+'
+  evidence_sources:
+    required_files:
+    - ".claude/skills/imf-ra-error-report/SKILL.md"
+  assertions:
+    required:
+    - error_report_schema_is_documented
+    - schema_includes_all_required_fields
+    - schema_defines_taxonomy_and_severity
+    - schema_example_provided
+    - schema_ready_for_json_implementation
+    forbidden:
+    - schema_is_incomplete
+    - schema_missing_critical_fields
+    - schema_conflicts_with_implementation

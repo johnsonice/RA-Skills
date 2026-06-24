@@ -24,7 +24,7 @@ Evidence sources:
 
 ### 1.3 Country-group codes are being used as series codes (production bug)
 - **Evidence:** `tests/issue_tracking/issues.md:11-14` — an aggregate/group identifier can be passed as an iData country selector instead of expanding to member countries.
-- **Current expected path:** Expand group requests through `.claude/skills/imf-ra/Country Group/weo_country_groups.py expand-for-idata ... --codes-only`, backed by the unified `.claude/skills/imf-ra/Country Group/Country Group.csv`.
+- **Current expected path:** Expand group requests through `.claude/skills/imf-ra/country_group/country_groups_helper.py expand-for-idata ... --codes-only`, backed by the unified `.claude/skills/imf-ra/country_group/country_group.csv`.
 - **Coverage:** The current harness includes WEO group helper and command-contract cases for this path.
 
 ### 1.4 Two test prompts are unrunnable in fresh sessions
@@ -64,9 +64,9 @@ Evidence sources:
 - **Evidence:**
   - `imf-ra/SKILL.md:25` says *"Use Python only when it is genuinely needed"*.
   - `imf-ra-catalog/SKILL.md:33,35` says the same.
-  - But the family ships large helper scripts: `weo_country_groups.py` (231 lines) and `catalog_search.py` (252 lines).
-  - **Quantification:** ~80% of `weo_country_groups.py` is convenience over `grep`. `catalog_search.py search` is genuinely irreducible (tokenized scoring + 11-entry synonyms map + WEO-priority fallback at lines 105-208) — Claude *cannot* easily replicate it.
-- **Impact:** The current SKILL prose is too uniform. Some subcommands (`catalog_search.py search`) should be **mandatory** for the 81K-row indicators CSV; others (`weo_country_groups.py summary | countries | memberships`) are pure convenience. Conflating them produces inconsistent agent behavior.
+  - But the family ships large helper scripts: `country_groups_helper.py` (231 lines) and `catalog_search.py` (252 lines).
+  - **Quantification:** ~80% of `country_groups_helper.py` is convenience over `grep`. `catalog_search.py search` is genuinely irreducible (tokenized scoring + 11-entry synonyms map + WEO-priority fallback at lines 105-208) — Claude *cannot* easily replicate it.
+- **Impact:** The current SKILL prose is too uniform. Some subcommands (`catalog_search.py search`) should be **mandatory** for the 81K-row indicators CSV; others (`country_groups_helper.py summary | countries | memberships`) are pure convenience. Conflating them produces inconsistent agent behavior.
 
 ### 2.5 Indicators-CSV context-cost is undocumented
 - **Evidence:** `idata_full_indicators_list.csv` measured at **8.8 MB / 81,035 rows / ~60-80K tokens**. Nothing in `imf-ra-catalog/SKILL.md` or `catalog-conventions.md` warns against loading it whole.
@@ -89,8 +89,8 @@ Evidence sources:
 - **Impact:** Minor. Asymmetric reference graph in the docs.
 
 ### 3.3 Country-group CSV source of truth
-- **Current structure:** Country-group data now lives in one folder: `.claude/skills/imf-ra/Country Group/`.
-- **Current files:** `Country Group.csv`, `weo_country_groups.md`, and `weo_country_groups.py`.
+- **Current structure:** Country-group data now lives in one folder: `.claude/skills/imf-ra/country_group/`.
+- **Current files:** `country_group.csv`, `country_groups_instruction.md`, and `country_groups_helper.py`.
 - **Impact:** The old split-reference ambiguity has been removed. Current tests should verify this unified folder and helper path only.
 
 ### 3.4 Coverage gap: ambiguous-multi-database matches
@@ -116,7 +116,7 @@ Evidence sources:
 - **Helper-script verdicts:**
   - `catalog_search.py search` — irreducible value, keep and emphasize as default for indicator lookups.
   - `catalog_search.py datasets / latest-weo` — borderline, could be replaced with grep.
-  - `weo_country_groups.py groups / members / expand-for-idata / compare / resolve / explain` — kept as the unified interface over `Country Group.csv`.
+  - `country_groups_helper.py groups / members / expand-for-idata / compare / resolve / explain` — kept as the unified interface over `country_group.csv`.
   - `fetch_idata.py` — SDK wrapper, not a reference-data helper; out of scope but does encode irreducible refreshable-format pivot logic.
 
 ---
