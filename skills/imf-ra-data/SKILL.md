@@ -197,9 +197,9 @@ Refreshable output layout is auto-selected by data shape (indicators × countrie
 | `Series_Code` | Always | All dimension values joined with `.` in key order |
 | `SCALE` | Always present | Human-readable scale label: `Units` / `Thousands` / `Millions` / `Billions`; empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
 | `UNIT` | Always present | Unit string from metadata (e.g. `National currency`, `Percent`); empty when unavailable |
-| `COUNTRY` | Country dimension detected | Human-readable name looked up from `imf-ra` `Country Group.csv` |
+| `COUNTRY` | Country dimension detected | Human-readable name looked up from `imf-ra` `country_group.csv` |
 | `ISO3` | Country dimension detected | Raw ISO3 code from the data |
-| `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `Country Group.csv` (`countrycode_s`) |
+| `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `country_group.csv` (`countrycode_s`) |
 | `<dim_name>` (non-country, non-indicator) | Each additional dimension | Raw dimension code (e.g. `FREQ`, `DATA_TRANSFORMATION`, `COUNTERPART_COUNTRY`) |
 | `<indicator dim_name>` | When indicator dim detected | Human-readable label from `get_dimension_values()["Name"]` |
 | `2019`, `2019Q1`, `2019M1` … | Always | Pivoted date columns; format matches frequency (A/Q/M/D) |
