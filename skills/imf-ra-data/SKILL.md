@@ -299,6 +299,5 @@ See [references/imf_datatools_agent_api_reference.md § 9](references/imf_datato
 ## Safe query policy
 
 - Avoid broad `ALL` pulls unless explicitly requested.
-- For large country panels (e.g. all EMDE), pass the full `+`-joined country list — `fetch_idata.py` automatically chunks requests into batches of 25 and merges results. Use `--chunk-size N` to override the default.
 - Validate dimension names and values with metadata calls before retrieval.
 - For iData dimensions, always use the exact dimension names returned by `--explore` — do not assume names like `COUNTRY`, `INDICATOR`, or `FREQUENCY`, as they vary by database (e.g. `REF_AREA`, `SERIES`, `FREQ`, `TICKER`).
