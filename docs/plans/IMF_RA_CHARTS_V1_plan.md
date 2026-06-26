@@ -85,11 +85,20 @@ Preferred V1 implementation stack:
 | Excel workbook generation | Python `xlsxwriter` | Strong for creating new Excel workbooks with multiple sheets, formatting, and embedded charts. |
 | Embedded Excel chart | `xlsxwriter` chart object linked to `chart_ready` | Keeps the workbook editable and auditable because the chart is tied to the visible chart-ready table. |
 
-If a confirmed internal IMF charting tool later supports PNG and workbook
-generation, it can become the preferred backend. Until then, V1 should use the
-Python stack above.
+There is no internal charting tool for V1. The Python stack above is the
+intended implementation path, not a fallback.
 
 ## Input Paths
+
+Use available data before attempting any pull. The preferred order is:
+
+1. data already produced by `imf-ra-data`;
+2. user-provided Excel or CSV data;
+3. a new data pull, only if no usable data are available and the user explicitly
+   asks the agent to pull data.
+
+`imf-ra-charts` should follow shared `imf-ra` conventions and its own chart
+workflow. It should not bypass the RA Skills chain when data need to be fetched.
 
 ### Path A: Data From `imf-ra-data`
 
@@ -103,11 +112,12 @@ When data have already been fetched by `imf-ra-data`, `imf-ra-charts` should:
 - generate the PNG and reproducibility package;
 - offer the optional Excel workbook.
 
-If the user asks for a chart but data are not fetched yet, ask for the data
-source. If the user asks the agent to pull data first, chain backward:
+If the user asks for a chart but no raw data are available from `imf-ra-data` or
+an external user-provided file, ask for the data source. Only chain backward to
+pull data if the user explicitly asks the agent to fetch the data:
 
 ```text
-imf-ra-charts -> imf-ra-data -> imf-ra-catalog, if identifiers are unresolved
+imf-ra -> imf-ra-charts -> imf-ra-data -> imf-ra-catalog, if identifiers are unresolved
 ```
 
 ### Path B: User-Provided Excel Or CSV
@@ -126,16 +136,20 @@ When the user provides raw Excel or CSV data, `imf-ra-charts` should:
 
 1. Confirm the output folder before writing artifacts.
 2. Load data from `imf-ra-data` output or user-provided Excel/CSV.
-3. Inspect columns, data types, grain, units, source, frequency, and date range.
-4. Ask clarification only if the chart would otherwise be wrong or misleading.
-5. Clean and transform data according to the transformation policy.
-6. Choose a chart type from user instruction or chart recommendation rules.
-7. Generate an initial reasonable PNG.
-8. Run chart QA before delivery.
-9. Save the reproducibility package.
-10. Show or link the PNG to the user.
-11. Offer the optional Excel workbook.
-12. If the user requests changes, update the chart and version or overwrite
+3. If no usable data are available, ask whether the user wants to provide data
+   or wants the agent to pull data.
+4. Pull data only if the user explicitly asks for a pull, following
+   `imf-ra-data` and `imf-ra-catalog` as needed.
+5. Inspect columns, data types, grain, units, source, frequency, and date range.
+6. Ask clarification only if the chart would otherwise be wrong or misleading.
+7. Clean and transform data according to the transformation policy.
+8. Choose a chart type from user instruction or chart recommendation rules.
+9. Generate an initial reasonable PNG.
+10. Run chart QA before delivery.
+11. Save the reproducibility package.
+12. Show or link the PNG to the user.
+13. Offer the optional Excel workbook.
+14. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
 
 ## Data Cleaning
@@ -230,7 +244,8 @@ Ask before charting when:
 - units or frequencies are incompatible;
 - the requested chart would require a Tier 2 or Tier 3 transformation;
 - the requested chart type would be unreadable for the number of series;
-- the data source is missing and the user has not asked the agent to fetch data.
+- no usable data are available and the user has not asked the agent to fetch
+  data.
 
 ## Chart Recommendation Rules
 
@@ -360,8 +375,8 @@ user confirms.
 2. Update `skills/imf-ra-charts/SKILL.md` with the V1 workflow.
 3. Expand `skills/imf-ra-charts/references/chart-tool-usage.md` with the PNG,
    reproducibility package, and optional Excel contract.
-4. Add chart behavior test cases to `tests/auto_test_cases.yaml` only after the
-   chart workflow is live enough to test.
+4. Add chart behavior test cases to `tests/auto_test_cases.yaml` after V1 is
+   implemented.
 5. Mirror reviewer-facing test descriptions in `tests/auto_test_instructions.md`
    when chart cases are added.
 6. Run `python scripts/sync_skills.py` after updating the actual skill.
