@@ -19,6 +19,8 @@ misleading.
 - For chart choice, consulting brief, transformation tiers, accessibility, and
   anti-patterns: see
   [references/chart-consulting-rules.md](references/chart-consulting-rules.md).
+- For IMF house styling, fonts, borders, and colors: see
+  [references/chart-formatting-rules.md](references/chart-formatting-rules.md).
 
 ## Core Rules
 
