@@ -203,6 +203,9 @@ cython_debug/
 tests/issue_tracking/
 tests/user_error_report
 tests/results
+
+# Temporary chart workspace; delete after each charting session
+chart-temp/
 #   you could uncomment the following to ignore the entire vscode folder
 # .vscode/
 # Temporary file for partial code execution

@@ -65,11 +65,26 @@ Only create the Excel workbook if the user says yes.
 ## Output Folder Convention
 
 Before writing chart artifacts, ask the user to confirm that outputs should be
-saved under a temporary folder named `chart-temp/`.
+saved under a temporary folder named `chart-temp/`. The confirmation message
+must also tell the user that `chart-temp/` will be deleted after the charting
+session ends and that they should save anything they need to keep.
+
+Use a short confirmation prompt such as:
+
+```text
+I can save the chart outputs in `chart-temp/`. This folder is temporary and will
+be deleted after this charting session, so save anything you need to keep. Is
+that okay?
+```
 
 After confirmation, create `chart-temp/` in the current working directory and
 save all chart artifacts there. Do not create or overwrite `chart-temp/` without
 user confirmation.
+
+`chart-temp/` is a temporary session workspace, not a durable project folder.
+Before deleting it, make sure any deliverables the user wants to keep have been
+moved, attached, or otherwise handed off. Delete `chart-temp/` after the charting
+session ends.
 
 Use stable, readable, lowercase file names based on the chart topic:
 
@@ -160,6 +175,8 @@ When the user provides raw Excel or CSV data, `imf-ra-charts` should:
 13. Offer the optional Excel workbook.
 14. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
+15. After the session ends and retained deliverables have been handed off,
+    delete `chart-temp/`.
 
 ## Data Cleaning
 

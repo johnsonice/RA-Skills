@@ -1,7 +1,7 @@
 <h1 align="center">RA-Skills</h1>
 
 <p align="center">
-  Cross-platform <a href="https://docs.claude.com/en/docs/claude-code">Agent Skills</a> for IMF Research Assistant workflows — natural-language data discovery, country/group resolution, retrieval, chart handoff, and local error reporting. Installs on GitHub Copilot (CLI &amp; cloud agent, incl. Windows), Claude Code, and other Agent Skills hosts.
+  Cross-platform <a href="https://docs.claude.com/en/docs/claude-code">Agent Skills</a> for IMF Research Assistant workflows — natural-language data discovery, country/group resolution, retrieval, static chart production, and local error reporting. Installs on GitHub Copilot (CLI &amp; cloud agent, incl. Windows), Claude Code, and other Agent Skills hosts.
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@
 | **`imf-ra`** | Family entry point. Loads shared operating rules, WEO country/group conventions, and routes to the right worker skill. |
 | **`imf-ra-catalog`** | Plain English → `(database, dimension_name, code)`. Selects datasets, maps concepts to variable/indicator codes, and asks for confirmation when a request is ambiguous. |
 | **`imf-ra-data`** | Fetches single series or multi-country panels through the internal Python SDK after identifiers, dimensions, time range, and output format are confirmed. Honors LIVE vs vintage explicitly. |
-| **`imf-ra-charts`** | Hands tidy data to the internal charting tool. *Scaffolded — not yet implemented; route requests here only when wired up.* |
+| **`imf-ra-charts`** | Turns IMF RA data or user-provided CSV/Excel files into a static PNG chart plus the complete Python script that generated it. Offers an optional editable Excel workbook only after user confirmation. |
 | **`imf-ra-error-report`** | Side skill for user-visible RA-Skills failures. Creates consent-based local JSON reports for system/execution errors or unsatisfactory answers after repeated attempts. |
 
 Recommended chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-charts`.
@@ -52,6 +52,7 @@ Drop any of these into Claude Code from inside the repo:
 - *"Pull WEO real GDP growth for advanced economies, 2010–present."*
 - *"Download IFS exchange rates monthly for ASEAN, 2015–present."*
 - *"Use the April 2024 WEO vintage for nominal GDP."*
+- *"Make a PNG chart from this CSV and save the reproducible Python script."*
 - *"Report this RA-Skills issue for the development team."*
 
 More patterns live in the YAML-first auto-test pack:
@@ -111,6 +112,7 @@ claude                           # or open Copilot CLI / Codex with cwd = this r
 | **Catalog** | discovery, WEO groups | Python 3.9+ (stdlib + bundled CSVs) | anywhere — laptops, CI, cloud, off-network |
 | **Data – iData** | `fetch_idata.py` | internal `imf_datatools` SDK + pandas | IMF-managed Windows / cloud |
 | **Data – Haver** | `fetch_haver.py` | `haver.db` (+ pandas) | IMF machines with Haver access |
+| **Charts** | `imf-ra-charts` generated scripts | pandas + matplotlib; xlsxwriter only for optional Excel output | anywhere with local CSV/Excel or previously fetched data |
 
 The catalog tier works everywhere; the data tiers require IMF-internal infrastructure. See [AGENTS.md](AGENTS.md) → *Dependencies & environments*.
 
@@ -125,12 +127,12 @@ RA-Skills/
 │   │   └── country_group/   # unified WEO country-group CSV, guide, and helper
 │   ├── imf-ra-catalog/      # database / variable-code discovery
 │   ├── imf-ra-data/         # SDK-based data fetch
-│   ├── imf-ra-charts/       # chart handoff (scaffold)
+│   ├── imf-ra-charts/       # static PNG chart production + reproducible scripts
 │   └── imf-ra-error-report/ # local consent-based failure reports
 ├── .claude-plugin/          # Claude Code plugin + marketplace manifests
 ├── scripts/                 # sync_skills.py (local-discovery mirror)
 ├── AGENTS.md                # cross-tool agent guidance (CLAUDE.md imports it)
-├── requirements.txt         # data-tier deps (pandas, openpyxl)
+├── requirements.txt         # data/chart deps (pandas, openpyxl, matplotlib, xlsxwriter)
 ├── docs/specs/              # design + distribution docs
 ├── docs/plans/              # implementation history
 └── tests/                   # YAML auto-test cases, reviewer catalog, results, issue tracking
