@@ -13,11 +13,11 @@ V1 includes:
 - recommending a reasonable chart type when the user does not specify one;
 - producing a PNG as the required primary output;
 - saving the complete Python script that reproduces every PNG;
+- applying the IMF house styling rules in `chart-formatting-rules.md`;
 - offering an optional editable Excel workbook after the PNG is ready.
 
-V1 excludes mimicry of example charts, full IMF house style, PPT decks,
-interactive dashboards, new data retrieval logic, and a large custom charting
-framework.
+V1 excludes mimicry of user-provided example charts, PPT decks, interactive
+dashboards, new data retrieval logic, and a large custom charting framework.
 
 ## Input Order
 
@@ -120,7 +120,7 @@ The PNG should include:
 Default visual style:
 
 - white background;
-- restrained, colorblind-safe palette;
+- IMF house style from `chart-formatting-rules.md`;
 - clear title and subtitle when useful;
 - readable font sizes;
 - light gridlines only when they help reading values;
@@ -137,6 +137,7 @@ Check and record whether:
 - the value field is numeric;
 - duplicate observations were checked;
 - missing values were handled intentionally;
+- the chart is understandable without relying on the note;
 - title, unit, and source notes are present when available;
 - labels and legend are readable and do not cover the data;
 - axes are not misleading for the chart type;
