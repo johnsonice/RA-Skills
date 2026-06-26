@@ -1,6 +1,6 @@
 # IMF RA Skill Family — Behavioral Test Catalog & Execution Guide
 
-**Objective:** Verify the IMF RA skill pipeline (`imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-charts`) routes analyst prompts correctly, resolves identifiers before fetch, preserves confirmed intent across handoffs, and stops for clarification when unsafe.
+**Objective:** Verify the IMF RA skill pipeline (`imf-ra` → `imf-ra-catalog` → `imf-ra-data`) routes analyst prompts correctly, resolves identifiers before fetch, preserves confirmed intent across handoffs, and stops for clarification when unsafe.
 
 **Reference:** Detailed fixtures, assertions, and guardrails live in [auto_test_cases.yaml](auto_test_cases.yaml) (machine-readable source of truth).
 
@@ -10,7 +10,7 @@
 
 | In Scope | Out of Scope |
 |----------|--------------|
-| 54 behavioral test cases across 9 categories | Chart execution (imf-ra-charts still scaffolded) |
+| 54 behavioral test cases across 9 categories | Chart execution skipped |
 | 9 command contract checks (helper script validation) | User-interface/styling validation |
 | Error classification, recovery, and consent flows | Performance/load testing |
 | Cross-skill handoff behavior and intent preservation | Deprecated EcOS workflows |
@@ -305,7 +305,7 @@ the prompt cases depend on.
 
 | Task | Owner | Rules |
 |------|-------|-------|
-| **Add test cases** | YAML maintainer | Only add if it tests a distinct routing, catalog behavior, or handoff. No chart cases until `imf-ra-charts` is live. |
+| **Add test cases** | YAML maintainer | Only add if it tests a distinct routing, catalog behavior, handoff.|
 | **Keep this guide updated** | YAML maintainer + Documentation owner | Update this file if execution process changes, preconditions shift, or pass/fail criteria evolve. |
 | **Run tests** | Research analyst or QA | Follow the workflow steps exactly. Ask for scope confirmation before starting. Record results in both YAML and Markdown. |
 | **Triage failures** | Code owner (skill author) | Determine if failure is a test gap, assertion error, or actual behavior bug. Update test or fix skill. |

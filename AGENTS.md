@@ -9,7 +9,7 @@ A family of **Agent Skills** for IMF Research Assistant workflows. The canonical
 - `imf-ra` — umbrella, family map, shared conventions
 - `imf-ra-catalog` — natural-language → confirmed identifier: iData `(database, dimension_name, code)` (plus confirmed frequency/geography passed as handoff constraints) or Haver `codes: ["CODE@DB", ...]`
 - `imf-ra-data` — pull series via internal Python SDK (`fetch_idata.py` for iData, `fetch_haver.py` for Haver)
-- `imf-ra-charts` — chart handoff (**not yet implemented**)
+- `imf-ra-charts` — turn IMF RA data or user-provided CSV/Excel files into a static PNG chart plus a complete reproducible Python script; optional editable Excel workbook only after confirmation
 - `imf-ra-error-report` — side skill for consent-based local JSON reports after user-visible RA-Skills failures
 
 Skill chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-charts`.
@@ -25,6 +25,7 @@ Skills run at three capability tiers. Pick commands the current environment can 
 | **Catalog** (discovery) | `imf-ra-catalog` (`catalog_search.py`), WEO `country_groups_helper.py` | Python 3.9+ only (stdlib + bundled CSVs) | Anywhere — laptops, CI, cloud agents, off-network |
 | **Data – iData** | `imf-ra-data` `fetch_idata.py` | Internal `imf_datatools` SDK + `pandas` | IMF-managed Windows / cloud only |
 | **Data – Haver** | `imf-ra-data` `fetch_haver.py`, `haver_catalog_search.py` lookups | `haver.db` (SQLite) + `pandas` (metadata for fetch) | IMF machines with `haver.db` access |
+| **Charts** | `imf-ra-charts` generated Python scripts | `pandas` + `matplotlib`; `xlsxwriter` only for optional Excel workbook output | Anywhere with local CSV/Excel or previously fetched data |
 
 - `haver.db` is **not** in the repo (SQLite, 12M+ rows). Resolution order: `HAVER_DB_PATH` env var → an upward search for `haver.db` beside any ancestor of the script (conventionally one directory above the repo root) → a clear "not found" error. Set `HAVER_DB_PATH` when installed into a global skills dir.
 - The internal `imf_datatools` SDK is IMF-only (installed from an internal location; see `skills/imf-ra-data/references/imf_datatools_agent_api_reference.md`). It is not pip-installable. Catalog lookup and WEO group helpers work without it.
@@ -69,7 +70,7 @@ After editing any `SKILL.md` or reference path, run the relevant helper command 
 
 ## Auto-tests
 
-Behavioral test pack: `tests/auto_test_cases.yaml` is the machine-readable source of truth. It defines prompts, fixtures, expected skills, evidence files, assertions, pre-test checks, and command contracts across `imf-ra`, `imf-ra-catalog`, and `imf-ra-data`. `tests/auto_test_instructions.md` mirrors the same cases as the human-readable catalog. Chart execution cases are excluded.
+Behavioral test pack: `tests/auto_test_cases.yaml` is the machine-readable source of truth. It defines prompts, fixtures, expected skills, evidence files, assertions, pre-test checks, and command contracts across `imf-ra`, `imf-ra-catalog`, and `imf-ra-data`. `tests/auto_test_instructions.md` mirrors the same cases as the human-readable catalog. 
 
 Run records and templates: `tests/results/`. Issues and audit notes: `tests/issue_tracking/`. (Both are gitignored except tracked templates.)
 
@@ -83,6 +84,7 @@ skills/imf-ra-catalog/scripts/      # catalog_search.py CLI + catalog_data/routi
 skills/imf-ra-data/scripts/         # fetch_idata.py + fetch_haver.py — the only supported retrieval paths
 skills/imf-ra-data/references/      # imf_datatools_agent_api_reference.md (SDK recipes)
 skills/imf-ra/country_group/        # country_group.csv (WEO country/group truth) + country_groups_helper.py helper + .md guide
+skills/imf-ra-charts/                # chart-production skill: PNG + reproducible Python script, optional Excel workbook
 skills/imf-ra-error-report/SKILL.md # consent-based local failure-report skill (no scripts)
 .claude-plugin/                     # Claude Code plugin + marketplace manifests (one plugin: imf-ra-skills)
 scripts/                            # sync_skills.py (mirror skills/ into host dirs for local discovery)
@@ -140,7 +142,7 @@ Example: `feat/chengyu_0509_auto-testing-steps`. Older remote branches without t
 
 ## Gotchas
 
-- `imf-ra-charts` is referenced but not implemented — don't route chart requests there yet; surface that gap to the user.
+- `imf-ra-charts` produces static PNG charts through generated Python scripts. It creates an optional Excel workbook only after the user confirms.
 - The umbrella `imf-ra` does **not** orchestrate. Worker skills chain by referencing each other directly (e.g. `imf-ra-charts` loads `imf-ra-data` in the same turn).
 - `imf-ra-error-report` is a side skill, not core infrastructure: no telemetry, remote upload, GitHub issue creation, dashboard, Python logging wrapper, or report lifecycle workflow belongs in v1.
 - `haver.db` is machine-dependent and may be absent (it is not committed; it lives one directory above the repo root, or wherever `HAVER_DB_PATH` points). If Haver catalog search or `fetch_haver.py` fails because the file is missing, say so — don't fall back to guessing Haver codes.
