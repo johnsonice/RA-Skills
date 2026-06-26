@@ -1,24 +1,45 @@
 ---
 name: imf-ra-charts
-description: Use when the user wants to prepare or hand off IMF data for a chart, plot, or visualization. This skill is scaffolded until the internal charting tool is fully specified; it covers chart-ready data shape, chart-type selection, and source/footnote conventions. If data is not yet in scope, follow imf-ra-data to fetch it first.
+description: Use when the user wants to turn IMF RA data or user-provided CSV/Excel data into a static economics chart. Produces a PNG plus a complete reproducible Python script containing data cleaning, transformation, and plotting code, with an optional editable Excel workbook only after user confirmation.
 ---
 
 # IMF RA - Charts
 
-Handing tidy data to the internal charting tool.
+Chart-production worker for the RA Skills family. Use this skill when the user
+asks to chart, plot, visualize, or prepare a figure from available data.
 
-## Before you chart
+Keep the interaction practical: make a reasonable chart when the data and
+intent are clear, and ask only when ambiguity would make the chart wrong or
+misleading.
 
-See the umbrella `imf-ra` for shared conventions.
+## Load The Right References
 
-## When data isn't in scope yet
+- For workflow, output files, routing, failure behavior, and optional Excel:
+  see [references/chart-tool-usage.md](references/chart-tool-usage.md).
+- For chart choice, consulting brief, transformation tiers, accessibility, and
+  anti-patterns: see
+  [references/chart-consulting-rules.md](references/chart-consulting-rules.md).
 
-Load `imf-ra-data` in the same turn and follow it to fetch. Do not duplicate SDK call patterns here. See [`imf-ra-data/references/imf_datatools_agent_api_reference.md`](../imf-ra-data/references/imf_datatools_agent_api_reference.md). If the user only described what they want in plain English, also load `imf-ra-catalog` to resolve the identifier.
+## Core Rules
 
-## How to chart
+- Use existing `imf-ra-data` output or user-provided CSV/Excel before attempting
+  a new pull.
+- Pull data only when no usable data are available and the user explicitly asks
+  the agent to pull data.
+- Required outputs are the PNG and the complete Python script that generated it.
+- Create the optional Excel workbook only after the user confirms.
 
-See [references/chart-tool-usage.md](references/chart-tool-usage.md) for the internal charting tool's invocation, input shape, chart-type selection, and captioning conventions.
+## Implementation Stack
 
-## Chart-type heuristics
+Use Python `pandas` for cleaning and reshaping, `matplotlib` for PNG output, and
+`xlsxwriter` for the optional Excel workbook with an embedded editable chart.
 
-Use the user's stated chart type when provided. Otherwise use the data shape as a guide: single time series -> line; multiple countries over time -> multi-line or small multiples; latest country comparison -> bar; two numeric series by country -> scatter; contribution or composition over time -> stacked bar/area when appropriate.
+## Before Delivery
+
+Run chart QA before showing the PNG. At minimum, verify the image is nonblank,
+the data are chartable, the labels are readable, and source/unit/transform notes
+are present when available.
+
+If chart generation fails, tell the user what failed, whether data cleaning
+succeeded, what outputs were saved, and what is needed next. Do not claim a
+chart was created when it was not.
