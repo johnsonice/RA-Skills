@@ -35,8 +35,23 @@ explicitly wants the agent to pull data. When pulling, follow `imf-ra-data` and
 ## Output Folder
 
 Before writing artifacts, ask the user to confirm that outputs should be saved
-under `chart-temp/` in the current working directory. Do not create or overwrite
-`chart-temp/` without confirmation.
+under `chart-temp/` in the current working directory. The confirmation message
+must also tell the user that `chart-temp/` will be deleted after the charting
+session ends and that they should save anything they need to keep. Do not create
+or overwrite `chart-temp/` without confirmation.
+
+Use a short confirmation prompt such as:
+
+```text
+I can save the chart outputs in `chart-temp/`. This folder is temporary and will
+be deleted after this charting session, so save anything you need to keep. Is
+that okay?
+```
+
+`chart-temp/` is a temporary session workspace, not a durable project folder.
+Before deleting it, make sure any deliverables the user wants to keep have been
+moved, attached, or otherwise handed off. Delete `chart-temp/` after the
+charting session ends.
 
 Use stable, readable, lowercase file names based on the chart topic:
 
@@ -90,6 +105,8 @@ extras and label them clearly.
 12. Offer the optional Excel workbook.
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
+14. After the session ends and retained deliverables have been handed off,
+    delete `chart-temp/`.
 
 ## Data Cleaning
 

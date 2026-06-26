@@ -28,13 +28,24 @@ misleading.
   a new pull.
 - Pull data only when no usable data are available and the user explicitly asks
   the agent to pull data.
+- Confirm before creating or writing to `chart-temp/` in the current working
+  directory. In that confirmation, tell the user `chart-temp/` will be deleted
+  after the charting session ends and that they should save anything they need
+  to keep.
 - Required outputs are the PNG and the complete Python script that generated it.
-- Create the optional Excel workbook only after the user confirms.
+- Do not use or invent an internal charting tool; V1 chart production is done
+  with generated Python scripts.
+- Create the optional Excel workbook only after the user confirms, after the
+  PNG is ready.
+- Do not handle mimicry, PPT deck generation, interactive dashboards, or new
+  data retrieval logic in this skill.
 
 ## Implementation Stack
 
 Use Python `pandas` for cleaning and reshaping, `matplotlib` for PNG output, and
 `xlsxwriter` for the optional Excel workbook with an embedded editable chart.
+If a chart dependency is missing, tell the user which package is missing and
+what was already prepared.
 
 ## Before Delivery
 
