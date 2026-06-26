@@ -29,13 +29,11 @@ V1 includes:
 - Creating a PNG as the primary chart output.
 - Saving the complete Python script that reproduces every PNG.
 - Offering an optional editable Excel workbook after the PNG is ready.
-- Applying user-requested formatting refinements, as long as they do not require
-  full IMF house-style implementation.
+- Applying the IMF house styling rules defined in `imf-ra-charts`.
 
 V1 excludes:
 
 - Mimicking a user-provided example chart.
-- Full IMF styling or publication-grade house-style templates.
 - PPT deck generation.
 - Interactive dashboards.
 - New database or API retrieval logic.
@@ -356,7 +354,7 @@ The PNG should include:
 - source note when known;
 - footnote for forecasts, vintages, or transformations when relevant.
 
-V1 does not need full IMF house styling, but it should still be clean,
+V1 applies the IMF house styling defaults while keeping charts clean,
 professional, and readable.
 
 Default visual style:

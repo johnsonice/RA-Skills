@@ -143,7 +143,7 @@ Prefer:
 - clear units in axis labels;
 - titles that state the subject and comparison;
 - notes only when they prevent misunderstanding;
-- colorblind-safe palettes and sufficient contrast.
+- the IMF house style palette with sufficient contrast.
 
 Avoid:
 
