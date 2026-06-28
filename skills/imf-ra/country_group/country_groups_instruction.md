@@ -171,7 +171,10 @@ A: The country is either not in WEO Live or uses a different name form. Check al
 A: Only when the user or dataset explicitly requires internal numeric codes (rare). Use `countrycode` by default.
 
 **Q: How do I list all countries in a group without seeing the full table?**  
-A: Use `members <GROUP> --codes-only` for a concise comma-separated list.
+A: Use `members <GROUP> --codes-only` for a concise comma-separated list (human review only).
+
+**Q: Which command do I use to get country codes for an iData key?**  
+A: Use `expand-for-idata <GROUP> --codes-only` — it outputs `+`-joined codes (e.g. `AFG+ALB+...`) ready to paste directly into an iData dimension value. Do **not** use `members --codes-only` for iData keys — its comma-separated output is for counting and inspection, not key construction.
 
 ---
 

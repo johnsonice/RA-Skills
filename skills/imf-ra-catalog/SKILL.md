@@ -344,7 +344,7 @@ If no useful match exists in any source, state the gap clearly and ask for one a
 
 Once the user confirms the identifier, hand off to `imf-ra-data`:
 
-- **iData:** pass `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints. If geography came from a WEO group/category, hand off member `countrycode` values from `imf-ra/country_group/country_groups_helper.py`, not the group/category column name.
+- **iData:** pass `database`, `dimension_name`, `code`, and any confirmed geography, frequency, date, or vintage constraints. If geography came from a WEO group/category, run `expand-for-idata <GROUP> --codes-only` from `imf-ra/country_group/country_groups_helper.py` and pass the `+`-joined output as `geo` (e.g. `USA+GBR+DEU`). Do **not** use `members --codes-only` for the `geo` handoff — that command outputs comma-separated codes which are not valid as iData dimension values.
 - **Haver:** see format below.
 
 **Haver handoff format:**
