@@ -1,6 +1,6 @@
 ---
 name: imf-ra-charts
-description: Use when the user wants to turn IMF RA data or user-provided CSV/Excel data into a static economics chart. Produces a PNG plus a complete reproducible Python script containing data cleaning, transformation, and plotting code, with an optional editable Excel workbook only after user confirmation.
+description: Use when the user wants to turn IMF RA data or user-provided CSV/Excel data into a static or interactive economics chart. Produces a PNG plus a complete reproducible Python script; optionally produces a self-contained interactive HTML chart (Plotly) and an editable Excel workbook after user confirmation.
 ---
 
 # IMF RA - Charts
@@ -26,9 +26,9 @@ Chart-production worker for the RA Skills family. Use this skill to turn availab
   directory. In that confirmation, tell the user `chart-temp/` will be deleted
   after the charting session ends and that they should save anything they need
   to keep.
-- Required outputs are a PNG and the complete Python script that generated it.
-- Create the optional Excel workbook only after the user confirms, after the
-  PNG is ready.
+- Required outputs are the PNG and the complete Python script that generated it.
+- Interactive HTML and editable Excel are optional outputs. Create either one
+  only when the user asks for it or confirms the post-PNG offer.
 - If the user gives no specific formatting requirement, apply the IMF-style
   defaults in `chart-formatting-rules.md`.
 - Ask only when ambiguity would make the chart wrong or misleading; otherwise
@@ -38,8 +38,9 @@ Chart-production worker for the RA Skills family. Use this skill to turn availab
 
 ## Implementation Stack
 
-Use Python `pandas` for cleaning and reshaping, `matplotlib` for PNG output, and
-`xlsxwriter` for the optional Excel workbook with an embedded editable chart.
+Use Python `pandas` for cleaning and reshaping, `matplotlib` for PNG output,
+`plotly` (with `plotly.graph_objects`) for the optional interactive HTML chart,
+and `xlsxwriter` for the optional Excel workbook with an embedded editable chart.
 If a chart dependency is missing, tell the user which package is missing and
 what was already prepared.
 
