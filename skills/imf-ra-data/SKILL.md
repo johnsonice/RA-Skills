@@ -67,7 +67,9 @@ If the user explicitly asks for R or Stata code:
 
 **This protocol is for iData sources only. For Haver sources, skip directly to [Haver Fetch](#haver-fetch).**
 
-**Never create a new Python script to explore or fetch data.** A pre-built fetch utility already exists. Follow these seven steps every time.
+**Never create a new Python script to explore or fetch data.** A pre-built fetch utility already exists.
+
+**Fast-path check:** Before following the seven steps, check whether all inputs are already known. If the catalog handoff contains confirmed `database`, `dimension_name`, `code`, `geo`, and `frequency`, AND the user has specified `start`, `end`, and output format in the same message, skip Steps 1–6 and go directly to Step 7.
 
 ### Step 1 — Catalog lookup
 
@@ -80,7 +82,9 @@ If you are arriving from a confirmed catalog handoff, check its shape: `database
 
 ### Step 2 — Read dimensions
 
-Once the database is confirmed, list its dimensions in key order:
+Skip this step if the catalog handoff already confirms all dimension names and values (e.g. a full WEO handoff with `database`, `dimension_name`, `code`, `geo`, and `frequency` covers all three WEO dimensions: COUNTRY · INDICATOR · FREQUENCY).
+
+When unresolved dimensions remain, list them in key order:
 
 ```bash
 python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --explore
@@ -164,7 +168,7 @@ Before executing, always ask the user which output format they want. Do **not** 
 
 **Refreshable is not the same as the raw API wide or long format** — it adds RA metadata columns and human-readable indicator labels that raw formats do not have.
 
-If the user has already stated a format preference earlier in the conversation, confirm it rather than re-asking.
+If the user has already stated a format preference at any point in the conversation, use it directly — do not ask again.
 
 ### Step 7 — Execute with the pre-built fetch utility
 

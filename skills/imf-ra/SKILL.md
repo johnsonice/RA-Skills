@@ -41,13 +41,11 @@ The umbrella does not execute the full workflow by itself. Worker skills chain b
 This policy applies across `imf-ra-catalog`, WEO country/group helpers, `imf-ra-data`, and chart handoffs.
 
 1. **Classify before acting.** Decide whether the request is exact lookup, fuzzy lookup, source routing, membership expansion, comparison, validation, handoff preparation, data pull, or charting.
-2. **Use direct references only for small exact checks.** Answer from CSV/Markdown directly only when the request is a single-record lookup that needs no ranking, expansion, API call, or computation.
-3. **Check helper maps before writing code.** For fuzzy, repeated, comparative, expansion, validation, handoff, or data-pull tasks, inspect the relevant helper command map first in markdowns. Existing helper commands are the preferred action.
-4. **Use the most specific helper.** If a helper covers the core task, run it and adapt its structured output. Do not rewrite helper logic for output styling or minor formatting differences.
-5. **Resolve ambiguity before execution.** If reference data produces multiple plausible official codes, groups, databases, dimensions, or variants, show candidates and ask for confirmation before committing.
-6. **Gate temporary code strictly.** Write temporary code only when no helper command or helper combination covers the core task, or when the task requires one-off transformation, analysis, or visualization beyond the helper scope.
-7. **Validate structured outputs.** Preserve and check returned fields such as `database`, `dimension_name`, `code`, `countrycode`, date/frequency fields, and DataFrame columns before handing off downstream.
-8. **Promote repeated patterns.** If the same temporary-code pattern appears repeatedly, document it and promote it into a permanent helper command later.
+2. **Pick the right lookup method.** Use CSV/Markdown direct reads only for single-row exact confirmation where no ranking, expansion, or computation is needed. Use the most specific helper command for everything else — fuzzy lookup, multi-record queries, group expansion, comparison, validation, handoff preparation, and data pulls. Do not write temporary code when a helper command covers the task.
+3. **Use the most specific helper.** If a helper covers the core task, run it and adapt its structured output. Do not rewrite helper logic for output styling or minor formatting differences.
+4. **Resolve ambiguity before execution.** If reference data produces multiple plausible official codes, groups, databases, dimensions, or variants, show candidates and ask for confirmation before committing.
+5. **Gate temporary code strictly.** Write temporary code only when no helper command or helper combination covers the core task, or when the task requires one-off transformation, analysis, or visualization beyond the helper scope.
+6. **Validate structured outputs.** Preserve and check returned fields such as `database`, `dimension_name`, `code`, `countrycode`, date/frequency fields, and DataFrame columns before handing off downstream.
 
 ## WEO Country And Group Conventions
 
@@ -66,3 +64,27 @@ For WEO country/group tasks involving ambiguity, membership expansion, compariso
 - When the user asks for charts, route to `imf-ra-charts` after data are available or after `imf-ra-data` produces tidy output.
 - When the catalog returns several plausible matches, present the candidates with distinction notes and ask for confirmation before fetching.
 - When a system/execution error blocks the RA workflow, or the user remains unsatisfied after repeated attempts and wants to report it, route to `imf-ra-error-report`. Reports are local JSON files under `tests/user_error_report/`; do not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
+
+## Handoff Contract
+
+The canonical inter-skill handoff object. All skills must produce and consume these exact field names and formats.
+
+**iData handoff:**
+
+```text
+database:        string   — iData resource ID (e.g. IMF.RES.WEO:WEO_LIVE)
+dimension_name:  string   — indicator dimension name (e.g. INDICATOR, TICKER, SERIES)
+code:            string   — indicator code (e.g. NGDP_RPCH)
+geo:             string?  — +-joined ISO3 codes (e.g. USA+GBR+DEU); absent if not geography-constrained
+frequency:       string?  — A | Q | M | D; absent if multi-frequency or not yet confirmed
+vintage:         string?  — full resource ID of a specific vintage; absent when using LIVE
+```
+
+**Haver handoff:**
+
+```text
+codes:           list     — ["CODE@DB", ...] using bare DB code without HAVER: prefix
+frequency:       string   — A | Q | M | W | D
+```
+
+`geo` is always `+`-joined ISO3 codes — never comma-separated. Use `expand-for-idata <GROUP> --codes-only` to produce a valid `geo` value from a WEO group.
