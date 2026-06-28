@@ -161,6 +161,19 @@ H1a. **Build target database list.** Read the Haver Analytics section of `databa
    | M/Q/A | Emerging markets | `EMERGE`, `EMERGELA`, `EMERGEPR`, `EMERGECW`, `EMERGEMA` |
    | M/Q/A | US | `USECON`, `G10`, and US-specific databases |
 
+   **Known EM sub-database coverage (use directly — do not rely on the `databases` command, which is unreliable):**
+
+   | Database | Geographic scope |
+   |---|---|
+   | `EMERGECW` | Central & Eastern Europe, CIS (Armenia, Czechia, Georgia, Hungary, Poland, Romania, Slovakia, etc.) |
+   | `EMERGELA` | Latin America (Brazil, Chile, Colombia, Mexico, Peru, etc.) |
+   | `EMERGEMA` | Middle East & Africa (Israel, Morocco, South Africa, Tunisia, Turkey, etc.) |
+   | `EMERGEPR` | Pacific Rim (China, India, Indonesia, Malaysia, Philippines, Singapore, Sri Lanka, Thailand, etc.) |
+   | `EMERGEFM` | Frontier Markets |
+   | `EMERGE` | Broad EM country summary database |
+   | `MENAR` | MENA region |
+   | `SUBAFR` | Sub-Saharan Africa |
+
    Do not search databases outside the confirmed dblist, and do not re-search the same database with different query variations.
 
 > ⚠️ **Never query `haver.db` with ad-hoc SQL `LIKE` patterns.** The `indicators` table has 12M+ rows with no text index — any `LIKE '%...%'` query does a full-table scan and will be extremely slow. Always use `haver_catalog_search.py` (FTS5) for all Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
@@ -171,7 +184,7 @@ H1b. **Search.** Choose ONE query string, then run a **single Bash call** coveri
 python skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search "<query>" --databases DB1 DB2 DB3 ... --limit 300
 ```
 
-The `--databases` flag is required (haver.db has 12M+ rows and unscoped searches are very slow). The output includes `aggtype` and `datatype` for every candidate.
+The `--databases` flag is required (haver.db has 12M+ rows and unscoped searches are very slow). The output includes `aggtype` and `datatype` for every candidate. Results from all specified databases are merged into a **single CSV block** with one header row — treat the combined output as one result set.
 
 **Set `--limit` to at least 300 for any multi-country or multi-database search.** The default limit is small and silently truncates results, which causes missed matches and forces re-runs that each trigger a permission prompt. Use `--limit 300` (or higher) whenever the confirmed dblist has 3+ databases or the concept plausibly matches many countries.
 

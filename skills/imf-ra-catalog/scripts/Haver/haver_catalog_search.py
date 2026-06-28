@@ -396,8 +396,10 @@ def write_rows(rows: list[dict[str, object]]) -> None:
 
 def cmd_search(args: argparse.Namespace) -> None:
     databases = args.databases if args.databases else ([args.database] if args.database else [None])
+    all_rows: list[dict[str, object]] = []
     for db in databases:
-        write_rows(search_indicators(args.query, database=db, limit=args.limit))
+        all_rows.extend(search_indicators(args.query, database=db, limit=args.limit))
+    write_rows(all_rows)
 
 
 def cmd_code(args: argparse.Namespace) -> None:
@@ -426,8 +428,13 @@ def cmd_databases(_args: argparse.Namespace) -> None:
         rows = list(
             conn.execute(
                 """
-                SELECT database, series_count, earliest_start, latest_end, distinct_frequencies
-                FROM database_summary
+                SELECT database,
+                       COUNT(*) AS series_count,
+                       MIN(startdate) AS earliest_start,
+                       MAX(enddate) AS latest_end,
+                       GROUP_CONCAT(DISTINCT frequency) AS distinct_frequencies
+                FROM indicators
+                GROUP BY database
                 ORDER BY upper(database)
                 """
             )

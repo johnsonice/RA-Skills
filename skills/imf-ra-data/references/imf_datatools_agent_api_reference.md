@@ -81,7 +81,7 @@ off the IMF network and has no macOS/Linux equivalent. From a Windows Command Pr
 PowerShell on an IMF-managed machine:
 
 ```powershell
-python \\ecnswn12p\ems_shared\pub\datatools\installer.py
+python \\ecnswn12p\ems_shared\pub\datatools\installer.py dev
 ```
 
 Test installation (any OS, once the SDK is present):

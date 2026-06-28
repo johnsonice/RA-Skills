@@ -41,11 +41,13 @@ The umbrella does not execute the full workflow by itself. Worker skills chain b
 This policy applies across `imf-ra-catalog`, WEO country/group helpers, `imf-ra-data`, and chart handoffs.
 
 1. **Classify before acting.** Decide whether the request is exact lookup, fuzzy lookup, source routing, membership expansion, comparison, validation, handoff preparation, data pull, or charting.
-2. **Pick the right lookup method.** Use CSV/Markdown direct reads only for single-row exact confirmation where no ranking, expansion, or computation is needed. Use the most specific helper command for everything else — fuzzy lookup, multi-record queries, group expansion, comparison, validation, handoff preparation, and data pulls. Do not write temporary code when a helper command covers the task.
-3. **Use the most specific helper.** If a helper covers the core task, run it and adapt its structured output. Do not rewrite helper logic for output styling or minor formatting differences.
-4. **Resolve ambiguity before execution.** If reference data produces multiple plausible official codes, groups, databases, dimensions, or variants, show candidates and ask for confirmation before committing.
-5. **Gate temporary code strictly.** Write temporary code only when no helper command or helper combination covers the core task, or when the task requires one-off transformation, analysis, or visualization beyond the helper scope.
-6. **Validate structured outputs.** Preserve and check returned fields such as `database`, `dimension_name`, `code`, `countrycode`, date/frequency fields, and DataFrame columns before handing off downstream.
+2. **Use direct references only for small exact checks.** Answer from CSV/Markdown directly only when the request is a single-record lookup that needs no ranking, expansion, API call, or computation.
+3. **Check helper maps before writing code.** For fuzzy, repeated, comparative, expansion, validation, handoff, or data-pull tasks, inspect the relevant helper command map first in markdowns. Existing helper commands are the preferred action.
+4. **Use the most specific helper.** If a helper covers the core task, run it and adapt its structured output. Do not rewrite helper logic for output styling or minor formatting differences.
+5. **Resolve ambiguity before execution.** If reference data produces multiple plausible official codes, groups, databases, dimensions, or variants, show candidates and ask for confirmation before committing.
+6. **Gate temporary code strictly.** Write temporary code only when no helper command or helper combination covers the core task, or when the task requires one-off transformation, analysis, or visualization beyond the helper scope.
+7. **Validate structured outputs.** Preserve and check returned fields such as `database`, `dimension_name`, `code`, `countrycode`, date/frequency fields, and DataFrame columns before handing off downstream.
+8. **Promote repeated patterns.** If the same temporary-code pattern appears repeatedly, document it and promote it into a permanent helper command later.
 
 ## WEO Country And Group Conventions
 
