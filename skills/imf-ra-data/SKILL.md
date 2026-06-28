@@ -143,7 +143,7 @@ The iData key is a dot-separated string of all dimension values in the exact ord
 - Combine multiple values within one dimension with `+` (e.g. `USA+GBR.NGDP_RPCH.A`).
 - The total number of dot-separated fields must match the total number of dimensions — do not add or drop dots.
 
-**Country group rule:** Do **not** use a WEO group/category column name (e.g. `Advanced Economies(AE)`, `Emerging Market and Developing Economies(EMDE)`) directly as the country selector in an iData key. If arriving from a catalog handoff, `geo` is already expanded to member `countrycode` values — use them directly. If geography was not resolved by the catalog, expand the group via `imf-ra` WEO group helpers and join member codes with `+`. Use a group aggregate value only when the database metadata explicitly confirms it is a valid dimension value.
+**Country group rule:** Do **not** use a WEO group/category column name (e.g. `Advanced Economies(AE)`, `Emerging Market and Developing Economies(EMDE)`) directly as the country selector in an iData key. If arriving from a catalog handoff, `geo` is already expanded to member `countrycode` values joined with `+` (e.g. `USA+GBR+DEU`) — use it directly as the iData dimension value. If geography was not resolved by the catalog, run `expand-for-idata <GROUP> --codes-only` — the output is `+`-joined and can be pasted directly into the iData dimension slot without further transformation. Use a group aggregate value only when the database metadata explicitly confirms it is a valid dimension value.
 
 ### Step 6 — Confirm output format
 
