@@ -76,7 +76,18 @@ Haver metadata is stored in a SQLite database, not a CSV. Use `scripts/Haver/hav
 4. Do not silently replace non-vintage `WEO_LIVE` with a dated WEO vintage. If the user asks for a WEO vintage but does not specify one, ask whether they want the latest available WEO Live vintage or a specific historical vintage.
 5. Search all databases only when WEO Live, GAS Live, and other highlighted databases in `database_overview.md` lack a plausible match, the user explicitly asks for another database family, or the concept is clearly outside WEO coverage.
 6. Use database-specific indicator files for Bloomberg, WDI, and WTO requests rather than the general non-vintage variable list.
-7. Treat Haver as a peer source, not a last resort. Route to the **Haver Lookup Path** proactively — without waiting for the user to name Haver — whenever the concept matches a Haver-owned data type (consult `databases/database_overview.md` for Haver sub-database coverage). For WEO-style macro concepts that exist in both iData and Haver, iData remains the default. When the concept is ambiguous between iData and Haver, use run an iData search  first, then the Haver Lookup Path; present both sets of results. Routing to Haver means entering the Haver Lookup Path at H1 — not running a search immediately.
+7. Treat Haver as a peer source, not a last resort. Use the routing table below — derive source routing from this table, not from memory:
+
+   | Concept type | Routing decision |
+   |---|---|
+   | Clearly WEO-style macro (GDP, inflation, CA balance, fiscal aggregates) | iData path only |
+   | User explicitly names Haver or a Haver database code | Haver Lookup Path exclusively |
+   | Clearly Haver-owned (see shortlist below) | Haver Lookup Path; no iData search needed |
+   | Ambiguous — plausibly either iData or Haver | Do H1 scoping AND run iData search concurrently; then run Haver search with confirmed dblist; present both results side by side |
+
+   **Haver-owned data types** (route directly to Haver Lookup Path without an iData search): US high-frequency economic indicators; US regional and state-level data; fund flows and capital market data; freight, shipping, and commodity prices; emerging-market country summaries (EMERGE family); private third-party forecasts and surveys; industry and trade statistics not published via WEO or IFS; daily or weekly financial data where INTDAILY / INTWKLY are the primary source.
+
+   Routing to Haver means entering the Haver Lookup Path at H1 — not running a search immediately.
 
 ## Legacy IFS Requests
 
@@ -112,7 +123,7 @@ Use this catalog-specific workflow after the umbrella `imf-ra` policy routes the
    - **Read `databases/database_overview.md` before any search.** Use it to determine which source family owns the concept. Do not route based on training assumptions — derive source routing from the overview every time.
    - If the concept matches Haver-owned categories (e.g. US weekly/daily data, fund flows, freight, US regional, emerging market country summaries, high-frequency financial, third-party forecasts, industry statistics), route to the **Haver Lookup Path** without running an iData search first. Do not wait for the user to name Haver.
    - If the user explicitly requests Haver or names a Haver database (USECON, EMERGE, WEEKLY, etc.), use the **Haver Lookup Path** exclusively for that request.
-   - When the concept could plausibly be in both iData and Haver, start with the **Haver Lookup Path** (complete all H1 scoping first), then run an iData search; present results from both sources.
+   - When the concept could plausibly be in both iData and Haver, do H1 scoping (collect country/frequency — no search yet) AND run an iData search concurrently; then run the Haver search with the confirmed dblist; present both results side by side.
    - If an iData search returns no useful match and Haver has not yet been searched, go to the **Haver Lookup Path** before declaring a gap.
 
    → **Haver source selected:** Go to the Haver Lookup Path below. Do **not** run any search until H1 scoping is complete.
@@ -152,6 +163,8 @@ H1a. **Build target database list.** Read the Haver Analytics section of `databa
 
    Do not search databases outside the confirmed dblist, and do not re-search the same database with different query variations.
 
+> ⚠️ **Never query `haver.db` with ad-hoc SQL `LIKE` patterns.** The `indicators` table has 12M+ rows with no text index — any `LIKE '%...%'` query does a full-table scan and will be extremely slow. Always use `haver_catalog_search.py` (FTS5) for all Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
+
 H1b. **Search.** Choose ONE query string, then run a **single Bash call** covering all databases in the confirmed dblist using `--databases`. Do not issue separate Bash calls per database — each separate call triggers its own permission prompt.
 
 ```bash
@@ -162,7 +175,7 @@ The `--databases` flag is required (haver.db has 12M+ rows and unscoped searches
 
 **Set `--limit` to at least 300 for any multi-country or multi-database search.** The default limit is small and silently truncates results, which causes missed matches and forces re-runs that each trigger a permission prompt. Use `--limit 300` (or higher) whenever the confirmed dblist has 3+ databases or the concept plausibly matches many countries.
 
-**One query, one pass.** Decide on the best query string before running. Each database is searched exactly once. Do not re-run with alternative phrasings — the FTS5 scorer expands synonyms internally (e.g. `treasury` → `government bond yield`). Accept the first-pass results.
+**One query, one rephrase maximum.** Decide on the best query string before running. The FTS5 scorer expands synonyms internally (e.g. `treasury` → `government bond yield`), so a well-chosen query rarely needs rephrasing. If the first pass returns fewer than 3 useful candidates, you may run one additional search with an alternative phrasing. Do not run more than two searches per session.
 
 H2. **Present results with variant choices.** Group all candidates by country. For each candidate, show `code`, `name`, `aggtype`, `datatype`, and `frequency`. Ask the user to:
    1. Select the countries they want.
@@ -279,9 +292,9 @@ Searches the local `haver.db` SQLite database using FTS5 full-text search and sy
 5. **Use direct references only for small exact checks:** CSV/Markdown inspection is fine for one-row confirmation or schema guidance; use helper commands for fuzzy, routed, comparative, vintage, or handoff workflows.
 6. **Promote repeated gaps:** Write temporary code only when no helper command covers the task; if the same pattern repeats, add it to `catalog_search.py`.
 7. **Keep responsibilities separate:** Catalog helpers do not fetch data, expand country groups, choose country membership, choose date ranges, transform series, or build charts.
-8. **Never query haver.db with ad-hoc SQL LIKE patterns.** The `indicators` table has 12M+ rows and no index on `descriptor` — unscoped `LIKE '%...%'` queries do full-table scans and are very slow. Always use `haver_catalog_search.py` (FTS5) for Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
+8. **Never query `haver.db` with ad-hoc SQL `LIKE` patterns.** The `indicators` table has 12M+ rows and no index on `descriptor` — unscoped `LIKE '%...%'` queries do full-table scans and are very slow. Always use `haver_catalog_search.py` (FTS5) for Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
 9. **Batch all Haver database searches into one Bash call.** When the confirmed dblist has multiple databases, use `--databases DB1 DB2 ...` in a single invocation — never one Bash call per database. Each separate call triggers a permission prompt.
-10. **One query per search session, no reruns.** The FTS5 scorer handles synonyms internally. Do not re-run the same database with a rephrased query to find more results — accept the first-pass output.
+10. **At most two searches per Haver session.** The FTS5 scorer handles synonyms internally. Run one carefully chosen query first; if fewer than 3 useful candidates are returned, one rephrase is permitted. Do not run more than two searches total.
 11. **Always use `--limit 300` or higher for broad searches.** Never use a small limit (e.g. 15, 20, 30) for multi-country or multi-database searches. A truncated result set forces re-runs, which generate additional permission prompts. Use `--limit 300` as the default for any search covering 3+ databases or concepts that span many countries.
 
 ## Ambiguity and Uncertainty
