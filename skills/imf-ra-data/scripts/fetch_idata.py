@@ -731,7 +731,12 @@ def main():
         print(f"{args.dim_values} values for {args.db}:")
         print("-" * 60)
         for _, row in vals.iterrows():
-            print(f"  {row['Name']} ({row['Code']})")
+            col_lower = {c.lower(): c for c in row.index}
+            name_col = col_lower.get("name")
+            code_col = col_lower.get("code")
+            name = row[name_col] if name_col else (row.iloc[0] if len(row) > 0 else "?")
+            code = row[code_col] if code_col else (row.iloc[1] if len(row) > 1 else "?")
+            print(f"  {name} ({code})")
         return
 
     # ── Fetch mode ────────────────────────────────────────────────────────────
@@ -844,6 +849,18 @@ def main():
         layout = "card" if "Label" in out.columns else "wide"
         print(f"Layout   : refreshable ({layout})")
         print(f"Output shape: {out.shape[0]} rows x {out.shape[1]} columns")
+        # Warn about tickers that returned no data
+        key_first_dim = args.key.split(".")[0] if args.key else ""
+        if "+" in key_first_dim:
+            requested = set(key_first_dim.split("+"))
+            data_cols = {c.split(".")[0] for c in out.columns if c != "Label"}
+            dropped = requested - data_cols
+            if dropped:
+                print(
+                    f"Warning: {len(dropped)} ticker(s) returned no data and were excluded: "
+                    f"{', '.join(sorted(dropped))}",
+                    file=sys.stderr,
+                )
         print()
         print(out.head().to_string())
         saved = save_output(out, args.output)
