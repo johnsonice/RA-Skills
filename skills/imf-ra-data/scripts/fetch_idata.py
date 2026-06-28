@@ -336,7 +336,8 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
 
         row_data: dict = {"DATASET": db, "Series_Code": series_code}
         row_data["SCALE"] = scale_label if scale_label is not None else ""
-        row_data["UNIT"] = unit_label if unit_label is not None else ""
+        if unit_label:
+            row_data["UNIT"] = unit_label
         if country_col:
             idx = id_cols.index(country_col)
             cv  = str(series_key[idx])
@@ -353,7 +354,9 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
             row_data[lbl] = r[val_col]
         series_data[series_code] = row_data
 
-    meta_labels = ["DATASET", "Series_Code", "SCALE", "UNIT"]
+    meta_labels = ["DATASET", "Series_Code", "SCALE"]
+    if any("UNIT" in d for d in series_data.values()):
+        meta_labels.append("UNIT")
     if country_col:
         meta_labels += ["COUNTRY", "ISO3", "IFSCODE"]
     for col in id_cols:
@@ -382,7 +385,8 @@ def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
     out = pd.DataFrame(index=grp.index)
     out["DATASET"] = db
     out["SCALE"] = scale_label if scale_label is not None else ""
-    out["UNIT"] = unit_label if unit_label is not None else ""
+    if unit_label:
+        out["UNIT"] = unit_label
 
     if id_cols:
         out["Series_Code"] = grp[id_cols].apply(
