@@ -75,7 +75,7 @@ If the user explicitly asks for R or Stata code:
 
 If the identifier is not yet confirmed, invoke **`imf-ra-catalog`** — do **not** search catalog files directly from this skill.
 
-- **iData path:** the catalog uses `resolve "<query>" --json`. If it returns `status=resolved` with a `handoff` object (`database`, `dimension_name`, `code`), proceed to Step 2. If `status=ambiguous`, present the `candidates` list from the catalog result to the user with distinction notes and wait for explicit confirmation. **Do not run additional catalog searches to self-resolve ambiguity — doing so bypasses the user's ability to choose the correct variant (e.g. growth rate vs. level, nominal vs. real, domestic currency vs. USD).**
+- **iData path:** the catalog uses `resolve "<query>" --json`. If it returns `status=resolved` with a `handoff` object (`database`, `dimension_name`, `code`), proceed to Step 2. If `status=ambiguous`, surface the clarification and wait.
 - **Haver path:** the catalog uses the Haver Lookup Path (H1–H3: scope → build dblist → search → surface variants → confirm). When the `codes` list is confirmed, skip Steps 2–7 entirely and go to [Haver Fetch](#haver-fetch).
 
 If you are arriving from a confirmed catalog handoff, check its shape: `database + code` fields → Step 2; `codes` list → Haver Fetch.
@@ -84,16 +84,7 @@ If you are arriving from a confirmed catalog handoff, check its shape: `database
 
 Skip this step if the catalog handoff already confirms all dimension names and values (e.g. a full WEO handoff with `database`, `dimension_name`, `code`, `geo`, and `frequency` covers all three WEO dimensions: COUNTRY · INDICATOR · FREQUENCY).
 
-**Fast-path known key formats — skip `--explore` for these databases:**
-
-| Database | Key format | Standard example |
-|---|---|---|
-| `IMF.RES.WEO:WEO_LIVE` | `COUNTRY.INDICATOR.FREQUENCY` | `USA+GBR.NGDP_RPCH.A` |
-| `IMF.CSF:BBGDL` | `TICKER.FIELD.FREQUENCY` | `GCNY2YR_INDEX.PX_LAST.D` |
-
-> **`IMF.CSF:BBGDL` note:** Use `FIELD=PX_LAST` and `FREQUENCY=D` for all yield, price, and rate index series. These are the only operationally validated values. `--dimension-values FIELD` is unreliable for this database — do not depend on it.
-
-For any other database, run `--explore` to get dimensions in key order:
+When unresolved dimensions remain, list them in key order:
 
 ```bash
 python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --explore
@@ -212,7 +203,7 @@ Refreshable output layout is auto-selected by data shape (indicators × countrie
 | `DATASET` | Always | The `--db` argument |
 | `Series_Code` | Always | All dimension values joined with `.` in key order |
 | `SCALE` | Always present | Human-readable scale label: `Units` / `Thousands` / `Millions` / `Billions`; empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
-| `UNIT` | Always present | Unit string from metadata (e.g. `National currency`, `Percent`); empty when unavailable |
+| `UNIT` | When metadata has unit info | Unit string decoded from metadata (e.g. `National currency`, `Percent`); column omitted entirely when the database has no unit metadata (e.g. BBGDL) |
 | `COUNTRY` | Country dimension detected | Human-readable name looked up from `imf-ra` `country_group.csv` |
 | `ISO3` | Country dimension detected | Raw ISO3 code from the data |
 | `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `country_group.csv` (`countrycode_s`) |
@@ -229,7 +220,7 @@ One tab per indicator (named by indicator label, max 31 chars). Within each tab:
 | `DATASET` | Database identifier |
 | `Series_Code` | Dot-separated dimension values for that series |
 | `SCALE` | Human-readable scale label (`Units` / `Thousands` / `Millions` / `Billions`); empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
-| `UNIT` | Unit string from metadata (e.g. `National currency`, `Percent`); empty when unavailable |
+| `UNIT` | Unit string decoded from metadata (e.g. `National currency`, `Percent`); row omitted entirely when the database has no unit metadata (e.g. BBGDL) |
 | `COUNTRY` | Human-readable country name (when country dimension present) |
 | `ISO3` | Raw ISO3 code (when country dimension present) |
 | `IFSCODE` | IFS code (when country dimension present) |
