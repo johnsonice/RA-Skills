@@ -190,8 +190,7 @@ def fetch_metadata(db, key):
                         raw = str(vals[0])
                         unit_label = _UNIT_LABELS.get(raw, raw)
                     break
-            if not unit_label:
-                print("Warning: unit metadata not found — UNIT column will be empty.", file=sys.stderr)
+
         elif isinstance(meta, dict):
             if "scale" in meta:
                 scale = int(meta["scale"])
@@ -200,8 +199,7 @@ def fetch_metadata(db, key):
                     raw = str(meta[col])
                     unit_label = _UNIT_LABELS.get(raw, raw)
                     break
-            if not unit_label:
-                print("Warning: unit metadata not found — UNIT column will be empty.", file=sys.stderr)
+
         return scale, unit_label
     except Exception as exc:
         print(f"Warning: metadata lookup failed ({exc}) — SCALE and UNIT will be empty.", file=sys.stderr)
