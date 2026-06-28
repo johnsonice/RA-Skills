@@ -58,7 +58,7 @@ Examples:
   # WDI — indicator dim is SERIES
   python skills/imf-ra-data/scripts/fetch_idata.py --db "WB:WDI" --key "A.AG_CON_FERT_PT_ZS.AFE" --start 2000 --end 2023 --format refreshable --indicator-dim SERIES
 
-  # Multi-indicator → refreshable produces long layout (one row per observation)
+  # Multi-indicator → refreshable produces card layout (Label col + one col per series)
   python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA.NGDP_RPCH+NGDP_D.A" --start 2000 --end 2026 --format refreshable
 
   python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.STA:CPI" --key "USA+JPN.CPI._T.IX.M" --start 2010 --end 2026 --format long
@@ -81,6 +81,24 @@ import pandas as pd
 from imf_datatools import idata_utilities
 
 SCALE_LABELS = {0: "Units", 3: "Thousands", 6: "Millions", 9: "Billions"}
+
+# Map raw SDMX unit codes to human-readable labels.
+# Codes not in this map pass through as-is (raw SDMX code shown in output).
+_UNIT_LABELS: dict[str, str] = {
+    "XDC": "National currency",
+    "USD": "US dollars",
+    "EUR": "Euro",
+    "GBP": "British pounds",
+    "JPY": "Japanese yen",
+    "CNY": "Chinese yuan",
+    "PCT": "Percent",
+    "PC_GDP": "Percent of GDP",
+    "PCT_GDP": "Percent of GDP",
+    "IX": "Index",
+    "PURE_NUMB": "Pure number",
+    "PERSONS": "Persons",
+    "MONTHS": "Months",
+}
 
 # LIVE databases (WEO_LIVE, GAS_LIVE, GEE_LIVE, etc.) are private IMF datasets.
 # Safe to leave on for public databases as well.
@@ -116,7 +134,9 @@ COUNTRIES_CSV = _resolve_countries_csv()
 _COUNTRY_DIMS = ("COUNTRY", "country", "GEO", "geo", "REF_AREA", "COUNTERPART_AREA")
 
 # Fallback candidate names for the indicator dimension when --indicator-dim is not specified.
-# Prefer explicit --indicator-dim (from catalog handoff) over this list.
+# IMPORTANT: Always pass --indicator-dim from the catalog handoff (dimension_name field).
+# This fallback is a last resort — databases whose indicator dimension is not in this list
+# will silently produce output with no indicator labels or multi-sheet grouping.
 _INDICATOR_DIMS = (
     "INDICATOR", "indicator",
     "SERIES", "series",
@@ -163,21 +183,28 @@ def fetch_metadata(db, key):
                 vals = meta["scale"].dropna().unique()
                 if len(vals) >= 1:
                     scale = int(vals[0])
-            for col in ("unit", "UNIT", "units", "UNITS"):
+            for col in ("unit", "UNIT", "units", "UNITS", "UNIT_MEASURE", "unit_measure"):
                 if col in meta.columns:
                     vals = meta[col].dropna().unique()
                     if len(vals) >= 1:
-                        unit_label = str(vals[0])
+                        raw = str(vals[0])
+                        unit_label = _UNIT_LABELS.get(raw, raw)
                     break
+            if not unit_label:
+                print("Warning: unit metadata not found — UNIT column will be empty.", file=sys.stderr)
         elif isinstance(meta, dict):
             if "scale" in meta:
                 scale = int(meta["scale"])
-            for col in ("unit", "UNIT", "units", "UNITS"):
+            for col in ("unit", "UNIT", "units", "UNITS", "UNIT_MEASURE", "unit_measure"):
                 if col in meta:
-                    unit_label = str(meta[col])
+                    raw = str(meta[col])
+                    unit_label = _UNIT_LABELS.get(raw, raw)
                     break
+            if not unit_label:
+                print("Warning: unit metadata not found — UNIT column will be empty.", file=sys.stderr)
         return scale, unit_label
-    except Exception:
+    except Exception as exc:
+        print(f"Warning: metadata lookup failed ({exc}) — SCALE and UNIT will be empty.", file=sys.stderr)
         return None, ""
 
 
@@ -704,8 +731,7 @@ def main():
         print(f"{args.dim_values} values for {args.db}:")
         print("-" * 60)
         for _, row in vals.iterrows():
-            #print(f"  {row['Name']} ({row['Code']})")
-            print(f" {row})")
+            print(f"  {row['Name']} ({row['Code']})")
         return
 
     # ── Fetch mode ────────────────────────────────────────────────────────────

@@ -104,6 +104,8 @@ Compare what the user specified against the dimensions returned. Required inputs
 | Dimension has multiple values and user did not specify | Ask the user — do not list all options upfront |
 | `start` / `end` not specified | **Always ask** — do not assume or default |
 
+**To determine whether a dimension has one or multiple values**, run `--dimension-values <DIM>` for each unresolved dimension before deciding to auto-resolve or ask. Do not assume a dimension is single-valued without checking.
+
 **Never guess or hardcode a dimension value.**
 
 For country and group dimensions, translate RA-friendly names ("advanced economies", "G7", "EMDE") through `imf-ra` conventions before presenting or validating codes.
@@ -150,10 +152,11 @@ Before executing, always ask the user which output format they want. Do **not** 
 > **Output format** — which would you like?
 > - **Refreshable** — RA enriched Excel (`.xlsx`) with human-readable indicator labels; `COUNTRY`, `ISO3`, `IFSCODE` added when a country dimension is present. Layout auto-selected by data shape:
 >   - **Multi-sheet card** (triggered when indicators > 1 AND countries > 1 AND time periods > 1): one tab per indicator; each tab is card format (first column = `Label` with metadata + date rows, one column per series/country).
->   - **Wide** (single indicator cases): single sheet, dates as columns, one row per series.
->   - **Long** (all other cases): single sheet, card format.
+>   - **Wide** (single indicator): single sheet, dates as columns, one row per series.
+>   - **Card** (multiple indicators, but not all three dimensions plural): single sheet, card format (first column = `Label` with metadata + date rows, one column per series across all indicators).
 >
 >   Always `.xlsx`.
+
 > - **Wide** — raw API output as-is, dates as rows, series as columns.
 > - **Long** — raw API output as-is, one row per observation.
 >
@@ -169,7 +172,7 @@ Once all dimensions, time range, and output format are confirmed, call `fetch_id
 
 ```bash
 # Refreshable RA Excel (layout auto-selected by number of indicators).
-# --indicator-dim comes from the catalog handoff; omit it if the dimension is INDICATOR.
+# Always pass --indicator-dim using dimension_name from the catalog handoff (e.g. INDICATOR, TICKER, SERIES).
 python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --key "<dot.separated.key>" --start "<YYYY>" --end "<YYYY>" --format refreshable --indicator-dim "<dimension_name>"
 
 # Wide (CSV by default; add --excel for Excel)
@@ -260,6 +263,7 @@ For all iData sources (handoff has `database`, `dimension_name`, `code` fields �
 - `geo` — if confirmed by the catalog, it is already expanded to member `countrycode` values (e.g. `USA+GBR+DEU`), not a group name. Use it directly as the country dimension value in the key; skip asking the user for geography in Step 3.
 - For WEO candidates, keep the LIVE database as the priority — do not substitute a vintage unless the user asked for one.
 - Resolve all remaining dimensions and the time range via Steps 2–6 before calling `fetch_idata.py`.
+- If the handoff is missing `dimension_name`, run `--explore` on the database, then match the catalog `code` value against each dimension using `--dimension-values <DIM>` to identify which dimension it belongs to. Ask the user to confirm if more than one dimension is a plausible match.
 
 ## Haver Fetch
 
@@ -277,7 +281,7 @@ The catalog handoff pre-confirms all series-selection decisions. The only remain
 Ask the user which format they want:
 
 > **Output format** — which would you like?
-> - **Refreshable** — Card-format `.xlsx`: metadata rows (`.DESC`, `.T1`, `.TN`, `.LSOURCE`, `.AGG`, `.FRQ`, `.DATA_TYPE`, `.MAG`) followed by date rows; one column per series. **Haver date format note:** Monthly date row labels use `YYYYMM` format with no zero-padding (e.g. `202101`, `202102`, …, `202112`).
+> - **Refreshable** — Card-format `.xlsx`: metadata rows (`.DESC`, `.T1`, `.TN`, `.LSOURCE`, `.AGG`, `.FRQ`, `.DATA_TYPE`, `.MAG`) followed by date rows; one column per series. **Haver date format note:** Monthly date row labels use zero-padded `YYYYMM` format (e.g. `202101`, `202102`, …, `202112`).
 > - **Wide** — Dates as rows, one column per series. CSV or Excel. Monthly dates appear as `YYYY-MM-DD` (e.g. `2021-01-01`).
 > - **Long** — One row per observation: `Date`, `Ticker`, `Value`. CSV or Excel. Monthly dates appear as `YYYY-MM-DD` (e.g. `2021-01-01`).
 
@@ -299,6 +303,5 @@ See [references/imf_datatools_agent_api_reference.md § 9](references/imf_datato
 ## Safe query policy
 
 - Avoid broad `ALL` pulls unless explicitly requested.
-- For large country panels (e.g. all EMDE), pass the full `+`-joined country list — `fetch_idata.py` automatically chunks requests into batches of 25 and merges results. Use `--chunk-size N` to override the default.
 - Validate dimension names and values with metadata calls before retrieval.
 - For iData dimensions, always use the exact dimension names returned by `--explore` — do not assume names like `COUNTRY`, `INDICATOR`, or `FREQUENCY`, as they vary by database (e.g. `REF_AREA`, `SERIES`, `FREQ`, `TICKER`).
