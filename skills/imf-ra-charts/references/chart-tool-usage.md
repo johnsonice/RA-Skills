@@ -1,7 +1,8 @@
 # Chart Workflow And Output Contract
 
 This file is the V1 operating contract for `imf-ra-charts`. The skill produces
-static PNG charts through Python, not an internal charting tool.
+static PNG charts through Python, not an internal charting tool. A parallel
+interactive HTML output using Plotly is available as an optional second format.
 
 ## Scope
 
@@ -12,12 +13,13 @@ V1 includes:
 - cleaning and transforming data into a plotting-ready table inside the script;
 - recommending a reasonable chart type when the user does not specify one;
 - producing a PNG as the required primary output;
-- saving the complete Python script that reproduces every PNG;
+- producing a self-contained interactive HTML chart (Plotly) as a parallel optional output when the user asks for interactive;
+- saving the complete Python script that reproduces every PNG (and HTML when produced);
 - applying the IMF house styling rules in `chart-formatting-rules.md`;
 - offering an optional editable Excel workbook after the PNG is ready.
 
-V1 excludes mimicry of user-provided example charts, PPT decks, interactive
-dashboards, new data retrieval logic, and a large custom charting framework.
+V1 excludes mimicry of user-provided example charts, PPT decks, new data
+retrieval logic, and a large custom charting framework.
 
 ## Input Order
 
@@ -59,7 +61,8 @@ Use stable, readable, lowercase file names based on the chart topic:
 chart-temp/
   real_gdp_growth_selected_economies.png
   real_gdp_growth_selected_economies_generate.py
-  real_gdp_growth_selected_economies.xlsx  # optional
+  real_gdp_growth_selected_economies.html   # optional interactive
+  real_gdp_growth_selected_economies.xlsx   # optional Excel
 ```
 
 If a file already exists, avoid accidental overwrite by adding a version suffix
@@ -67,7 +70,7 @@ such as `_v2`, unless the user explicitly asks to replace the prior output.
 
 ## Required Outputs
 
-Every successful PNG chart must save these required files:
+Every successful chart session must save these required files:
 
 - the PNG;
 - the Python script that generated the PNG.
@@ -82,6 +85,25 @@ The Python script is the reproducibility record. It must include:
 - lightweight QA checks, such as required columns, numeric values, missing data,
   duplicate observations, and non-empty output;
 - the plotting code and PNG save path.
+
+## Interactive HTML Output (Optional Parallel)
+
+Produce a self-contained interactive HTML chart using `plotly.graph_objects` when
+the user asks for an interactive chart or uses the word "interactive". The HTML
+is a parallel output — it accompanies the PNG, never replaces it.
+
+Rules:
+- Use `fig.write_html(path, include_plotlyjs="cdn")` to keep the file small
+  (loads Plotly from CDN; requires internet) or `include_plotlyjs=True` for a
+  fully self-contained offline file.
+- Apply the same title, axis labels, units, source note, and series colors as
+  the PNG.
+- Add hover templates showing year and value with unit label.
+- Save as `<topic>_interactive.html` beside the PNG in `chart-temp/`.
+- Include the HTML generation code in the same Python script as the PNG, gated
+  by an `INTERACTIVE = True` flag at the top so the script is self-documenting.
+- Open the HTML in the default browser after saving so the user sees it
+  immediately: `import webbrowser; webbrowser.open(str(html_path))`.
 
 Do not create separate chart-ready CSV or chart spec CSV files by default. If
 the user explicitly asks for intermediate data exports, create them as optional
@@ -98,10 +120,11 @@ extras and label them clearly.
 6. Clean and transform data according to the transformation rules.
 7. Choose a chart type from user instruction or the consulting rules.
 8. Write and run the complete Python script to generate an initial reasonable
-   PNG.
+   PNG (and interactive HTML if requested).
 9. Run QA before delivery.
 10. Keep the exact Python script beside the PNG.
-11. Show or link the PNG to the user.
+11. Show or link the PNG to the user; if HTML was produced, open it in the
+    browser automatically and tell the user where the file is.
 12. Offer the optional Excel workbook.
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
