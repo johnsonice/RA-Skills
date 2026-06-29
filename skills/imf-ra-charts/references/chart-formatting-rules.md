@@ -62,9 +62,11 @@ When preparing figures for Word reports:
 
 ## Typography
 
-Use Segoe UI as the default chart font.
+Use Segoe UI as the preferred chart font. For Matplotlib PNG output, check
+whether Segoe UI is available at runtime; if it is not available, use Arial.
+For Excel workbook output, keep Segoe UI as the default chart font.
 
-For chart-sheet style outputs:
+For Excel chart-sheet style outputs:
 
 | Element | Font | Size | Color |
 |---|---|---:|---|
@@ -207,7 +209,25 @@ scale instead of unrelated categorical colors.
 
 Generated Python scripts should encode the formatting choices explicitly:
 
-- Set `font.family` to `Segoe UI`.
+- Check whether Segoe UI is available before setting the Matplotlib font. Use
+  Segoe UI when available; otherwise use Arial, with common sans-serif
+  fallbacks:
+
+```python
+from matplotlib import font_manager
+
+def choose_chart_font():
+    try:
+        font_manager.findfont("Segoe UI", fallback_to_default=False)
+        return "Segoe UI"
+    except ValueError:
+        return "Arial"
+
+CHART_FONT = choose_chart_font()
+plt.rcParams["font.family"] = "sans-serif"
+plt.rcParams["font.sans-serif"] = [CHART_FONT, "Arial", "Helvetica", "DejaVu Sans"]
+```
+
 - Set `figsize=(13.333, 7.5)` and `dpi=150`.
 - Set title and subtitle positions explicitly. For standalone centered headers,
   use title `y=0.955`, subtitle `y=0.885`, and keep at least `0.05` figure
