@@ -33,7 +33,14 @@ Placement:
 
 - Align title, subtitle, plot area, and source note to the same left edge.
 - Place title at the top-center above the plot area.
-- Place subtitle directly below the title.
+- Place subtitle directly below the title with enough vertical separation that
+  the two lines read as distinct elements, not one stacked title block.
+- On the default `2000 x 1125` PNG canvas, use these baseline vertical
+  positions for standalone centered headers: title center `y=0.955`; subtitle
+  center `y=0.885`; plot area top no higher than `0.82`.
+- Keep at least `0.05` of figure-height whitespace between the title center and
+  subtitle center. Increase this gap for multi-line titles, long subtitles, or
+  larger title fonts.
 - Place source and notes at the bottom-left below the plot area.
 - Keep source and notes outside the plotting area whenever practical.
 
@@ -202,7 +209,10 @@ Generated Python scripts should encode the formatting choices explicitly:
 
 - Set `font.family` to `Segoe UI`.
 - Set `figsize=(13.333, 7.5)` and `dpi=150`.
-- Set subplot margins to approximately left `0.08`, right `0.96`, top `0.84`,
+- Set title and subtitle positions explicitly. For standalone centered headers,
+  use title `y=0.955`, subtitle `y=0.885`, and keep at least `0.05` figure
+  height between them.
+- Set subplot margins to approximately left `0.08`, right `0.96`, top `0.82`,
   bottom `0.14`, adjusting bottom margin as needed for notes or long labels.
 - Define brand color constants in the script.
 - Set title, subtitle, axis label, tick label, source, and legend font sizes
