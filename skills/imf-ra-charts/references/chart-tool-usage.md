@@ -5,19 +5,11 @@ static PNG charts through Python, not an internal charting tool.
 
 ## Scope
 
-V1 includes:
-
-- charting data fetched through `imf-ra-data`;
-- charting user-provided Excel or CSV data;
-- cleaning and transforming data into a plotting-ready table inside the script;
-- recommending a reasonable chart type when the user does not specify one;
-- producing a PNG as the required primary output;
-- saving the complete Python script that reproduces every PNG;
-- applying the IMF house styling rules in `chart-formatting-rules.md`;
-- offering an optional editable Excel workbook after the PNG is ready.
-
-V1 excludes mimicry of user-provided example charts, PPT decks, interactive
-dashboards, new data retrieval logic, and a large custom charting framework.
+- data from `imf-ra-data` or user-provided CSV/Excel files;
+- cleaning and reshaping data inside the generated script;
+- a reasonable chart choice when the user does not specify one;
+- a PNG plus the complete Python script that reproduces it;
+- an optional editable Excel workbook after the PNG is ready.
 
 ## Input Order
 
@@ -48,11 +40,6 @@ be deleted after this charting session, so save anything you need to keep. Is
 that okay?
 ```
 
-`chart-temp/` is a temporary session workspace, not a durable project folder.
-Before deleting it, make sure any deliverables the user wants to keep have been
-moved, attached, or otherwise handed off. Delete `chart-temp/` after the
-charting session ends.
-
 Use stable, readable, lowercase file names based on the chart topic:
 
 ```text
@@ -64,6 +51,10 @@ chart-temp/
 
 If a file already exists, avoid accidental overwrite by adding a version suffix
 such as `_v2`, unless the user explicitly asks to replace the prior output.
+
+`chart-temp/` is a temporary workspace. Before deleting it, make sure any
+deliverables the user wants to keep have been moved, attached, or otherwise
+handed off. Delete `chart-temp/` after the charting session ends.
 
 ## Required Outputs
 
@@ -84,7 +75,7 @@ The Python script is the reproducibility record. It must include:
 - the plotting code and PNG save path.
 
 Do not create separate chart-ready CSV or chart spec CSV files by default. If
-the user explicitly asks for intermediate data exports, create them as optional
+the user explicitly asks for intermediate exports, create them as optional
 extras and label them clearly.
 
 ## Execution Flow
@@ -108,65 +99,37 @@ extras and label them clearly.
 14. After the session ends and retained deliverables have been handed off,
     delete `chart-temp/`.
 
-## Data Cleaning
+## Data Preparation
 
-V1 should support common chart-preparation steps:
-
-- normalize dates or periods;
-- convert values to numeric;
-- standardize country, group, and series labels;
-- reshape long data to wide plotting-ready data when useful;
-- reshape wide data to long clean data when useful;
-- sort time periods and categories;
-- drop or flag empty observations;
-- preserve missing values intentionally rather than hiding them silently.
+Use Tier 1 preparation from `chart-consulting-rules.md` for routine cleanup:
+date parsing, numeric conversion, label trimming, reshaping, sorting, filtering,
+and empty-row handling. Preserve missing values intentionally rather than hiding
+them silently.
 
 Record transformations and important cleaning choices in the generated Python
 script.
 
-## PNG Requirements
-
-The PNG should include:
-
-- clear title;
-- axis labels with units;
-- readable legend or direct labels;
-- source note when known;
-- footnote for forecasts, vintages, or transformations when relevant.
-
-Default visual style:
-
-- white background;
-- IMF house style from `chart-formatting-rules.md`;
-- clear title and subtitle when useful;
-- readable font sizes;
-- light gridlines only when they help reading values;
-- sorted bars for cross-sectional comparisons;
-- no decorative effects.
-
 ## QA Before Delivery
 
-Check and record whether:
+Check and record whether the:
 
-- the PNG exists and is not blank;
-- plotting-ready data has at least one row;
-- required axis/value fields exist;
-- the value field is numeric;
-- duplicate observations were checked;
-- missing values were handled intentionally;
-- the chart is understandable without relying on the note;
-- title, unit, and source notes are present when available;
-- labels and legend are readable and do not cover the data;
-- axes are not misleading for the chart type;
-- bars or categories are sorted when sorting improves interpretation;
-- too many series are not squeezed into one unreadable chart;
-- transformations are recorded in the generated Python script.
+- PNG exists and is not blank;
+- plotting-ready data has rows, required fields, numeric values, and no
+  unexpected duplicate observations;
+- missing values and transformations are handled intentionally;
+- title, unit, source, caveats, labels, and legend are readable when present;
+- axes and chart type are not misleading;
+- chart avoids crowding, clutter, and unsupported transformations;
+- generated Python script records the data source, cleaning, transformations,
+  metadata, QA checks, plotting code, and PNG path.
 
 ## Optional Excel Workbook
 
 Only create the Excel workbook if the user confirms they want it after seeing
-the PNG offer. The workbook is optional and does not replace the required Python
-script.
+the PNG offer. Use a short prompt: `Would you like an editable Excel workbook
+with the chart data and embedded chart?`
+
+The workbook is optional and does not replace the required Python script.
 
 Required sheets:
 

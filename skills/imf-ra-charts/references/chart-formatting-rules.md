@@ -1,18 +1,22 @@
 # Chart Formatting Rules
 
-Use these rules as the IMF house styling layer for standard static charts.
-They define the default visual appearance for `imf-ra-charts`; they do not
-override the analytical safety and chart-selection rules in
+Use these rules as the default static-chart formatting layer for
+`imf-ra-charts`. They define clean IMF-style defaults, not mimicry of
+user-provided examples, PPT deck production, or a separate charting scope. They
+do not override the analytical safety and chart-selection rules in
 `chart-consulting-rules.md`.
 
 ## Formatting Priority
 
-Apply formatting in this order:
+If the user gives no specific formatting requirement, use the IMF-style defaults
+in this file as the first-priority formatting rule. Apply formatting in this
+order:
 
-1. Preserve analytical clarity and avoid misleading encodings.
-2. Make the chart readable without relying on notes.
-3. Apply the IMF house style canvas, typography, color, and spacing rules below.
-4. Adjust only when the data shape, chart type, or user request requires it.
+1. Start from the IMF-style canvas, typography, color, and spacing rules below.
+2. Apply any specific user-requested formatting that does not make the chart
+   misleading or unreadable.
+3. Adjust only when the data shape or chart type requires it.
+4. Preserve analytical clarity, readability, and non-misleading encodings.
 
 ## Default PNG Layout
 
@@ -33,6 +37,22 @@ Placement:
 - Place source and notes at the bottom-left below the plot area.
 - Keep source and notes outside the plotting area whenever practical.
 
+## Word And Report Placement
+
+When preparing figures for Word reports:
+
+- Place each figure as close as possible to the first reference to it in the
+  text.
+- Small in-text figures may appear within a paragraph when they help illustrate
+  a key point. They do not need figure numbers unless the report requires them.
+- For in-text figures, use Square or Tight text wrapping so the figure is
+  separated from surrounding text.
+- Large or full-page figures may appear on a separate page or within the text,
+  depending on size and readability.
+- After copying a figure from Excel to Word, resize it only if labels remain
+  readable. If text becomes too small, enlarge the font in the source Excel file
+  and recopy the figure as an image, preferably Enhanced Metafile.
+
 ## Typography
 
 Use Segoe UI as the default chart font.
@@ -41,17 +61,52 @@ For chart-sheet style outputs:
 
 | Element | Font | Size | Color |
 |---|---|---:|---|
-| All chart text | Segoe UI | 18 | Black/auto |
-| Chart title | Segoe UI bold | 24 | RGB `75,130,173` (`#4B82AD`) |
-| Chart subtitle | Segoe UI | 18 | RGB `75,130,173` (`#4B82AD`) |
-| Axis labels | Segoe UI | 18 | Black/auto |
-| Legend | Segoe UI | 18 | Black/auto |
-| Source box | Segoe UI | 18 | Black/auto |
+| All chart text | Segoe UI | 10 pt | Black/auto |
+| Figure title | Segoe UI | 10.5 pt | Black/auto |
+| Chart subtitle | Segoe UI | 10 pt | Black/auto |
+| Axis labels | Segoe UI | 10 pt | Black/auto |
+| Legend | Segoe UI | 10 pt | Black/auto |
+| Source box | Segoe UI | 10 pt | Black/auto |
 
 For panel-sheet style outputs:
 
 - Default font size: 8.
 - Do not use font sizes below 8 because they may become unreadable.
+
+Use the 10 pt / 10.5 pt defaults for report figures. If a large standalone PNG
+is intended only for screen review, larger fonts may be used, but the generated
+script should record that output-specific choice.
+
+## Titles, Captions, And Units
+
+For formal report figures that require numbered captions, place the figure title
+as a caption to the graphic box or frame that contains the chart. Center that
+caption above the figure and keep it inside the surrounding frame when a frame
+is used. This report caption convention can differ from the default standalone
+PNG title placement above.
+
+Use Arabic numerals for numbered report figures:
+
+```text
+Figure 7. Jamaica: Monetary Growth, 2014-20
+```
+
+For single-panel figures, use:
+
+```text
+Figure #. Country: Concise Figure Subject, Time Period
+(unit of measurement)
+```
+
+Omit the country or time period when not applicable. For multipanel figures, use
+the same convention for the overall figure and add concise panel titles.
+
+Center units of measurement below the panel title, not in bold, and enclose the
+units in parentheses:
+
+```text
+(in percent of GDP)
+```
 
 ## Plot Area And Axes
 
@@ -74,9 +129,21 @@ X-axis:
 Use light gridlines only when they help the reader compare values. Use the
 light solid border above, and avoid heavy axis frames or decorative effects.
 
+## Frames And Borders
+
+- For large or full-page figures in the main body of a report, place a black
+  single-line frame around the entire figure, including title, source, notes,
+  and footnotes.
+- Borders are optional for small in-text charts.
+- For figures in annexes, appendices, and attachments, use a black single-line
+  frame for full-page figures.
+- Keep the internal plot-area border light, as specified above, unless the user
+  or report template requires otherwise.
+
 ## Legend And Labels
 
 - Legend background fill: no fill.
+- When using a legend, place it to the right of the chart or below the chart.
 - Prefer direct labels when they reduce legend-reading.
 - Do not let the legend cover data.
 - Use consistent colors for the same country, group, or series across related
@@ -140,6 +207,7 @@ Generated Python scripts should encode the formatting choices explicitly:
   bottom `0.14`, adjusting bottom margin as needed for notes or long labels.
 - Define brand color constants in the script.
 - Set title, subtitle, axis label, tick label, source, and legend font sizes
-  explicitly.
+  explicitly. For report figures, use 10.5 pt for figure titles and 10 pt for
+  other chart text unless the output is only for screen review.
 - Use light borders and gridlines.
 - Save PNG output at the standard size unless the user requests another format.

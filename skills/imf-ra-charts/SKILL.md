@@ -8,12 +8,12 @@ Chart-production worker for the RA Skills family. Use this skill to turn availab
 
 ## Load The Right References
 
-- For workflow, output files, routing, failure behavior, and optional Excel:
+- Workflow, output files, routing, QA, failure behavior, and optional Excel:
   see [references/chart-tool-usage.md](references/chart-tool-usage.md).
-- For chart choice, consulting brief, transformation tiers, accessibility, and
-  anti-patterns: see
+- Chart choice, transformation tiers, cognitive load, and anti-patterns: see
   [references/chart-consulting-rules.md](references/chart-consulting-rules.md).
-- For IMF house styling, fonts, borders, and colors: see
+- Default static chart formatting, report placement, fonts, borders, and colors:
+  see
   [references/chart-formatting-rules.md](references/chart-formatting-rules.md).
 
 ## Core Rules
@@ -26,13 +26,15 @@ Chart-production worker for the RA Skills family. Use this skill to turn availab
   directory. In that confirmation, tell the user `chart-temp/` will be deleted
   after the charting session ends and that they should save anything they need
   to keep.
-- Required outputs are the PNG and the complete Python script that generated it.
-- Do not use or invent an internal charting tool; V1 chart production is done
-  with generated Python scripts.
+- Required outputs are a PNG and the complete Python script that generated it.
 - Create the optional Excel workbook only after the user confirms, after the
   PNG is ready.
-- Do not handle mimicry, PPT deck generation, interactive dashboards, or new
-  data retrieval logic in this skill.
+- If the user gives no specific formatting requirement, apply the IMF-style
+  defaults in `chart-formatting-rules.md`.
+- Ask only when ambiguity would make the chart wrong or misleading; otherwise
+  make a reasonable default chart.
+- Do not handle mimicry, PPT decks, dashboards, or new data retrieval logic in
+  this skill.
 
 ## Implementation Stack
 
@@ -43,9 +45,7 @@ what was already prepared.
 
 ## Before Delivery
 
-Run chart QA before showing the PNG. At minimum, verify the image is nonblank,
-the data are chartable, the labels are readable, and source/unit/transform notes
-are present when available.
+Run the QA checklist in `chart-tool-usage.md` before showing the PNG.
 
 If chart generation fails, tell the user what failed, whether data cleaning
 succeeded, what outputs were saved, and what is needed next. Do not claim a
