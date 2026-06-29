@@ -24,6 +24,7 @@ import argparse
 import os
 import sqlite3
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -58,6 +59,7 @@ _DB_PATH = _resolve_haver_db()
 
 _FREQ_LABELS = {"A": "Annual", "Q": "Quarterly", "M": "Monthly", "W": "Weekly", "D": "Daily"}
 _AGG_LABELS = {"AVG": "Average", "EOP": "End of Period", "SUM": "Sum", "NST": "Not Specified", "NDF": "Non-Disaggregated Flow"}
+_HAVER_RETRY_DELAYS = (5, 15)  # seconds to wait before retry 1, then retry 2
 
 
 def _load_metadata(codes: list[str]) -> dict[str, dict]:
@@ -87,21 +89,36 @@ def _load_metadata(codes: list[str]) -> dict[str, dict]:
 
 
 def _fetch(codes: list[str]) -> pd.DataFrame:
-    """Fetch from Haver. Returns wide DataFrame: DatetimeIndex, one column per CODE@DB."""
+    """Fetch from Haver with automatic retries on transient failures."""
     from imf_datatools import haver_utilities
-    df = haver_utilities.get_haver_data(codes)
-    if df is None or df.empty:
-        raise ValueError("No data returned from haver_utilities.get_haver_data().")
-    df.index = pd.to_datetime(df.index)
-    df.columns = [c.upper() for c in df.columns]
-    return df
+    last_exc: Exception | None = None
+    for attempt, delay in enumerate([0] + list(_HAVER_RETRY_DELAYS), 1):
+        if attempt > 1:
+            print(f"Retrying Haver fetch (attempt {attempt}, waiting {delay}s)...", file=sys.stderr)
+            time.sleep(delay)
+        try:
+            df = haver_utilities.get_haver_data(codes)
+            if df is None or df.empty:
+                raise ValueError("No data returned from haver_utilities.get_haver_data().")
+            df.index = pd.to_datetime(df.index)
+            df.columns = [c.upper() for c in df.columns]
+            return df
+        except Exception as exc:
+            last_exc = exc
+    raise last_exc  # type: ignore[misc]
 
 
 def _filter_dates(df: pd.DataFrame, start: str | None, end: str | None) -> pd.DataFrame:
     if start:
         df = df[df.index >= pd.to_datetime(start)]
     if end:
-        df = df[df.index <= pd.to_datetime(end + "-12-31" if len(end) == 4 else end)]
+        if len(end) == 4:          # YYYY → include through Dec 31
+            end_dt = pd.to_datetime(end + "-12-31")
+        elif len(end) == 7:        # YYYY-MM → include through end of that month
+            end_dt = pd.to_datetime(end) + pd.offsets.MonthEnd(0)
+        else:
+            end_dt = pd.to_datetime(end)
+        df = df[df.index <= end_dt]
     return df
 
 
@@ -117,10 +134,11 @@ def _format_date_label(ts: pd.Timestamp, freq: str) -> str:
 
 
 def _detect_freq(df: pd.DataFrame) -> str:
-    """Infer dominant frequency from the DatetimeIndex."""
+    """Infer dominant frequency from the DatetimeIndex using median gap."""
     if len(df) < 2:
         return "D"
-    delta = (df.index[1] - df.index[0]).days
+    deltas = pd.Series(df.index).diff().dropna().dt.days
+    delta = int(deltas.median())
     if delta >= 300:
         return "A"
     if delta >= 80:

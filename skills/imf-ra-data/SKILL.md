@@ -67,7 +67,9 @@ If the user explicitly asks for R or Stata code:
 
 **This protocol is for iData sources only. For Haver sources, skip directly to [Haver Fetch](#haver-fetch).**
 
-**Never create a new Python script to explore or fetch data.** A pre-built fetch utility already exists. Follow these seven steps every time.
+**Never create a new Python script to explore or fetch data.** A pre-built fetch utility already exists.
+
+**Fast-path check:** Before following the seven steps, check whether all inputs are already known. If the catalog handoff contains confirmed `database`, `dimension_name`, `code`, `geo`, and `frequency`, AND the user has specified `start`, `end`, and output format in the same message, skip Steps 1–6 and go directly to Step 7.
 
 ### Step 1 — Catalog lookup
 
@@ -80,7 +82,9 @@ If you are arriving from a confirmed catalog handoff, check its shape: `database
 
 ### Step 2 — Read dimensions
 
-Once the database is confirmed, list its dimensions in key order:
+Skip this step if the catalog handoff already confirms all dimension names and values (e.g. a full WEO handoff with `database`, `dimension_name`, `code`, `geo`, and `frequency` covers all three WEO dimensions: COUNTRY · INDICATOR · FREQUENCY).
+
+When unresolved dimensions remain, list them in key order:
 
 ```bash
 python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --explore
@@ -103,6 +107,8 @@ Compare what the user specified against the dimensions returned. Required inputs
 | User already specified the dimension | Use the user's value; validate it using `--dimension-values <DIM>` |
 | Dimension has multiple values and user did not specify | Ask the user — do not list all options upfront |
 | `start` / `end` not specified | **Always ask** — do not assume or default |
+
+**To determine whether a dimension has one or multiple values**, run `--dimension-values <DIM>` for each unresolved dimension before deciding to auto-resolve or ask. Do not assume a dimension is single-valued without checking.
 
 **Never guess or hardcode a dimension value.**
 
@@ -141,7 +147,7 @@ The iData key is a dot-separated string of all dimension values in the exact ord
 - Combine multiple values within one dimension with `+` (e.g. `USA+GBR.NGDP_RPCH.A`).
 - The total number of dot-separated fields must match the total number of dimensions — do not add or drop dots.
 
-**Country group rule:** Do **not** use a WEO group/category column name (e.g. `Advanced Economies(AE)`, `Emerging Market and Developing Economies(EMDE)`) directly as the country selector in an iData key. If arriving from a catalog handoff, `geo` is already expanded to member `countrycode` values — use them directly. If geography was not resolved by the catalog, expand the group via `imf-ra` WEO group helpers and join member codes with `+`. Use a group aggregate value only when the database metadata explicitly confirms it is a valid dimension value.
+**Country group rule:** Do **not** use a WEO group/category column name (e.g. `Advanced Economies(AE)`, `Emerging Market and Developing Economies(EMDE)`) directly as the country selector in an iData key. If arriving from a catalog handoff, `geo` is already expanded to member `countrycode` values joined with `+` (e.g. `USA+GBR+DEU`) — use it directly as the iData dimension value. If geography was not resolved by the catalog, run `expand-for-idata <GROUP> --codes-only` — the output is `+`-joined and can be pasted directly into the iData dimension slot without further transformation. Use a group aggregate value only when the database metadata explicitly confirms it is a valid dimension value.
 
 ### Step 6 — Confirm output format
 
@@ -150,10 +156,11 @@ Before executing, always ask the user which output format they want. Do **not** 
 > **Output format** — which would you like?
 > - **Refreshable** — RA enriched Excel (`.xlsx`) with human-readable indicator labels; `COUNTRY`, `ISO3`, `IFSCODE` added when a country dimension is present. Layout auto-selected by data shape:
 >   - **Multi-sheet card** (triggered when indicators > 1 AND countries > 1 AND time periods > 1): one tab per indicator; each tab is card format (first column = `Label` with metadata + date rows, one column per series/country).
->   - **Wide** (single indicator cases): single sheet, dates as columns, one row per series.
->   - **Long** (all other cases): single sheet, card format.
+>   - **Wide** (single indicator): single sheet, dates as columns, one row per series.
+>   - **Card** (multiple indicators, but not all three dimensions plural): single sheet, card format (first column = `Label` with metadata + date rows, one column per series across all indicators).
 >
 >   Always `.xlsx`.
+
 > - **Wide** — raw API output as-is, dates as rows, series as columns.
 > - **Long** — raw API output as-is, one row per observation.
 >
@@ -161,7 +168,7 @@ Before executing, always ask the user which output format they want. Do **not** 
 
 **Refreshable is not the same as the raw API wide or long format** — it adds RA metadata columns and human-readable indicator labels that raw formats do not have.
 
-If the user has already stated a format preference earlier in the conversation, confirm it rather than re-asking.
+If the user has already stated a format preference at any point in the conversation, use it directly — do not ask again.
 
 ### Step 7 — Execute with the pre-built fetch utility
 
@@ -169,7 +176,7 @@ Once all dimensions, time range, and output format are confirmed, call `fetch_id
 
 ```bash
 # Refreshable RA Excel (layout auto-selected by number of indicators).
-# --indicator-dim comes from the catalog handoff; omit it if the dimension is INDICATOR.
+# Always pass --indicator-dim using dimension_name from the catalog handoff (e.g. INDICATOR, TICKER, SERIES).
 python skills/imf-ra-data/scripts/fetch_idata.py --db "<database_id>" --key "<dot.separated.key>" --start "<YYYY>" --end "<YYYY>" --format refreshable --indicator-dim "<dimension_name>"
 
 # Wide (CSV by default; add --excel for Excel)
@@ -196,7 +203,7 @@ Refreshable output layout is auto-selected by data shape (indicators × countrie
 | `DATASET` | Always | The `--db` argument |
 | `Series_Code` | Always | All dimension values joined with `.` in key order |
 | `SCALE` | Always present | Human-readable scale label: `Units` / `Thousands` / `Millions` / `Billions`; empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
-| `UNIT` | Always present | Unit string from metadata (e.g. `National currency`, `Percent`); empty when unavailable |
+| `UNIT` | When metadata has unit info | Unit string decoded from metadata (e.g. `National currency`, `Percent`); column omitted entirely when the database has no unit metadata (e.g. BBGDL) |
 | `COUNTRY` | Country dimension detected | Human-readable name looked up from `imf-ra` `country_group.csv` |
 | `ISO3` | Country dimension detected | Raw ISO3 code from the data |
 | `IFSCODE` | Country dimension detected | Looked up from `imf-ra` `country_group.csv` (`countrycode_s`) |
@@ -213,7 +220,7 @@ One tab per indicator (named by indicator label, max 31 chars). Within each tab:
 | `DATASET` | Database identifier |
 | `Series_Code` | Dot-separated dimension values for that series |
 | `SCALE` | Human-readable scale label (`Units` / `Thousands` / `Millions` / `Billions`); empty when scale metadata is unavailable; values already divided by 10^scale when scale > 0 |
-| `UNIT` | Unit string from metadata (e.g. `National currency`, `Percent`); empty when unavailable |
+| `UNIT` | Unit string decoded from metadata (e.g. `National currency`, `Percent`); row omitted entirely when the database has no unit metadata (e.g. BBGDL) |
 | `COUNTRY` | Human-readable country name (when country dimension present) |
 | `ISO3` | Raw ISO3 code (when country dimension present) |
 | `IFSCODE` | IFS code (when country dimension present) |
@@ -260,6 +267,7 @@ For all iData sources (handoff has `database`, `dimension_name`, `code` fields �
 - `geo` — if confirmed by the catalog, it is already expanded to member `countrycode` values (e.g. `USA+GBR+DEU`), not a group name. Use it directly as the country dimension value in the key; skip asking the user for geography in Step 3.
 - For WEO candidates, keep the LIVE database as the priority — do not substitute a vintage unless the user asked for one.
 - Resolve all remaining dimensions and the time range via Steps 2–6 before calling `fetch_idata.py`.
+- If the handoff is missing `dimension_name`, run `--explore` on the database, then match the catalog `code` value against each dimension using `--dimension-values <DIM>` to identify which dimension it belongs to. Ask the user to confirm if more than one dimension is a plausible match.
 
 ## Haver Fetch
 
@@ -277,7 +285,7 @@ The catalog handoff pre-confirms all series-selection decisions. The only remain
 Ask the user which format they want:
 
 > **Output format** — which would you like?
-> - **Refreshable** — Card-format `.xlsx`: metadata rows (`.DESC`, `.T1`, `.TN`, `.LSOURCE`, `.AGG`, `.FRQ`, `.DATA_TYPE`, `.MAG`) followed by date rows; one column per series. **Haver date format note:** Monthly date row labels use `YYYYMM` format with no zero-padding (e.g. `202101`, `202102`, …, `202112`).
+> - **Refreshable** — Card-format `.xlsx`: metadata rows (`.DESC`, `.T1`, `.TN`, `.LSOURCE`, `.AGG`, `.FRQ`, `.DATA_TYPE`, `.MAG`) followed by date rows; one column per series. **Haver date format note:** Monthly date row labels use zero-padded `YYYYMM` format (e.g. `202101`, `202102`, …, `202112`).
 > - **Wide** — Dates as rows, one column per series. CSV or Excel. Monthly dates appear as `YYYY-MM-DD` (e.g. `2021-01-01`).
 > - **Long** — One row per observation: `Date`, `Ticker`, `Value`. CSV or Excel. Monthly dates appear as `YYYY-MM-DD` (e.g. `2021-01-01`).
 

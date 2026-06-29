@@ -58,7 +58,7 @@ Examples:
   # WDI — indicator dim is SERIES
   python skills/imf-ra-data/scripts/fetch_idata.py --db "WB:WDI" --key "A.AG_CON_FERT_PT_ZS.AFE" --start 2000 --end 2023 --format refreshable --indicator-dim SERIES
 
-  # Multi-indicator → refreshable produces long layout (one row per observation)
+  # Multi-indicator → refreshable produces card layout (Label col + one col per series)
   python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA.NGDP_RPCH+NGDP_D.A" --start 2000 --end 2026 --format refreshable
 
   python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.STA:CPI" --key "USA+JPN.CPI._T.IX.M" --start 2010 --end 2026 --format long
@@ -81,6 +81,24 @@ import pandas as pd
 from imf_datatools import idata_utilities
 
 SCALE_LABELS = {0: "Units", 3: "Thousands", 6: "Millions", 9: "Billions"}
+
+# Map raw SDMX unit codes to human-readable labels.
+# Codes not in this map pass through as-is (raw SDMX code shown in output).
+_UNIT_LABELS: dict[str, str] = {
+    "XDC": "National currency",
+    "USD": "US dollars",
+    "EUR": "Euro",
+    "GBP": "British pounds",
+    "JPY": "Japanese yen",
+    "CNY": "Chinese yuan",
+    "PCT": "Percent",
+    "PC_GDP": "Percent of GDP",
+    "PCT_GDP": "Percent of GDP",
+    "IX": "Index",
+    "PURE_NUMB": "Pure number",
+    "PERSONS": "Persons",
+    "MONTHS": "Months",
+}
 
 # LIVE databases (WEO_LIVE, GAS_LIVE, GEE_LIVE, etc.) are private IMF datasets.
 # Safe to leave on for public databases as well.
@@ -116,7 +134,9 @@ COUNTRIES_CSV = _resolve_countries_csv()
 _COUNTRY_DIMS = ("COUNTRY", "country", "GEO", "geo", "REF_AREA", "COUNTERPART_AREA")
 
 # Fallback candidate names for the indicator dimension when --indicator-dim is not specified.
-# Prefer explicit --indicator-dim (from catalog handoff) over this list.
+# IMPORTANT: Always pass --indicator-dim from the catalog handoff (dimension_name field).
+# This fallback is a last resort — databases whose indicator dimension is not in this list
+# will silently produce output with no indicator labels or multi-sheet grouping.
 _INDICATOR_DIMS = (
     "INDICATOR", "indicator",
     "SERIES", "series",
@@ -163,21 +183,26 @@ def fetch_metadata(db, key):
                 vals = meta["scale"].dropna().unique()
                 if len(vals) >= 1:
                     scale = int(vals[0])
-            for col in ("unit", "UNIT", "units", "UNITS"):
+            for col in ("unit", "UNIT", "units", "UNITS", "UNIT_MEASURE", "unit_measure"):
                 if col in meta.columns:
                     vals = meta[col].dropna().unique()
                     if len(vals) >= 1:
-                        unit_label = str(vals[0])
+                        raw = str(vals[0])
+                        unit_label = _UNIT_LABELS.get(raw, raw)
                     break
+
         elif isinstance(meta, dict):
             if "scale" in meta:
                 scale = int(meta["scale"])
-            for col in ("unit", "UNIT", "units", "UNITS"):
+            for col in ("unit", "UNIT", "units", "UNITS", "UNIT_MEASURE", "unit_measure"):
                 if col in meta:
-                    unit_label = str(meta[col])
+                    raw = str(meta[col])
+                    unit_label = _UNIT_LABELS.get(raw, raw)
                     break
+
         return scale, unit_label
-    except Exception:
+    except Exception as exc:
+        print(f"Warning: metadata lookup failed ({exc}) — SCALE and UNIT will be empty.", file=sys.stderr)
         return None, ""
 
 
@@ -311,7 +336,8 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
 
         row_data: dict = {"DATASET": db, "Series_Code": series_code}
         row_data["SCALE"] = scale_label if scale_label is not None else ""
-        row_data["UNIT"] = unit_label if unit_label is not None else ""
+        if unit_label:
+            row_data["UNIT"] = unit_label
         if country_col:
             idx = id_cols.index(country_col)
             cv  = str(series_key[idx])
@@ -328,7 +354,9 @@ def _build_card_sheet(grp, db, country_lookup, id_cols, country_col,
             row_data[lbl] = r[val_col]
         series_data[series_code] = row_data
 
-    meta_labels = ["DATASET", "Series_Code", "SCALE", "UNIT"]
+    meta_labels = ["DATASET", "Series_Code", "SCALE"]
+    if any("UNIT" in d for d in series_data.values()):
+        meta_labels.append("UNIT")
     if country_col:
         meta_labels += ["COUNTRY", "ISO3", "IFSCODE"]
     for col in id_cols:
@@ -357,7 +385,8 @@ def _build_wide_sheet(grp, db, country_lookup, id_cols, country_col,
     out = pd.DataFrame(index=grp.index)
     out["DATASET"] = db
     out["SCALE"] = scale_label if scale_label is not None else ""
-    out["UNIT"] = unit_label if unit_label is not None else ""
+    if unit_label:
+        out["UNIT"] = unit_label
 
     if id_cols:
         out["Series_Code"] = grp[id_cols].apply(
@@ -704,8 +733,12 @@ def main():
         print(f"{args.dim_values} values for {args.db}:")
         print("-" * 60)
         for _, row in vals.iterrows():
-            #print(f"  {row['Name']} ({row['Code']})")
-            print(f" {row})")
+            col_lower = {c.lower(): c for c in row.index}
+            name_col = col_lower.get("name")
+            code_col = col_lower.get("code")
+            name = row[name_col] if name_col else (row.iloc[0] if len(row) > 0 else "?")
+            code = row[code_col] if code_col else (row.iloc[1] if len(row) > 1 else "?")
+            print(f"  {name} ({code})")
         return
 
     # ── Fetch mode ────────────────────────────────────────────────────────────
@@ -818,6 +851,18 @@ def main():
         layout = "card" if "Label" in out.columns else "wide"
         print(f"Layout   : refreshable ({layout})")
         print(f"Output shape: {out.shape[0]} rows x {out.shape[1]} columns")
+        # Warn about tickers that returned no data
+        key_first_dim = args.key.split(".")[0] if args.key else ""
+        if "+" in key_first_dim:
+            requested = set(key_first_dim.split("+"))
+            data_cols = {c.split(".")[0] for c in out.columns if c != "Label"}
+            dropped = requested - data_cols
+            if dropped:
+                print(
+                    f"Warning: {len(dropped)} ticker(s) returned no data and were excluded: "
+                    f"{', '.join(sorted(dropped))}",
+                    file=sys.stderr,
+                )
         print()
         print(out.head().to_string())
         saved = save_output(out, args.output)

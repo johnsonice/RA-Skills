@@ -5,7 +5,9 @@ description: Use when the user wants to prepare or hand off IMF data for a chart
 
 # IMF RA - Charts
 
-Handing tidy data to the internal charting tool.
+> **⚠️ STATUS: NOT IMPLEMENTED** — The internal charting tool API is not yet finalized.
+>
+> When a user asks to chart: **(1)** confirm the data is ready in tidy form from `imf-ra-data`, **(2)** explain that the internal charting tool is pending and offer to output chart-ready Excel/CSV instead, **(3)** describe the intended chart type, axis labels, series, and source line so the user or a human analyst can hand it off to their charting tool. Do not block the user — deliver the data and a clear chart specification.
 
 ## Before you chart
 
