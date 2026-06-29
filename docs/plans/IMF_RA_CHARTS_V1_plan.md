@@ -8,16 +8,26 @@ This is a planning document only; it is not yet the final `SKILL.md`.
 V1 should let an agent turn confirmed data into a useful economics/research
 chart, while preserving enough evidence to reproduce the output later.
 
+## Chart Design Principle
+
+Every V1 chart should be clear, accurate, and reduce cognitive load.
+
+This means the chart should make the main comparison easy to see, label units
+and sources plainly, avoid unnecessary visual complexity, choose a chart type
+that fits the data, and avoid transformations or visual encodings that could
+mislead the reader.
+
 ## V1 Scope
 
 V1 includes:
 
 - Charting data fetched through `imf-ra-data`.
 - Charting user-provided Excel or CSV data.
-- Cleaning and transforming data into chart-ready shape.
+- Cleaning and transforming data into plotting-ready shape inside the generated
+  script.
 - Recommending a reasonable chart type when the user does not specify one.
 - Creating a PNG as the primary chart output.
-- Saving a lightweight reproducibility package for every PNG.
+- Saving the complete Python script that reproduces every PNG.
 - Offering an optional editable Excel workbook after the PNG is ready.
 - Applying user-requested formatting refinements, as long as they do not require
   full IMF house-style implementation.
@@ -35,13 +45,16 @@ V1 excludes:
 
 Every successful V1 chart request produces a PNG as the required primary output.
 
-Every successful V1 chart request also saves a lightweight reproducibility
-package in the confirmed output folder:
+Every successful V1 chart request also saves the complete Python script in the
+confirmed output folder:
 
 - the PNG;
-- the chart-ready data used to generate the PNG;
-- the chart spec;
 - the Python script that generated the PNG.
+
+The Python script is the reproducibility record. It should include all data
+loading, cleaning, transformation, QA checks, chart metadata, plotting code, and
+the PNG save path. Do not create separate chart-ready CSV or chart spec CSV
+files by default.
 
 The Excel workbook is optional. After providing the PNG, ask:
 
@@ -65,8 +78,6 @@ Use stable, readable, lowercase file names based on the chart topic:
 ```text
 chart-temp/
   real_gdp_growth_selected_economies.png
-  real_gdp_growth_selected_economies_chart_ready.csv
-  real_gdp_growth_selected_economies_chart_spec.csv
   real_gdp_growth_selected_economies_generate.py
   real_gdp_growth_selected_economies.xlsx
 ```
@@ -108,8 +119,8 @@ When data have already been fetched by `imf-ra-data`, `imf-ra-charts` should:
 - preserve source fields such as database, indicator, unit, frequency, vintage,
   geography, and time period when present;
 - validate that the data are chartable;
-- transform into chart-ready data;
-- generate the PNG and reproducibility package;
+- transform into plotting-ready data inside the generated script;
+- generate the PNG and Python script;
 - offer the optional Excel workbook.
 
 If the user asks for a chart but no raw data are available from `imf-ra-data` or
@@ -128,8 +139,8 @@ When the user provides raw Excel or CSV data, `imf-ra-charts` should:
 - infer likely time, geography, series, value, unit, and source fields;
 - ask clarification only when required fields are ambiguous or unsafe;
 - preserve the original data for optional workbook export;
-- create standardized clean and chart-ready data;
-- generate the PNG and reproducibility package;
+- create standardized clean and plotting-ready data inside the generated script;
+- generate the PNG and Python script;
 - offer the optional Excel workbook.
 
 ## Execution Flow
@@ -146,7 +157,7 @@ When the user provides raw Excel or CSV data, `imf-ra-charts` should:
 8. Choose a chart type from user instruction or chart recommendation rules.
 9. Generate an initial reasonable PNG.
 10. Run chart QA before delivery.
-11. Save the reproducibility package.
+11. Save the complete reproducible Python script.
 12. Show or link the PNG to the user.
 13. Offer the optional Excel workbook.
 14. If the user requests changes, update the chart and version or overwrite
@@ -159,14 +170,14 @@ V1 should support common chart-preparation steps:
 - Normalize dates or periods.
 - Convert values to numeric.
 - Standardize country, group, and series labels.
-- Reshape long data to wide chart-ready data when useful.
+- Reshape long data to wide plotting-ready data when useful.
 - Reshape wide data to long clean data when useful.
 - Sort time periods and categories.
 - Drop or flag empty observations.
 - Preserve missing values intentionally rather than hiding them silently.
 - Apply transformations according to the V1 transformation policy.
 
-When transformations are applied, record them in the chart spec.
+When transformations are applied, record them in the generated Python script.
 
 ## Transformation Policy
 
@@ -184,7 +195,7 @@ separate confirmation when they are needed to make the data chartable:
   `series`.
 - Drop fully empty rows or columns.
 - Trim labels and standardize obvious whitespace.
-- Reshape long data to wide chart-ready data when useful.
+- Reshape long data to wide plotting-ready data when useful.
 - Reshape wide data to long clean data when useful.
 - Create a forecast or estimate flag when the source has clear status labels.
 - Filter to requested countries, indicators, dates, or series.
@@ -249,19 +260,87 @@ Ask before charting when:
 
 ## Chart Recommendation Rules
 
-Use the user's stated chart type when provided and safe. If the user does not
-specify a chart type, recommend and use a simple research-appropriate default
-based on the indicator, data shape, and research purpose.
+When suggesting a chart type, first infer the analytical task, then match it to
+the simplest chart that answers the question accurately. Prefer charts that make
+the main comparison obvious, minimize legend-reading and visual clutter, and do
+not require unconfirmed analytical transformations.
 
-| Data Shape | Default Chart |
+Use the user's stated chart type when provided and safe. If the requested chart
+type would be misleading, unreadable, or unnecessarily complex, briefly explain
+the issue and recommend a simpler alternative.
+
+Use this selection order:
+
+1. Identify the user's analytical task.
+2. Confirm the data shape can support that task.
+3. Choose the lowest-cognitive-load chart that answers the task accurately.
+4. Check whether the chart requires a Tier 2 or Tier 3 transformation.
+5. Ask for confirmation before applying transformations that change analytical
+   meaning.
+
+### Analytical Task Defaults
+
+| User Wants To See | Default Chart |
 |---|---|
-| One time series | Line chart |
-| Several comparable time series | Multi-line chart |
-| Many countries over time | Small multiples or filtered multi-line chart |
-| Latest cross-country comparison | Sorted bar chart |
-| Two numeric variables by country | Scatter plot |
-| Additive components over time | Stacked bar or stacked area, only if units are additive |
-| Ranking over one period | Horizontal bar chart |
+| Change over time for one series | Line chart |
+| Compare several countries or series over time | Multi-line chart, or small multiples if crowded |
+| Compare countries or categories at one point in time | Sorted bar chart |
+| Rank countries or categories | Horizontal sorted bar chart |
+| Compare two numeric variables | Scatter plot |
+| Show composition over time | Stacked bar or stacked area, only if components are additive |
+| Show contribution to a total or change | Contribution bar chart, only when contribution logic is explicit |
+| Compare before and after, or two selected periods | Slope chart or grouped bar chart |
+| Show a distribution | Histogram or box plot |
+| Show latest value plus recent trend | Annotated line chart, or bar chart plus compact trend context |
+
+### Data Shape Checks
+
+| Data Shape | Recommended Chart |
+|---|---|
+| `time` + `value` | Line chart |
+| `time` + `series/country` + `value` | Multi-line chart or small multiples |
+| `country/category` + `value` | Sorted bar chart |
+| `country/category` + `x_value` + `y_value` | Scatter plot |
+| `time` + `component` + `value` | Stacked bar or stacked area, only if additive |
+| `period` + `country/category` + `value` for two periods | Slope chart or grouped bar chart |
+
+### Cognitive Load And Anti-Patterns
+
+Do not make the reader solve a visual puzzle before they can answer the
+economic question.
+
+Prefer:
+
+- fewer series per chart;
+- sorted categories when order helps interpretation;
+- direct labels when practical;
+- clear units in axis labels;
+- titles that state the subject and comparison;
+- notes only when they prevent misunderstanding.
+
+Avoid:
+
+- excessive color or color variation;
+- too many categories in one chart;
+- crowded legends or too many lines;
+- misleading scaling, including unjustified truncated axes or inconsistent
+  scales across related charts;
+- decorative elements or chart junk, including 3D effects, shadows, gradients,
+  heavy borders, background images, unnecessary icons, or ornamental shapes;
+- dual-axis charts by default;
+- pie charts for many categories or precise comparisons;
+- stacked area or stacked bar charts when components are not additive;
+- unsorted bar charts when ranking or comparison is the goal;
+- inconsistent colors for the same country, group, or series across related
+  charts;
+- transformations such as growth rates, index-to-100, smoothing, shares, or
+  aggregations without user request or confirmation;
+- chart types that require the reader to compare areas, angles, or subtle color
+  differences when simple position or length would be clearer.
+
+When in doubt, choose the simplest chart that preserves accuracy: line for
+time, sorted bar for category comparison, scatter for two numeric variables,
+and small multiples when one chart becomes crowded.
 
 By default, create an initial reasonable plot rather than over-asking. If the
 user gives formatting preferences up front, apply them before the first chart.
@@ -301,31 +380,26 @@ Before delivering the PNG, verify:
 - the legend does not cover the data;
 - axes are not misleading for the chart type;
 - bars or categories are sorted when sorting improves interpretation;
+- the main comparison is visually clear;
+- the chart avoids unnecessary decoding, clutter, or decoration;
 - too many series are not squeezed into one unreadable chart.
 
-## Chart Spec Format
+## Python Script Requirements
 
-The chart spec should use a table shape. In the reproducibility package, save it
-as `*_chart_spec.csv`. If the user requests the optional Excel workbook, include
-the same table as the `chart_spec` sheet.
+The generated Python script is the reproducibility record. It should include:
 
-Use a simple two-column structure:
+- data loading from the selected source;
+- all cleaning and reshaping code;
+- all analytical transformations;
+- chart metadata as variables or comments, including chart type, title,
+  subtitle, axes, units, source, filters, date range, and caveats;
+- lightweight QA checks for required columns, numeric values, missing data,
+  duplicate observations, and non-empty output;
+- the plotting code and PNG save path.
 
-| field | value |
-|---|---|
-| `chart_type` | `line` |
-| `title` | `Real GDP Growth` |
-| `subtitle` | `Annual percent change, 2019-2025` |
-| `x_axis` | `time` |
-| `y_axis` | `value` |
-| `series` | `country` |
-| `unit` | `Percent change` |
-| `source` | `IMF, World Economic Outlook` |
-| `transformation` | `none` |
-| `footnote` | `2025 values are forecasts.` |
-
-A separate JSON chart spec can be added later if automated testing or downstream
-tooling needs it, but JSON is not required for V1.
+Do not create separate chart-ready CSV or chart spec CSV files by default. If
+the user explicitly asks for intermediate exports, create them as optional
+extras and label them clearly.
 
 ## Optional Excel Workbook
 
@@ -338,13 +412,13 @@ Required sheets:
 | `raw_data` | The original pulled or uploaded data, preserved as much as practical. |
 | `clean_data` | Normalized and cleaned data with consistent field names and types. |
 | `chart_ready` | The exact table used by the chart. This should be easy to inspect and edit. |
+| `chart_spec` | Chart type, title, subtitle, axis fields, units, source, filters, caveats, and transformations. |
 | `chart` | An embedded Excel chart linked to `chart_ready`. |
 
 Recommended additional sheets:
 
 | Sheet | Purpose |
 |---|---|
-| `chart_spec` | Chart type, title, subtitle, axis fields, units, source, footnotes, and transformations. |
 | `QA_checks` | Checks for duplicates, missing values, numeric conversion, date consistency, units, and source notes. |
 
 Excel requirements:
@@ -366,15 +440,15 @@ If chart generation fails, do not pretend the chart was created. Tell the user:
 - what input, confirmation, or environment fix is needed next.
 
 If the failure happens after data cleaning, the agent may offer a diagnostic
-Excel workbook or chart-ready CSV, but should only create optional files if the
-user confirms.
+Python script or diagnostic Excel workbook, but should only create optional
+files if the user confirms.
 
 ## Suggested Implementation Sequence
 
 1. Finalize this V1 plan.
 2. Update `skills/imf-ra-charts/SKILL.md` with the V1 workflow.
 3. Expand `skills/imf-ra-charts/references/chart-tool-usage.md` with the PNG,
-   reproducibility package, and optional Excel contract.
+   Python-script reproducibility, and optional Excel contract.
 4. Add chart behavior test cases to `tests/auto_test_cases.yaml` after V1 is
    implemented.
 5. Mirror reviewer-facing test descriptions in `tests/auto_test_instructions.md`
@@ -386,8 +460,8 @@ user confirms.
 V1 is successful when a user can ask for a chart and receive:
 
 - a PNG chart they can immediately inspect or use;
-- a reproducibility package containing chart-ready data, chart spec, and the
-  Python generation script;
+- a Python generation script containing data loading, cleaning, transformation,
+  QA checks, chart metadata, and plotting code;
 - an offer to create an optional Excel workbook containing `raw_data`,
   `clean_data`, `chart_ready`, and an embedded chart;
 - a clear record of source, units, and transformations;
