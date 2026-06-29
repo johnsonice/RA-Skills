@@ -9,7 +9,7 @@ static PNG charts through Python, not an internal charting tool.
 - cleaning and reshaping data inside the generated script;
 - a reasonable chart choice when the user does not specify one;
 - a PNG plus the complete Python script that reproduces it;
-- an optional editable Excel workbook after the PNG is ready.
+- an optional editable Excel workbook after the PNG is ready. Musr ask immediately afrer the PNG generating.
 
 ## Input Order
 
