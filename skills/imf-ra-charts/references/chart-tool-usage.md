@@ -6,12 +6,13 @@ interactive HTML output using Plotly is available as an optional second format.
 
 ## Scope
 
-- Use data from `imf-ra-data` output or user-provided CSV/Excel files.
-- Clean and reshape data inside the generated script.
-- Choose a reasonable chart when the user does not specify one.
-- Always produce a PNG plus the complete Python script that reproduces it.
-- Offer optional self-contained interactive HTML and editable Excel outputs
-  after the PNG is ready, unless the user already requested one of them.
+- data from `imf-ra-data` or user-provided CSV/Excel files;
+- cleaning and reshaping data inside the generated script;
+- a reasonable chart choice when the user does not specify one;
+- a PNG plus the complete Python script that reproduces it;
+- optional self-contained interactive HTML chart and editable Excel workbook
+  outputs after the PNG is ready. Ask immediately after generating the PNG
+  unless the user already requested a specific optional output.
 
 ## Input Order
 
@@ -48,7 +49,7 @@ Use stable, readable, lowercase file names based on the chart topic:
 chart-temp/
   real_gdp_growth_selected_economies.png
   real_gdp_growth_selected_economies_generate.py
-  real_gdp_growth_selected_economies.html   # optional interactive
+  real_gdp_growth_selected_economies_interactive.html   # optional interactive
   real_gdp_growth_selected_economies.xlsx   # optional Excel
 ```
 
@@ -80,21 +81,23 @@ The Python script is the reproducibility record. It must include:
 ## Interactive HTML Output (Optional Parallel)
 
 Produce a self-contained interactive HTML chart using `plotly.graph_objects` when
-the user asks for an interactive chart or uses the word "interactive". The HTML
-is a parallel output — it accompanies the PNG, never replaces it.
+the user asks for an interactive chart, uses the word "interactive", or confirms
+the optional HTML offer after seeing the PNG. The HTML is a parallel output; it
+accompanies the PNG and never replaces it.
 
 Rules:
-- Use `fig.write_html(path, include_plotlyjs="cdn")` to keep the file small
-  (loads Plotly from CDN; requires internet) or `include_plotlyjs=True` for a
-  fully self-contained offline file.
+- Use `fig.write_html(path, include_plotlyjs=True)` by default so the HTML is
+  fully self-contained and works offline. Use `include_plotlyjs="cdn"` only if
+  the user explicitly asks for a smaller internet-dependent file.
 - Apply the same title, axis labels, units, source note, and series colors as
   the PNG.
 - Add hover templates showing year and value with unit label.
 - Save as `<topic>_interactive.html` beside the PNG in `chart-temp/`.
 - Include the HTML generation code in the same Python script as the PNG, gated
   by an `INTERACTIVE = True` flag at the top so the script is self-documenting.
-- Open the HTML in the default browser after saving so the user sees it
-  immediately: `import webbrowser; webbrowser.open(str(html_path))`.
+- If the local host supports browser opening, open the HTML after saving so the
+  user sees it immediately. If the environment is headless, remote, or
+  browser-opening fails, provide the saved HTML path instead.
 
 Do not create separate chart-ready CSV or chart spec CSV files by default. If
 the user explicitly asks for intermediate exports, create them as optional
@@ -115,8 +118,9 @@ extras and label them clearly.
 9. Run QA before delivery.
 10. Keep the exact Python script beside the PNG.
 11. Show or link the PNG to the user; if HTML was produced, open it in the
-    browser automatically and tell the user where the file is.
-12. Offer the optional Excel workbook.
+    browser when supported and tell the user where the file is.
+12. Offer optional outputs not already requested: `Would you like a
+    self-contained interactive HTML chart, an editable Excel workbook, or both?`
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
 14. After the session ends and retained deliverables have been handed off,
@@ -149,8 +153,11 @@ Check and record whether the:
 ## Optional Excel Workbook
 
 Only create the Excel workbook if the user confirms they want it after seeing
-the PNG offer. Use a short prompt: `Would you like an editable Excel workbook
-with the chart data and embedded chart?`
+the PNG offer. If interactive HTML has not already been requested or produced,
+offer both optional outputs together using the prompt in the execution flow. If
+interactive HTML is already handled, use a short Excel-only prompt:
+`Would you like an editable Excel workbook with the chart data and embedded
+chart?`
 
 The workbook is optional and does not replace the required Python script.
 

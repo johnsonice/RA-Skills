@@ -10,6 +10,7 @@ openpyxl>=3.0      # Excel (.xlsx) engine used by the refreshable / --excel outp
 #
 # The CHART tier (skills/imf-ra-charts) needs:
 matplotlib>=3.5    # PNG chart generation for skills/imf-ra-charts
+plotly>=5.0        # optional self-contained interactive HTML chart output
 xlsxwriter>=3.0    # optional editable Excel chart workbook output
 #
 # NOT pip-installable — install separately on an IMF-managed machine:

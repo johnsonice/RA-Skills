@@ -4,11 +4,18 @@ description: Use when the user wants to turn IMF RA data or user-provided CSV/Ex
 ---
 
 # IMF RA - Charts
+<<<<<<< HEAD
 Chart-production worker for the RA Skills family. Use this skill to turn available data into a static economics chart, with optional interactive HTML output when the user asks for it.
+=======
+
+Chart-production worker for the RA Skills family. Use this skill to turn
+available data into a static economics chart, with optional interactive HTML
+output when the user asks for it.
+>>>>>>> fa3ff63 (Merge feat/jamie_0628_ra_charts into bella_0625_chart_v1)
 
 ## Load The Right References
 
-- Workflow, output files, routing, QA, failure behavior, and optional Excel:
+- Workflow, output files, routing, QA, failure behavior, and optional outputs:
   see [references/chart-tool-usage.md](references/chart-tool-usage.md).
 - Chart choice, transformation tiers, cognitive load, and anti-patterns: see
   [references/chart-consulting-rules.md](references/chart-consulting-rules.md).
@@ -26,7 +33,7 @@ Chart-production worker for the RA Skills family. Use this skill to turn availab
   directory. In that confirmation, tell the user `chart-temp/` will be deleted
   after the charting session ends and that they should save anything they need
   to keep.
-- Required outputs are the PNG and the complete Python script that generated it.
+- Required outputs are a PNG and the complete Python script that generated it.
 - Interactive HTML and editable Excel are optional outputs. Create either one
   only when the user asks for it or confirms the post-PNG offer.
 - If the user gives no specific formatting requirement, apply the IMF-style
