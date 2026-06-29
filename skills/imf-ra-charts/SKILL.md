@@ -1,26 +1,54 @@
 ---
 name: imf-ra-charts
-description: Use when the user wants to prepare or hand off IMF data for a chart, plot, or visualization. This skill is scaffolded until the internal charting tool is fully specified; it covers chart-ready data shape, chart-type selection, and source/footnote conventions. If data is not yet in scope, follow imf-ra-data to fetch it first.
+description: Use when the user wants to turn IMF RA data or user-provided CSV/Excel data into a static or interactive economics chart. Produces a PNG plus a complete reproducible Python script; optionally produces a self-contained interactive HTML chart (Plotly) and an editable Excel workbook after user confirmation.
 ---
 
 # IMF RA - Charts
 
-> **⚠️ STATUS: NOT IMPLEMENTED** — The internal charting tool API is not yet finalized.
->
-> When a user asks to chart: **(1)** confirm the data is ready in tidy form from `imf-ra-data`, **(2)** explain that the internal charting tool is pending and offer to output chart-ready Excel/CSV instead, **(3)** describe the intended chart type, axis labels, series, and source line so the user or a human analyst can hand it off to their charting tool. Do not block the user — deliver the data and a clear chart specification.
+Chart-production worker for the RA Skills family. Use this skill to turn available data into a static economics chart, with optional interactive HTML output when the user asks for it.
 
-## Before you chart
+## Load The Right References
 
-See the umbrella `imf-ra` for shared conventions.
+- Workflow, output files, routing, QA, failure behavior, and optional outputs:
+  see [references/chart-tool-usage.md](references/chart-tool-usage.md).
+- Chart choice, transformation tiers, cognitive load, and anti-patterns: see
+  [references/chart-consulting-rules.md](references/chart-consulting-rules.md).
+- Default static chart formatting, report placement, fonts, borders, and colors:
+  see
+  [references/chart-formatting-rules.md](references/chart-formatting-rules.md).
 
-## When data isn't in scope yet
+## Core Rules
 
-Load `imf-ra-data` in the same turn and follow it to fetch. Do not duplicate SDK call patterns here. See [`imf-ra-data/references/imf_datatools_agent_api_reference.md`](../imf-ra-data/references/imf_datatools_agent_api_reference.md). If the user only described what they want in plain English, also load `imf-ra-catalog` to resolve the identifier.
+- Use existing `imf-ra-data` output or user-provided CSV/Excel before attempting
+  a new pull.
+- Pull data only when no usable data are available and the user explicitly asks
+  the agent to pull data.
+- Confirm before creating or writing to `chart-temp/` in the current working
+  directory. In that confirmation, tell the user `chart-temp/` will be deleted
+  after the charting session ends and that they should save anything they need
+  to keep.
+- Required outputs are a PNG and the complete Python script that generated it.
+- Interactive HTML and editable Excel are optional outputs. Create either one
+  only when the user asks for it or confirms the post-PNG offer.
+- If the user gives no specific formatting requirement, apply the IMF-style
+  defaults in `chart-formatting-rules.md`.
+- Ask only when ambiguity would make the chart wrong or misleading; otherwise
+  make a reasonable default chart.
+- Do not handle mimicry, PPT decks, dashboards, or new data retrieval logic in
+  this skill.
 
-## How to chart
+## Implementation Stack
 
-See [references/chart-tool-usage.md](references/chart-tool-usage.md) for the internal charting tool's invocation, input shape, chart-type selection, and captioning conventions.
+Use Python `pandas` for cleaning and reshaping, `matplotlib` for PNG output,
+`plotly` (with `plotly.graph_objects`) for the optional interactive HTML chart,
+and `xlsxwriter` for the optional Excel workbook with an embedded editable chart.
+If a chart dependency is missing, tell the user which package is missing and
+what was already prepared.
 
-## Chart-type heuristics
+## Before Delivery
 
-Use the user's stated chart type when provided. Otherwise use the data shape as a guide: single time series -> line; multiple countries over time -> multi-line or small multiples; latest country comparison -> bar; two numeric series by country -> scatter; contribution or composition over time -> stacked bar/area when appropriate.
+Run the QA checklist in `chart-tool-usage.md` before showing the PNG.
+
+If chart generation fails, tell the user what failed, whether data cleaning
+succeeded, what outputs were saved, and what is needed next. Do not claim a
+chart was created when it was not.
