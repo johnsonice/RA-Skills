@@ -109,9 +109,6 @@ Preferred V1 implementation stack:
 | Excel workbook generation | Python `xlsxwriter` | Strong for creating new Excel workbooks with multiple sheets, formatting, and embedded charts. |
 | Embedded Excel chart | `xlsxwriter` chart object linked to `chart_ready` | Keeps the workbook editable and auditable because the chart is tied to the visible chart-ready table. |
 
-There is no internal charting tool for V1. The Python stack above is the
-intended implementation path, not a fallback.
-
 ## Input Paths
 
 Use available data before attempting any pull. The preferred order is:
