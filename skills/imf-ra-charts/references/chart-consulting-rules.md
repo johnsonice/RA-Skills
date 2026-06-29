@@ -4,10 +4,9 @@ Use these rules to act like a visualization consultant, not just a chart
 generator. The goal is a chart that makes the right economic comparison easy to
 see without hiding assumptions.
 
-## Consulting Brief
+## Brief And Clarification
 
-Before choosing a chart, infer the brief from the user's request and available
-data:
+Infer the brief from the user's request and available data:
 
 - analytical task: trend, ranking, comparison, relationship, distribution,
   composition, contribution, or before/after;
@@ -17,12 +16,7 @@ data:
 - main entities, periods, units, and source;
 - required caveats, such as forecast, vintage, missing data, or transformation.
 
-Do not over-ask. Ask only when missing brief details would make the chart wrong
-or misleading.
-
-## Clarification Policy
-
-Ask before charting when:
+Do not over-ask. Ask before charting only when:
 
 - there is no clear value column;
 - there is no clear time, category, or geography axis;
@@ -98,18 +92,18 @@ Record every Tier 2 or Tier 3 transformation in the generated Python script.
 
 ## Chart Recommendation Rules
 
-First infer the analytical task, then match it to the simplest chart that
-answers the question accurately. Use the user's chart type when provided and
-safe. If it would be misleading, unreadable, or unnecessarily complex, briefly
-explain the issue and recommend a simpler alternative.
+Use the user's chart type when provided and safe. If it would be misleading,
+unreadable, or unnecessarily complex, briefly explain the issue and recommend a
+simpler alternative.
 
-Selection order:
+Decision tree:
 
-1. Identify the analytical task.
-2. Confirm the data shape can support that task.
-3. Choose the lowest-cognitive-load chart that answers the task accurately.
-4. Check whether the chart requires a Tier 2 or Tier 3 transformation.
-5. Ask before applying transformations that change analytical meaning.
+1. Use the requested chart type if it is accurate and readable.
+2. Otherwise infer the analytical task.
+3. Confirm the data shape supports that task.
+4. Choose the simplest accurate chart from the tables below.
+5. Ask before applying any Tier 2 or Tier 3 transformation.
+6. Reject anti-patterns that add clutter, distort scale, or hide assumptions.
 
 | User wants to see | Default chart |
 |---|---|
@@ -164,6 +158,4 @@ Avoid:
 - chart types that force comparison by areas, angles, or subtle color
   differences when position or length would be clearer.
 
-When in doubt, choose the simplest chart that preserves accuracy: line for time,
-sorted bar for category comparison, scatter for two numeric variables, and small
-multiples when one chart becomes crowded.
+When in doubt, choose the simplest chart that preserves accuracy.
