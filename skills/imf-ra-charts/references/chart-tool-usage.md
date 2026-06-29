@@ -1,18 +1,17 @@
 # Chart Workflow And Output Contract
 
-This file is the V1 operating contract for `imf-ra-charts`. The skill produces
-static PNG charts through Python, not an internal charting tool. A parallel
-interactive HTML output using Plotly is available as an optional second format.
+This file is the operating contract for `imf-ra-charts`. The skill produces
+static PNG charts through Python. Interactive
+HTML and editable Excel outputs are optional add-ons.
 
 ## Scope
 
-- data from `imf-ra-data` or user-provided CSV/Excel files;
-- cleaning and reshaping data inside the generated script;
-- a reasonable chart choice when the user does not specify one;
-- a PNG plus the complete Python script that reproduces it;
-- optional self-contained interactive HTML chart and editable Excel workbook
-  outputs after the PNG is ready. Ask immediately after generating the PNG
-  unless the user already requested a specific optional output.
+- Use data from `imf-ra-data` output or user-provided CSV/Excel files.
+- Clean and reshape data inside the generated script.
+- Choose a reasonable chart when the user does not specify one.
+- Always produce a PNG plus the complete Python script that reproduces it.
+- Offer optional self-contained interactive HTML and editable Excel outputs
+  after the PNG is ready, unless the user already requested one of them.
 
 ## Input Order
 
@@ -30,10 +29,10 @@ explicitly wants the agent to pull data. When pulling, follow `imf-ra-data` and
 ## Output Folder
 
 Before writing artifacts, ask the user to confirm that outputs should be saved
-under `chart-temp/` in the current working directory. The confirmation message
-must also tell the user that `chart-temp/` will be deleted after the charting
-session ends and that they should save anything they need to keep. Do not create
-or overwrite `chart-temp/` without confirmation.
+under `chart-temp/` in the current working directory. Tell the user this folder
+is temporary, will be deleted after the charting session, and anything they need
+to keep should be saved elsewhere. Do not create or overwrite `chart-temp/`
+without confirmation.
 
 Use a short confirmation prompt such as:
 
@@ -49,20 +48,19 @@ Use stable, readable, lowercase file names based on the chart topic:
 chart-temp/
   real_gdp_growth_selected_economies.png
   real_gdp_growth_selected_economies_generate.py
-  real_gdp_growth_selected_economies_interactive.html   # optional interactive
-  real_gdp_growth_selected_economies.xlsx   # optional Excel
+  real_gdp_growth_selected_economies_interactive.html   # optional
+  real_gdp_growth_selected_economies.xlsx               # optional
 ```
 
 If a file already exists, avoid accidental overwrite by adding a version suffix
 such as `_v2`, unless the user explicitly asks to replace the prior output.
 
-`chart-temp/` is a temporary workspace. Before deleting it, make sure any
-deliverables the user wants to keep have been moved, attached, or otherwise
-handed off. Delete `chart-temp/` after the charting session ends.
+Before deleting `chart-temp/`, make sure any deliverables the user wants to keep
+have been moved, attached, or otherwise handed off.
 
 ## Required Outputs
 
-Every successful chart session must save these required files:
+Every successful chart session must save:
 
 - the PNG;
 - the Python script that generated the PNG.
@@ -78,17 +76,28 @@ The Python script is the reproducibility record. It must include:
   duplicate observations, and non-empty output;
 - the plotting code and PNG save path.
 
-## Interactive HTML Output (Optional Parallel)
+## Optional Outputs
 
-Produce a self-contained interactive HTML chart using `plotly.graph_objects` when
-the user asks for an interactive chart, uses the word "interactive", or confirms
-the optional HTML offer after seeing the PNG. The HTML is a parallel output; it
-accompanies the PNG and never replaces it.
+Create optional outputs only when the user asks for them up front or confirms
+the post-PNG offer. Use this short prompt when neither optional output has
+already been requested:
+
+```text
+Would you also want an HTML chart or an editable Excel workbook?
+```
+
+### Interactive HTML
+
+Produce a self-contained interactive HTML chart using `plotly.graph_objects`
+when the user asks for an interactive chart, uses the word `interactive`, or
+confirms the optional HTML offer.
 
 Rules:
+
 - Use `fig.write_html(path, include_plotlyjs=True)` by default so the HTML is
-  fully self-contained and works offline. Use `include_plotlyjs="cdn"` only if
-  the user explicitly asks for a smaller internet-dependent file.
+  fully self-contained and works offline.
+- Use `include_plotlyjs="cdn"` only if the user explicitly asks for a smaller
+  internet-dependent file.
 - Apply the same title, axis labels, units, source note, and series colors as
   the PNG.
 - Add hover templates showing year and value with unit label.
@@ -99,9 +108,27 @@ Rules:
   user sees it immediately. If the environment is headless, remote, or
   browser-opening fails, provide the saved HTML path instead.
 
-Do not create separate chart-ready CSV or chart spec CSV files by default. If
-the user explicitly asks for intermediate exports, create them as optional
-extras and label them clearly.
+### Excel Workbook
+
+Produce an editable Excel workbook only after user confirmation. 
+
+The workbook does not replace the required PNG or Python script.
+
+Required sheets:
+
+| Sheet | Purpose |
+|---|---|
+| `raw_data` | Original pulled or uploaded data, preserved as much as practical. |
+| `clean_data` | Normalized and cleaned data with consistent field names and types. |
+| `chart_ready` | Exact table used by the chart, easy to inspect and edit. |
+| `chart_spec` | Chart type, title, axes, units, source, filters, caveats, and transformations. |
+| `chart` | Embedded Excel chart linked to `chart_ready`. |
+
+Recommended sheets:
+
+| Sheet | Purpose |
+|---|---|
+| `QA_checks` | Checks for duplicates, missing values, numeric conversion, dates, units, and source notes. |
 
 ## Execution Flow
 
@@ -113,14 +140,13 @@ extras and label them clearly.
 5. Ask clarification only if the chart would otherwise be wrong or misleading.
 6. Clean and transform data according to the transformation rules.
 7. Choose a chart type from user instruction or the consulting rules.
-8. Write and run the complete Python script to generate an initial reasonable
-   PNG (and interactive HTML if requested).
+8. Write and run the complete Python script to generate the PNG and any
+   already-requested optional outputs.
 9. Run QA before delivery.
 10. Keep the exact Python script beside the PNG.
-11. Show or link the PNG to the user; if HTML was produced, open it in the
-    browser when supported and tell the user where the file is.
-12. Offer optional outputs not already requested: `Would you like a
-    self-contained interactive HTML chart, an editable Excel workbook, or both?`
+11. Show or link the PNG to the user. If HTML was produced, open it when
+    supported and tell the user where the file is.
+12. Offer optional outputs not already requested.
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
 14. After the session ends and retained deliverables have been handed off,
@@ -150,32 +176,11 @@ Check and record whether the:
 - generated Python script records the data source, cleaning, transformations,
   metadata, QA checks, plotting code, and PNG path.
 
-## Optional Excel Workbook
+For optional outputs, also check that:
 
-Only create the Excel workbook if the user confirms they want it after seeing
-the PNG offer. If interactive HTML has not already been requested or produced,
-offer both optional outputs together using the prompt in the execution flow. If
-interactive HTML is already handled, use a short Excel-only prompt:
-`Would you like an editable Excel workbook with the chart data and embedded
-chart?`
-
-The workbook is optional and does not replace the required Python script.
-
-Required sheets:
-
-| Sheet | Purpose |
-|---|---|
-| `raw_data` | Original pulled or uploaded data, preserved as much as practical. |
-| `clean_data` | Normalized and cleaned data with consistent field names and types. |
-| `chart_ready` | Exact table used by the chart, easy to inspect and edit. |
-| `chart_spec` | Chart type, title, axes, units, source, filters, caveats, and transformations. |
-| `chart` | Embedded Excel chart linked to `chart_ready`. |
-
-Recommended sheets:
-
-| Sheet | Purpose |
-|---|---|
-| `QA_checks` | Checks for duplicates, missing values, numeric conversion, dates, units, and source notes. |
+- HTML exists, is non-empty, and is self-contained unless the user requested CDN
+  mode;
+- Excel opens and contains the required sheets when requested.
 
 ## Failure Behavior
 
