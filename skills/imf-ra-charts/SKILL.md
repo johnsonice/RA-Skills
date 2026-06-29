@@ -4,14 +4,8 @@ description: Use when the user wants to turn IMF RA data or user-provided CSV/Ex
 ---
 
 # IMF RA - Charts
-<<<<<<< HEAD
-Chart-production worker for the RA Skills family. Use this skill to turn available data into a static economics chart, with optional interactive HTML output when the user asks for it.
-=======
 
-Chart-production worker for the RA Skills family. Use this skill to turn
-available data into a static economics chart, with optional interactive HTML
-output when the user asks for it.
->>>>>>> fa3ff63 (Merge feat/jamie_0628_ra_charts into bella_0625_chart_v1)
+Chart-production worker for the RA Skills family. Use this skill to turn available data into a static economics chart, with optional interactive HTML output when the user asks for it.
 
 ## Load The Right References
 
