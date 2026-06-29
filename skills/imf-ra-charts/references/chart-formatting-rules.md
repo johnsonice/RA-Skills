@@ -32,7 +32,7 @@ Default PNG export:
 Placement:
 
 - Align title, subtitle, plot area, and source note to the same left edge.
-- Place title at the top-left above the plot area.
+- Place title at the top-center above the plot area.
 - Place subtitle directly below the title.
 - Place source and notes at the bottom-left below the plot area.
 - Keep source and notes outside the plotting area whenever practical.
@@ -61,19 +61,18 @@ For chart-sheet style outputs:
 
 | Element | Font | Size | Color |
 |---|---|---:|---|
-| All chart text | Segoe UI | 10 pt | Black/auto |
-| Figure title | Segoe UI | 10.5 pt | Black/auto |
-| Chart subtitle | Segoe UI | 10 pt | Black/auto |
+| Basic chart text | Segoe UI | 10 pt | Black/auto |
+| Figure title | Segoe UI | 24 pt | Black/auto |
+| Chart subtitle | Segoe UI | 18 pt | Black/auto |
 | Axis labels | Segoe UI | 10 pt | Black/auto |
 | Legend | Segoe UI | 10 pt | Black/auto |
 | Source box | Segoe UI | 10 pt | Black/auto |
 
 For panel-sheet style outputs:
 
-- Default font size: 8.
+- Default font size: 10.
 - Do not use font sizes below 8 because they may become unreadable.
 
-Use the 10 pt / 10.5 pt defaults for report figures. If a large standalone PNG
 is intended only for screen review, larger fonts may be used, but the generated
 script should record that output-specific choice.
 
@@ -207,7 +206,7 @@ Generated Python scripts should encode the formatting choices explicitly:
   bottom `0.14`, adjusting bottom margin as needed for notes or long labels.
 - Define brand color constants in the script.
 - Set title, subtitle, axis label, tick label, source, and legend font sizes
-  explicitly. For report figures, use 10.5 pt for figure titles and 10 pt for
+  explicitly. For report figures, use 24 pt for figure titles and 10 pt for
   other chart text unless the output is only for screen review.
 - Use light borders and gridlines.
 - Save PNG output at the standard size unless the user requests another format.
