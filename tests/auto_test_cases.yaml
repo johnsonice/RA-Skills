@@ -1056,7 +1056,7 @@ cases:
   command: python3 ".claude/skills/imf-ra/country_group/country_groups_helper.py" expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
   expected_exit_codes:
   - 0
-  expected_behavior: 'Expands EMDE to comma-separated WEO member countrycode values suitable for iData country selection, rather than returning the group/category column alone.
+  expected_behavior: 'Expands EMDE to `+`-joined WEO member countrycode values for direct use as an iData dimension value, rather than returning the group/category column alone.
 
 '
   expected_stdout_contains:

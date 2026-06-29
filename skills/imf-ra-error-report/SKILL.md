@@ -85,6 +85,7 @@ Offer a report when one of these occurs:
 - The agent or tool run crashes, stops, or is interrupted unexpectedly.
 - The agent says it created an output file, but the file is missing.
 - Output is empty, corrupt, saved to the wrong location, or in the wrong format.
+- **Partial failure:** some data chunks were retrieved but others failed and are absent from the output file; `--explore` returned empty or malformed dimensions; metadata lookup silently produced empty SCALE/UNIT columns with a warning printed to stderr. These count as system errors when they degrade the output the user asked for.
 
 Suggested offer:
 

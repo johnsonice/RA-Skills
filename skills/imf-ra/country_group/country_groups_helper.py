@@ -561,7 +561,7 @@ def cmd_expand_for_idata(tables: CsvTables, args: argparse.Namespace) -> None:
     """CLI handler for expanding a group into iData-ready country rows/codes."""
     rows = group_members(tables, args.group)
     if args.codes_only:
-        print(",".join(row["countrycode"] for row in rows))
+        print("+".join(row["countrycode"] for row in rows))
         return
     write_rows(rows, ["countrycode", "countryname", "countrycode_s", "countryname_s"])
 
@@ -669,7 +669,7 @@ def build_parser() -> argparse.ArgumentParser:
         epilog='Example: country_groups_helper.py expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only',
     )
     p.add_argument("group")
-    p.add_argument("--codes-only", action="store_true", help="Print only comma-separated countrycode values.")
+    p.add_argument("--codes-only", action="store_true", help="Print only `+`-joined countrycode values, ready for direct use as an iData dimension value.")
     p.set_defaults(func=cmd_expand_for_idata)
 
     p = sub.add_parser(

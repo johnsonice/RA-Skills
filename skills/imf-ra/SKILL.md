@@ -66,3 +66,27 @@ For WEO country/group tasks involving ambiguity, membership expansion, compariso
 - When the user asks for charts, route to `imf-ra-charts` after data are available or after `imf-ra-data` produces tidy output.
 - When the catalog returns several plausible matches, present the candidates with distinction notes and ask for confirmation before fetching.
 - When a system/execution error blocks the RA workflow, or the user remains unsatisfied after repeated attempts and wants to report it, route to `imf-ra-error-report`. Reports are local JSON files under `tests/user_error_report/`; do not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
+
+## Handoff Contract
+
+The canonical inter-skill handoff object. All skills must produce and consume these exact field names and formats.
+
+**iData handoff:**
+
+```text
+database:        string   — iData resource ID (e.g. IMF.RES.WEO:WEO_LIVE)
+dimension_name:  string   — indicator dimension name (e.g. INDICATOR, TICKER, SERIES)
+code:            string   — indicator code (e.g. NGDP_RPCH)
+geo:             string?  — +-joined ISO3 codes (e.g. USA+GBR+DEU); absent if not geography-constrained
+frequency:       string?  — A | Q | M | D; absent if multi-frequency or not yet confirmed
+vintage:         string?  — full resource ID of a specific vintage; absent when using LIVE
+```
+
+**Haver handoff:**
+
+```text
+codes:           list     — ["CODE@DB", ...] using bare DB code without HAVER: prefix
+frequency:       string   — A | Q | M | W | D
+```
+
+`geo` is always `+`-joined ISO3 codes — never comma-separated. Use `expand-for-idata <GROUP> --codes-only` to produce a valid `geo` value from a WEO group.

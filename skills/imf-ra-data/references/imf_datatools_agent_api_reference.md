@@ -81,7 +81,7 @@ off the IMF network and has no macOS/Linux equivalent. From a Windows Command Pr
 PowerShell on an IMF-managed machine:
 
 ```powershell
-python \\ecnswn12p\ems_shared\pub\datatools\installer.py
+python \\ecnswn12p\ems_shared\pub\datatools\installer.py dev
 ```
 
 Test installation (any OS, once the SDK is present):
@@ -459,6 +459,11 @@ df_idata = idata_utilities.get_idata_data(data_db, data_key)
 ---
 
 # 5. EcOS API
+
+> **⚠️ RETIRED — do not use for new workflows.**
+> EcOS retrieval is retired in the RA-Skills system. All retrieval functions in this section (`get_ecos_sdmx_data`, `get_ecos_gfs_data`, `get_ecos_commodity_data`, `get_ecos_bloomberg_data`, `get_idata_data_using_ecos`) are disallowed.
+> Use the iData API (§ 3) instead. For EcOS → iData code migration, see the mapper in § 4.
+> This section is retained as a legacy reference only.
 
 Use module:
 

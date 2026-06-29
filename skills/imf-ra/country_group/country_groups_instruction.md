@@ -37,7 +37,7 @@ See **Commands Reference** below for full syntax and examples.
 | `explain` | `<TERM>` | `explain EM` | Document term across WEO/SPR frameworks |
 | `members` | `<GROUP>` `[--codes-only]` | `members "Advanced Economies(AE)" --codes-only` | List all countries in a group (compact: `--codes-only`) |
 | `memberships` | `<COUNTRY>` | `memberships USA` | List all groups containing a country |
-| `expand-for-idata` | `<GROUP>` `--codes-only` | `expand-for-idata "EMDE" --codes-only` | Convert group to iData-ready comma-separated codes |
+| `expand-for-idata` | `<GROUP>` `--codes-only` | `expand-for-idata "EMDE" --codes-only` | Convert group to `+`-joined member codes for direct use as an iData dimension value |
 | `compare` | `<GROUP_A>` `<GROUP_B>` | `compare "LIDC" "SPR-LIC"` | Compare group membership (WEO vs SPR/PRGT) |
 | `groups` | `<QUERY>` | `groups "latin america"` | Search group metadata by keyword |
 | `countries` | `<QUERY>` | `countries "united"` | Search country metadata by code/name/department |
@@ -50,7 +50,7 @@ See **Commands Reference** below for full syntax and examples.
 |---|---|---|
 | **WEO vs SPR/PRGT differ** | `EM` and `LIC` have different members in each framework. `EMDE` = `EM` + `LIC` + Syria in WEO; differs in SPR. | Ask: *"Which framework—WEO or SPR/PRGT?"* before committing to group membership. |
 | **IMF scope ambiguity** | Two definitions: (191) sovereign members vs (198) including territories (Anguilla, Aruba, Curaçao, HK SAR, Macao SAR, Montserrat, Sint Maarten). WEO has 201 = 198 + Puerto Rico + Taiwan + West Bank/Gaza. | Ask: *"Do you mean 191 sovereign or 198 including territories?"* when user says "all IMF countries." |
-| **iData rejects group names** | Group column names (e.g., `Advanced Economies(AE)`) are **not valid** iData country selectors. Most datasets require expanded codes. | Use `expand-for-idata <GROUP> --codes-only` to generate comma-separated member codes. Exception: verify dataset metadata supports aggregates first. |
+| **iData rejects group names** | Group column names (e.g., `Advanced Economies(AE)`) are **not valid** iData country selectors. Most datasets require expanded codes. | Use `expand-for-idata <GROUP> --codes-only` to generate `+`-joined member codes ready for direct use as an iData dimension value. Exception: verify dataset metadata supports aggregates first. |
 | **G20 scope ambiguity** | CSV stores 19 country-members. Official G20 also includes EU + African Union (21 total). | Ask: *"19 country-members or 21 including EU and AU?"* when user requests G20. |
 
 ---
@@ -73,8 +73,8 @@ Response: "I found two Congos: Republic of Congo (COG) or Democratic Republic of
 User: "Pull data for all EMDE countries"
 You: "Let me expand the EMDE group..."
 $ expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
-# Output: AFG,ALB,DZA,...,ZWE (160 codes)
-Response: "EMDE contains 160 member countries. I'll use these codes for the iData pull."
+# Output: AFG+ALB+DZA+...+ZWE  (160 codes, +-joined — paste directly into iData key)
+Response: "EMDE contains 160 member countries. I'll use these codes directly as the iData country dimension value."
 ```
 
 ### Pattern 3: Compare WEO vs SPR Frameworks
@@ -171,7 +171,10 @@ A: The country is either not in WEO Live or uses a different name form. Check al
 A: Only when the user or dataset explicitly requires internal numeric codes (rare). Use `countrycode` by default.
 
 **Q: How do I list all countries in a group without seeing the full table?**  
-A: Use `members <GROUP> --codes-only` for a concise comma-separated list.
+A: Use `members <GROUP> --codes-only` for a concise comma-separated list (human review only).
+
+**Q: Which command do I use to get country codes for an iData key?**  
+A: Use `expand-for-idata <GROUP> --codes-only` — it outputs `+`-joined codes (e.g. `AFG+ALB+...`) ready to paste directly into an iData dimension value. Do **not** use `members --codes-only` for iData keys — its comma-separated output is for counting and inspection, not key construction.
 
 ---
 
