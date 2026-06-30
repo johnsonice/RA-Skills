@@ -98,7 +98,7 @@ Rules:
   fully self-contained and works offline.
 - Use `include_plotlyjs="cdn"` only if the user explicitly asks for a smaller
   internet-dependent file.
-- Apply the same title, axis labels, units, source note, and series colors as
+- Apply the same chart (including chart type, title, axis labels, units, source note, and series colors as)
   the PNG.
 - Add hover templates showing year and value with unit label.
 - Save as `<topic>_interactive.html` beside the PNG in `chart-temp/`.

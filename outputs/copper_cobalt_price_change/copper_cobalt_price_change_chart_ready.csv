@@ -1,0 +1,269 @@
+date,period,commodity,price,price_index,SERIES_CODE,INDICATOR,DATA_TRANSFORMATION,FREQUENCY
+2015-01-01,2015M1,Cobalt,30749.4761904761,100.0,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-02-01,2015M2,Cobalt,29155.375,94.8158427785842,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-03-01,2015M3,Cobalt,27568.784090909,89.65610965252071,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-04-01,2015M4,Cobalt,28827.275,93.74883273272975,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-05-01,2015M5,Cobalt,30066.5789473684,97.77915812654003,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-06-01,2015M6,Cobalt,30650.3863636363,99.67775117135005,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-07-01,2015M7,Cobalt,31579.8695652173,102.70051226107843,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-08-01,2015M8,Cobalt,29243.95,95.10389646590988,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-09-01,2015M9,Cobalt,27714.3068181818,90.12936235566066,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-10-01,2015M10,Cobalt,27499.0454545454,89.42931347579365,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-11-01,2015M11,Cobalt,24413.7023809523,79.39550654366545,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-12-01,2015M12,Cobalt,23951.1785714285,77.89133845098407,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-01-01,2016M1,Cobalt,23134.6,75.23575314484667,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-02-01,2016M2,Cobalt,22275.8809523809,72.44312330523637,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-03-01,2016M3,Cobalt,22982.5238095238,74.74118800320272,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-04-01,2016M4,Cobalt,23000.5,74.79964815505977,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-05-01,2016M5,Cobalt,23413.625,76.14316697613145,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-06-01,2016M6,Cobalt,23692.7272727272,77.05083210511873,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-07-01,2016M7,Cobalt,25085.5238095238,81.58032889449163,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-08-01,2016M8,Cobalt,26296.5909090909,85.51882557672845,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-09-01,2016M9,Cobalt,26625.0,86.5868408133939,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-10-01,2016M10,Cobalt,28205.6666666666,91.72730778224644,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-11-01,2016M11,Cobalt,29258.409090909,95.15091870075848,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2016-12-01,2016M12,Cobalt,31589.375,102.7314247706894,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-01-01,2017M1,Cobalt,34720.3809523809,112.91373139921875,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-02-01,2017M2,Cobalt,43005.0,139.85604090816918,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-03-01,2017M3,Cobalt,52765.2173913043,171.5971259622531,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-04-01,2017M4,Cobalt,55305.5555555555,179.8585290135285,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-05-01,2017M5,Cobalt,54941.9404761904,178.6760208071685,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-06-01,2017M6,Cobalt,57449.4545454545,186.83067701572122,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-07-01,2017M7,Cobalt,58548.9047619047,190.40618578094282,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-08-01,2017M8,Cobalt,58465.1363636363,190.1337635850345,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-09-01,2017M9,Cobalt,60128.5,195.54316836988377,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-10-01,2017M10,Cobalt,59905.8636363636,194.81913534162246,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-11-01,2017M11,Cobalt,62118.0454545454,202.0133451046719,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2017-12-01,2017M12,Cobalt,72632.0526315789,236.20582081354254,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-01-01,2018M1,Cobalt,77293.5227272727,251.3653313912791,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-02-01,2018M2,Cobalt,80792.6,262.74463831362283,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-03-01,2018M3,Cobalt,87614.9047619047,284.9313732018671,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-04-01,2018M4,Cobalt,90782.5,295.2326714043918,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-05-01,2018M5,Cobalt,90250.0,293.5009345881239,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-06-01,2018M6,Cobalt,81188.0952380952,264.0308235990089,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-07-01,2018M7,Cobalt,70647.7272727272,229.75262028889003,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-08-01,2018M8,Cobalt,63302.2954545454,205.86463022141413,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-09-01,2018M9,Cobalt,62210.325,202.31344629951167,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-10-01,2018M10,Cobalt,60626.7826086956,197.1636272213094,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-11-01,2018M11,Cobalt,54962.9318181818,178.7442864968387,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2018-12-01,2018M12,Cobalt,55263.1578947368,179.72064809303393,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-01-01,2019M1,Cobalt,40704.5454545454,132.37476047527807,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-02-01,2019M2,Cobalt,32100.0,104.39202216375378,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-03-01,2019M3,Cobalt,31333.3333333333,101.89875476005031,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-04-01,2019M4,Cobalt,33500.0,108.94494524877732,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-05-01,2019M5,Cobalt,34166.6666666666,111.11300386069306,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-06-01,2019M6,Cobalt,28809.0,93.6894008260306,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-07-01,2019M7,Cobalt,27340.3260869565,88.91314413812518,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-08-01,2019M8,Cobalt,30136.5714285714,98.00677982900231,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-09-01,2019M9,Cobalt,35720.4285714285,116.16597417842205,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-10-01,2019M10,Cobalt,35263.0869565217,114.67865903824269,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-11-01,2019M11,Cobalt,35510.1666666666,115.4821839783567,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2019-12-01,2019M12,Cobalt,33547.4625,109.0992974715794,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-01-01,2020M1,Cobalt,32213.0227272727,104.75958200956248,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-02-01,2020M2,Cobalt,33542.075,109.08177684792184,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-03-01,2020M3,Cobalt,31119.0454545454,101.20187173849735,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-04-01,2020M4,Cobalt,29565.0,96.14797929194332,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-05-01,2020M5,Cobalt,29562.5921052631,96.14014860656192,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-06-01,2020M6,Cobalt,29074.3409090909,94.55231279060281,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-07-01,2020M7,Cobalt,28517.0217391304,92.73986185157473,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-08-01,2020M8,Cobalt,32914.8809523809,107.04208666349733,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-09-01,2020M9,Cobalt,33482.1022727272,108.88674026615604,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-10-01,2020M10,Cobalt,33227.875,108.05997082412586,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-11-01,2020M11,Cobalt,32238.8809523809,104.84367523101452,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2020-12-01,2020M12,Cobalt,31882.2857142857,103.68399616563373,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-01-01,2021M1,Cobalt,37883.775,123.20136696095518,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-02-01,2021M2,Cobalt,47516.45,154.52767294526163,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-03-01,2021M3,Cobalt,52414.6739130434,170.45712775191134,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-04-01,2021M4,Cobalt,49020.7,159.4196261957235,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-05-01,2021M5,Cobalt,44214.85,143.79057947560898,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-06-01,2021M6,Cobalt,44149.3636363636,143.57761206364157,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-07-01,2021M7,Cobalt,51649.0227272727,167.96716278136057,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-08-01,2021M8,Cobalt,51640.5,167.93944612296968,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-09-01,2021M9,Cobalt,51797.909090909,168.45135432567838,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-10-01,2021M10,Cobalt,54779.2857142857,178.14705322119357,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-11-01,2021M11,Cobalt,60412.5,196.46676133855996,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2021-12-01,2021M12,Cobalt,69347.1904761904,225.5231602861222,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-01-01,2022M1,Cobalt,70527.05,229.36016718829194,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-02-01,2022M2,Cobalt,71573.6,232.76363979874293,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-03-01,2022M3,Cobalt,80457.4347826087,261.654651559653,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-04-01,2022M4,Cobalt,81790.3809523809,265.98950969354553,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-05-01,2022M5,Cobalt,77721.3636363636,252.75670764250577,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-06-01,2022M6,Cobalt,72057.7272727272,234.33806425309234,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-07-01,2022M7,Cobalt,55713.2380952381,181.1843484751585,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-08-01,2022M8,Cobalt,49308.8260869565,160.35663756193904,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-09-01,2022M9,Cobalt,51515.409090909,167.53263948887897,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-10-01,2022M10,Cobalt,51509.2380952381,167.5125708684164,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-11-01,2022M11,Cobalt,51504.5909090909,167.49745781049498,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2022-12-01,2022M12,Cobalt,51497.7727272727,167.47528448378213,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-01-01,2023M1,Cobalt,48874.3636363636,158.94372747559598,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-02-01,2023M2,Cobalt,36615.0125,119.07523976405363,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-03-01,2023M3,Cobalt,33865.1304347826,110.13238152418185,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-04-01,2023M4,Cobalt,34498.75,112.19296805675391,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-05-01,2023M5,Cobalt,33139.6304347826,107.77299173976431,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-06-01,2023M6,Cobalt,29350.6363636363,95.45084990009339,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-07-01,2023M7,Cobalt,32982.2976190476,107.2613315906274,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-08-01,2023M8,Cobalt,32980.652173913,107.25598045838566,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-09-01,2023M9,Cobalt,32981.8809523809,107.25997655399489,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-10-01,2023M10,Cobalt,32982.75,107.262802773257,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-11-01,2023M11,Cobalt,33003.7272727272,107.33102270844309,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2023-12-01,2023M12,Cobalt,30025.6666666666,97.64610779277703,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-01-01,2024M1,Cobalt,28691.4239130434,93.30703305420815,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-02-01,2024M2,Cobalt,28271.0476190476,91.93993238754379,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-03-01,2024M3,Cobalt,28282.3571428571,91.97671195328157,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-04-01,2024M4,Cobalt,27997.0681818181,91.04892716998381,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-05-01,2024M5,Cobalt,27440.2391304347,89.23807013965866,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-06-01,2024M6,Cobalt,26825.4,87.23855923213584,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-07-01,2024M7,Cobalt,26401.2173913043,85.8590800954243,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-08-01,2024M8,Cobalt,25111.3409090909,81.66428837206836,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-09-01,2024M9,Cobalt,24080.3571428571,78.31143852237523,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-10-01,2024M10,Cobalt,24229.2173913043,78.79554513780208,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-11-01,2024M11,Cobalt,24292.2619047619,79.00057143830578,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2024-12-01,2024M12,Cobalt,24300.0,79.02573640433697,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-01-01,2025M1,Cobalt,23779.9565217391,77.33450929191555,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-02-01,2025M2,Cobalt,21721.075,70.6388455707339,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-03-01,2025M3,Cobalt,31534.7142857142,102.55366332217817,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-04-01,2025M4,Cobalt,33313.6363636363,108.33887431862787,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-05-01,2025M5,Cobalt,33260.3409090909,108.16555281482316,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-06-01,2025M6,Cobalt,32964.7857142857,107.20438133673231,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-07-01,2025M7,Cobalt,32895.1413043478,106.97789159262578,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-08-01,2025M8,Cobalt,32895.9761904761,106.98060671571645,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-09-01,2025M9,Cobalt,33482.0681818181,108.88662939952243,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-10-01,2025M10,Cobalt,43145.7391304347,140.31373693382795,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-11-01,2025M11,Cobalt,48138.85,156.55177246534637,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2025-12-01,2025M12,Cobalt,51872.6931818181,168.69455876417302,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2026-01-01,2026M1,Cobalt,55500.1363636363,180.49132290853825,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2026-02-01,2026M2,Cobalt,55858.175,181.6556960319887,G001.PCOBA.USD.M,"Cobalt, US dollars per pound, Unit prices",US dollars,Monthly
+2015-01-01,2015M1,Copper,5830.53571428571,100.0,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-02-01,2015M2,Copper,5729.275,98.26326911886319,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-03-01,2015M3,Copper,5939.67045454545,101.87177895150086,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-04-01,2015M4,Copper,6042.0875,103.62834216409918,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-05-01,2015M5,Copper,6294.77631578947,107.96222893149078,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-06-01,2015M6,Copper,5833.01136363636,100.04246006665537,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-07-01,2015M7,Copper,5456.75,93.5891703163763,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-08-01,2015M8,Copper,5127.3,87.93874613334974,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-09-01,2015M9,Copper,5217.25,89.481486018805,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-10-01,2015M10,Copper,5216.0909090909,89.46160635481014,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-11-01,2015M11,Copper,4799.90476190476,82.32356334160262,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2015-12-01,2015M12,Copper,4638.83333333333,79.56101395567262,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-01-01,2016M1,Copper,4471.7875,76.69599705981446,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-02-01,2016M2,Copper,4598.61904761904,78.87129541718981,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-03-01,2016M3,Copper,4953.79761904761,84.96299245556533,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-04-01,2016M4,Copper,4872.73809523809,83.57273386215836,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-05-01,2016M5,Copper,4694.5375,80.5164007227957,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-06-01,2016M6,Copper,4641.9659090909,79.61474102143596,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-07-01,2016M7,Copper,4864.90476190476,83.43838371463868,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-08-01,2016M8,Copper,4751.67045454545,81.49629274893431,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-09-01,2016M9,Copper,4722.20454545454,80.99092050640238,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-10-01,2016M10,Copper,4731.2619047619,81.14626402458319,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-11-01,2016M11,Copper,5450.93181818181,93.48938219906942,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2016-12-01,2016M12,Copper,5660.35,97.08113074637843,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-01-01,2017M1,Copper,5754.55952380952,98.69692607679194,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-02-01,2017M2,Copper,5940.9125,101.89308137576192,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-03-01,2017M3,Copper,5824.6304347826,99.8987180630994,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-04-01,2017M4,Copper,5683.90277777777,97.48508638496688,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-05-01,2017M5,Copper,5599.55952380952,96.0385082641675,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-06-01,2017M6,Copper,5719.76136363636,98.10009995517332,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-07-01,2017M7,Copper,5985.11904761904,102.65127152818184,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-08-01,2017M8,Copper,6485.625,111.23549049033727,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-09-01,2017M9,Copper,6577.16666666666,112.80552918236293,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-10-01,2017M10,Copper,6807.60227272727,116.75774931019798,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-11-01,2017M11,Copper,6826.54545454545,117.08264538744464,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2017-12-01,2017M12,Copper,6833.8947368421,117.20869353562153,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-01-01,2018M1,Copper,7065.85227272727,121.1870164076835,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-02-01,2018M2,Copper,7006.525,120.16948944902155,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-03-01,2018M3,Copper,6799.17857142857,116.61327371290318,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-04-01,2018M4,Copper,6851.5125,117.51085724786385,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-05-01,2018M5,Copper,6825.27380952381,117.06083529856164,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-06-01,2018M6,Copper,6965.85714285714,119.47199166947418,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-07-01,2018M7,Copper,6250.75,107.20712995007817,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-08-01,2018M8,Copper,6051.04545454545,103.78198078299148,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-09-01,2018M9,Copper,6050.7625,103.77712780619284,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-10-01,2018M10,Copper,6219.58695652173,106.67265001537996,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-11-01,2018M11,Copper,6195.92045454545,106.2667438836622,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2018-12-01,2018M12,Copper,6075.31578947368,104.19824330358223,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-01-01,2019M1,Copper,5939.10227272727,101.86203401817015,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-02-01,2019M2,Copper,6300.4875,108.06018192398403,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-03-01,2019M3,Copper,6439.46428571428,110.44378426388164,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-04-01,2019M4,Copper,6438.3625,110.42488744602011,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-05-01,2019M5,Copper,6017.90476190476,103.21358202403196,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-06-01,2019M6,Copper,5882.225,100.88652721203033,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-07-01,2019M7,Copper,5941.19565217391,101.89793774210261,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-08-01,2019M8,Copper,5709.44047619047,97.92308556144269,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-09-01,2019M9,Copper,5759.25,98.77737282165944,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-10-01,2019M10,Copper,5757.29782608695,98.74389092550594,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-11-01,2019M11,Copper,5859.95238095238,100.50452768164328,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2019-12-01,2019M12,Copper,6077.0625,104.2282012802059,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-01-01,2020M1,Copper,6031.20909090909,103.44176567054892,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-02-01,2020M2,Copper,5687.75,97.55107041131978,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-03-01,2020M3,Copper,5182.63181818181,88.88774672082985,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-04-01,2020M4,Copper,5057.972,86.74969587455213,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-05-01,2020M5,Copper,5239.82631578947,89.86869427711571,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-06-01,2020M6,Copper,5754.59545454545,98.69754232781398,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-07-01,2020M7,Copper,6372.46086956521,109.29460313486632,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-08-01,2020M8,Copper,6508.39285714285,111.62598389023302,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-09-01,2020M9,Copper,6704.9,114.99629414106774,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-10-01,2020M10,Copper,6713.81136363636,115.14913367542692,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-11-01,2020M11,Copper,7068.90714285714,121.23941073780287,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2020-12-01,2020M12,Copper,7772.23809523809,133.30229804089717,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-01-01,2021M1,Copper,7972.1475,136.7309607668985,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-02-01,2021M2,Copper,8470.94,145.28579216563057,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-03-01,2021M3,Copper,8988.24782608695,154.1581814525955,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-04-01,2021M4,Copper,9324.8175,159.9307157514319,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-05-01,2021M5,Copper,10166.285,174.3627944013967,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-06-01,2021M6,Copper,9631.5,165.19065265994928,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-07-01,2021M7,Copper,9450.82045454545,162.09180284050888,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-08-01,2021M8,Copper,9370.13857142857,160.70802119383796,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-09-01,2021M9,Copper,9324.70954545454,159.92886421409898,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-10-01,2021M10,Copper,9829.21904761904,168.58174838953377,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-11-01,2021M11,Copper,9728.90454545454,166.8612460707037,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2021-12-01,2021M12,Copper,9551.18,163.81307770053,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-01-01,2022M1,Copper,9782.3375,167.77767909099273,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-02-01,2022M2,Copper,9943.175,170.53621634865712,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-03-01,2022M3,Copper,10230.8939130434,175.47090720971204,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-04-01,2022M4,Copper,10174.3476190476,174.50107704715506,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-05-01,2022M5,Copper,9395.02727272727,161.13488936716408,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-06-01,2022M6,Copper,9067.55181818181,155.5183307764484,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-07-01,2022M7,Copper,7544.80952380952,129.40165181260403,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-08-01,2022M8,Copper,7990.81217391304,137.05108013204207,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-09-01,2022M9,Copper,7746.01136363636,132.85248119923938,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-10-01,2022M10,Copper,7651.08285714285,131.22435453738015,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-11-01,2022M11,Copper,8049.86136363636,138.06383766611634,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2022-12-01,2022M12,Copper,8371.09136363636,143.5732799496605,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-01-01,2023M1,Copper,9007.34636363636,154.4857420488305,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-02-01,2023M2,Copper,8936.587,153.2721423539862,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-03-01,2023M3,Copper,8856.31086956521,151.89531980510617,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-04-01,2023M4,Copper,8809.1575,151.086588465897,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-05-01,2023M5,Copper,8243.15608695652,141.3790514439268,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-06-01,2023M6,Copper,8396.51772727272,144.00936961418412,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-07-01,2023M7,Copper,8476.67904761904,145.3842230457464,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-08-01,2023M8,Copper,8347.82826086956,143.17429255113038,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-09-01,2023M9,Copper,8276.71380952381,141.95460271763,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-10-01,2023M10,Copper,7941.3559090909,136.2028516459192,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-11-01,2023M11,Copper,8189.58772727272,140.46029607891722,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2023-12-01,2023M12,Copper,8407.90047619047,144.20459608179434,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-01-01,2024M1,Copper,8351.33956521739,143.23451522225176,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-02-01,2024M2,Copper,8304.95047619047,142.43889212173184,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-03-01,2024M3,Copper,8692.81904761904,149.0912580523312,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-04-01,2024M4,Copper,9445.59363636363,162.00215724981277,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-05-01,2024M5,Copper,10117.1634782608,173.52030712155988,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-06-01,2024M6,Copper,9648.167,165.47650975467837,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-07-01,2024M7,Copper,9385.31304347826,160.9682798183158,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-08-01,2024M8,Copper,8981.11772727272,154.03589253844373,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-09-01,2024M9,Copper,9259.12857142857,158.804079507519,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-10-01,2024M10,Copper,9533.99130434782,163.51827296054583,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-11-01,2024M11,Copper,9075.72714285714,155.65854644574446,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2024-12-01,2024M12,Copper,8909.90772727272,152.81456394207612,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-01-01,2025M1,Copper,8976.6804347826,153.95978816814983,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-02-01,2025M2,Copper,9330.975,160.03632354292375,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-03-01,2025M3,Copper,9735.82333333333,166.9799107735343,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-04-01,2025M4,Copper,9172.6959090909,157.32166577106085,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-05-01,2025M5,Copper,9531.2009090909,163.4704146608345,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-06-01,2025M6,Copper,9835.06809523809,168.68206588874259,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-07-01,2025M7,Copper,9770.5804347826,167.5760326935855,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-08-01,2025M8,Copper,9671.87571428571,165.88313987320456,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-09-01,2025M9,Copper,9994.77318181818,171.42118103023444,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-10-01,2025M10,Copper,10739.9182608695,184.2012258762955,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-11-01,2025M11,Copper,10812.028,185.43798597286468,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2025-12-01,2025M12,Copper,11790.964090909,202.2277997889512,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2026-01-01,2026M1,Copper,12986.6068181818,222.73436703873733,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
+2026-02-01,2026M2,Copper,12951.345,222.1295886802856,G001.PCOPP.USD.M,"Copper, US dollars per metric tonne, Unit prices",US dollars,Monthly
