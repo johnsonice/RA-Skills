@@ -79,7 +79,7 @@ The Python script is the reproducibility record. It must include:
 ## Optional Outputs
 
 Create optional outputs only when the user asks for them up front or confirms
-the post-PNG offer. Generate same chart as the PNG in both html and excel. Use this short prompt when neither optional output has
+the post-PNG offer. Generate the same chart as the PNG in both html and excel. Use this short prompt when neither optional output has
 already been requested:
 
 ```text
