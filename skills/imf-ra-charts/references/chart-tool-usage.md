@@ -83,7 +83,7 @@ the post-PNG offer. Use this short prompt when neither optional output has
 already been requested:
 
 ```text
-Would you also want an HTML chart or an editable Excel workbook?
+Would you also want an HTML interactive chart or an editable Excel workbook with data and chart included?
 ```
 
 ### Interactive HTML
@@ -144,8 +144,7 @@ Recommended sheets:
    already-requested optional outputs.
 9. Run QA before delivery.
 10. Keep the exact Python script beside the PNG.
-11. Show or link the PNG to the user. If HTML was produced, open it when
-    supported and tell the user where the file is.
+11. Show or link the PNG to the user.
 12. Offer optional outputs not already requested.
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
