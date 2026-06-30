@@ -79,7 +79,7 @@ The Python script is the reproducibility record. It must include:
 ## Optional Outputs
 
 Create optional outputs only when the user asks for them up front or confirms
-the post-PNG offer. Use this short prompt when neither optional output has
+the post-PNG offer. Generate same chart as the PNG in both html and excel. Use this short prompt when neither optional output has
 already been requested:
 
 ```text
@@ -122,7 +122,7 @@ Required sheets:
 | `clean_data` | Normalized and cleaned data with consistent field names and types. |
 | `chart_ready` | Exact table used by the chart, easy to inspect and edit. |
 | `chart_spec` | Chart type, title, axes, units, source, filters, caveats, and transformations. |
-| `chart` | Embedded Excel chart linked to `chart_ready`. |
+| `chart` | Embedded Excel chart same as in PNG linked to `chart_ready`. |
 
 Recommended sheets:
 
