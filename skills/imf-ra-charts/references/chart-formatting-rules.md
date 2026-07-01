@@ -1,8 +1,7 @@
 # Chart Formatting Rules
 
-Use these rules as the default static-chart formatting layer for
-`imf-ra-charts`. They define clean IMF-style defaults, not mimicry of
-user-provided examples, PPT deck production, or a separate charting scope. They
+Use these rules as the default chart formatting layer for
+`imf-ra-charts`. They define clean IMF-style defaults. They
 do not override the analytical safety and chart-selection rules in
 `chart-consulting-rules.md`.
 
@@ -44,21 +43,6 @@ Placement:
 - Place source and notes at the bottom-left below the plot area.
 - Keep source and notes outside the plotting area whenever practical.
 
-## Word And Report Placement
-
-When preparing figures for Word reports:
-
-- Place each figure as close as possible to the first reference to it in the
-  text.
-- Small in-text figures may appear within a paragraph when they help illustrate
-  a key point. They do not need figure numbers unless the report requires them.
-- For in-text figures, use Square or Tight text wrapping so the figure is
-  separated from surrounding text.
-- Large or full-page figures may appear on a separate page or within the text,
-  depending on size and readability.
-- After copying a figure from Excel to Word, resize it only if labels remain
-  readable. If text becomes too small, enlarge the font in the source Excel file
-  and recopy the figure as an image, preferably Enhanced Metafile.
 
 ## Typography
 
@@ -71,8 +55,8 @@ For Excel chart-sheet style outputs:
 | Element | Font | Size | Color |
 |---|---|---:|---|
 | Basic chart text | Segoe UI | 10 pt | Black/auto |
-| Figure title | Segoe UI | 24 pt | Black/auto |
-| Chart subtitle | Segoe UI | 18 pt | Black/auto |
+| Chart title | Segoe UI | 24 pt in bold | #004C97 |
+| Chart subtitle | Segoe UI | 18 pt | #004C97 |
 | Axis labels | Segoe UI | 10 pt | Black/auto |
 | Legend | Segoe UI | 10 pt | Black/auto |
 | Source box | Segoe UI | 10 pt | Black/auto |
@@ -82,8 +66,8 @@ For panel-sheet style outputs:
 - Default font size: 10.
 - Do not use font sizes below 8 because they may become unreadable.
 
-is intended only for screen review, larger fonts may be used, but the generated
-script should record that output-specific choice.
+If the output is intended only for screen review, larger fonts may be used, but
+the generated script should record that output-specific choice.
 
 ## Titles, Captions, And Units
 
@@ -131,7 +115,7 @@ X-axis:
 
 - Tick marks: inside.
 - Axis line: solid.
-- Axis line color: RGB `179,179,179` (`#B3B3B3`).
+- Axis line color: RGB `179,179,179` (#B3B3B3).
 - Axis dash style: solid line.
 
 Use light gridlines only when they help the reader compare values. Use the
@@ -183,12 +167,12 @@ plot area white by default.
 
 Use this order when multiple categorical colors are needed:
 
-1. Fund Blue `#004C97`
-2. Pantone 2925 `#009CDE`
-3. Pantone 130 `#F2A900`
-4. Cool Gray 5 `#B1B3B3`
-5. Pantone 2757 `#001E60`
-6. Pantone 485 `#DA291C`
+1. Fund Blue #004C97
+2. Pantone 130 #F2A900
+3. Cool Gray 5 #B1B3B3
+4. Pantone 485 #DA291C
+5. Pantone 2757 #001E60
+6. Pantone 2925 #009CDE
 
 Avoid using many saturated colors when a highlight-plus-neutral design would
 make the message clearer.
@@ -228,15 +212,12 @@ plt.rcParams["font.family"] = "sans-serif"
 plt.rcParams["font.sans-serif"] = [CHART_FONT, "Arial", "Helvetica", "DejaVu Sans"]
 ```
 
-- Set `figsize=(13.333, 7.5)` and `dpi=150`.
-- Set title and subtitle positions explicitly. For standalone centered headers,
-  use title `y=0.955`, subtitle `y=0.885`, and keep at least `0.05` figure
-  height between them.
-- Set subplot margins to approximately left `0.08`, right `0.96`, top `0.82`,
-  bottom `0.14`, adjusting bottom margin as needed for notes or long labels.
+- Use the size, DPI, title/subtitle positions, and subplot margins from
+  [Default PNG Layout](#default-png-layout).
 - Define brand color constants in the script.
 - Set title, subtitle, axis label, tick label, source, and legend font sizes
   explicitly. For report figures, use 24 pt for figure titles and 10 pt for
   other chart text unless the output is only for screen review.
-- Use light borders and gridlines.
+- Use the light border and gridline rules from
+  [Plot Area And Axes](#plot-area-and-axes).
 - Save PNG output at the standard size unless the user requests another format.

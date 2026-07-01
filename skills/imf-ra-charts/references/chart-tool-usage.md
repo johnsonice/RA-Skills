@@ -79,11 +79,11 @@ The Python script is the reproducibility record. It must include:
 ## Optional Outputs
 
 Create optional outputs only when the user asks for them up front or confirms
-the post-PNG offer. Use this short prompt when neither optional output has
+the post-PNG offer. Generate the same chart as the PNG in both html and excel. Use this short prompt when neither optional output has
 already been requested:
 
 ```text
-Would you also want an HTML chart or an editable Excel workbook?
+Would you also want an HTML interactive chart or an editable Excel workbook with data and chart included?
 ```
 
 ### Interactive HTML
@@ -98,7 +98,7 @@ Rules:
   fully self-contained and works offline.
 - Use `include_plotlyjs="cdn"` only if the user explicitly asks for a smaller
   internet-dependent file.
-- Apply the same title, axis labels, units, source note, and series colors as
+- Apply the same chart (including chart type, title, axis labels, units, source note, and series colors as)
   the PNG.
 - Add hover templates showing year and value with unit label.
 - Save as `<topic>_interactive.html` beside the PNG in `chart-temp/`.
@@ -122,7 +122,7 @@ Required sheets:
 | `clean_data` | Normalized and cleaned data with consistent field names and types. |
 | `chart_ready` | Exact table used by the chart, easy to inspect and edit. |
 | `chart_spec` | Chart type, title, axes, units, source, filters, caveats, and transformations. |
-| `chart` | Embedded Excel chart linked to `chart_ready`. |
+| `chart` | Embedded Excel chart same as in PNG linked to `chart_ready`. |
 
 Recommended sheets:
 
@@ -144,8 +144,7 @@ Recommended sheets:
    already-requested optional outputs.
 9. Run QA before delivery.
 10. Keep the exact Python script beside the PNG.
-11. Show or link the PNG to the user. If HTML was produced, open it when
-    supported and tell the user where the file is.
+11. Show or link the PNG to the user.
 12. Offer optional outputs not already requested.
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
