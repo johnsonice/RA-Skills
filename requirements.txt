@@ -14,7 +14,9 @@ plotly>=5.0        # optional self-contained interactive HTML chart output
 xlsxwriter>=3.0    # optional editable Excel chart workbook output
 #
 # NOT pip-installable — install separately on an IMF-managed machine:
-#   imf_datatools   internal IMF SDK; see
-#                   skills/imf-ra-data/references/imf_datatools_agent_api_reference.md (section 1.1)
+#   imf_datatools   internal IMF SDK; install with:
+#                     python \\ecnswn12p\ems_shared\pub\datatools\installer.py dev
+#                   then restart the Python environment. See:
+#                     skills/imf-ra-data/references/imf_datatools_agent_api_reference.md (section 1.1)
 #
 # See AGENTS.md (Dependencies & environments) for which tiers run where.

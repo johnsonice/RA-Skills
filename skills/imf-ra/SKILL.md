@@ -28,7 +28,7 @@ The umbrella does not execute the full workflow by itself. Worker skills chain b
 
 ## Shared Operating Rules
 
-- **Environment check first.** Before running any data or chart skill, verify that required packages are importable: `pandas`, `numpy`, `matplotlib`, `xlsxwriter`, `plotly`. If any are missing, install with `pip install <package>`. Then check for `imf_datatools` — if missing, tell the user to run `python \\ecnswn12p\ems_shared\pub\datatools\installer.py dev` and restart their Python environment before proceeding with any data pull.
+- **Environment check first.** Before running any data or chart skill, verify that all packages in `requirements.txt` are importable. Standard packages install with `pip install -r requirements.txt`; `imf_datatools` requires the dedicated installer listed there — do not `pip install` it. If any package is missing, tell the user before proceeding.
 - Use reference CSVs as the source of truth for identifiers, codes, group membership, and catalog lookup. For WEO countries and groups, the single consolidated source is `country_group/country_group.csv`.
 - Do not rely on memory for database IDs, indicator codes, WEO groups, country membership, or iData dimensions.
 - Do not guess when there is material uncertainty. List plausible candidates and ask for confirmation.
