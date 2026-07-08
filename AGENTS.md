@@ -29,7 +29,6 @@ Skills run at three capability tiers. Pick commands the current environment can 
 
 - `haver.db` is **not** in the repo (SQLite, 12M+ rows). Resolution order: `HAVER_DB_PATH` env var → an upward search for `haver.db` beside any ancestor of the script (conventionally one directory above the repo root) → a clear "not found" error. Set `HAVER_DB_PATH` when installed into a global skills dir.
 - The internal `imf_datatools` SDK is IMF-only and not pip-installable; `fetch_idata.py` and `fetch_haver.py` require it. Catalog lookup and WEO group helpers work without it.
-- Before running any data or chart skill, verify that all packages in `requirements.txt` are importable. Standard packages install with `pip install -r requirements.txt`; `imf_datatools` requires the dedicated installer listed there — do not `pip install` it.
 
 ## Interpreter note
 
