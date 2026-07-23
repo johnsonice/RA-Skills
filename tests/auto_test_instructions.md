@@ -10,8 +10,8 @@
 
 | In Scope | Out of Scope |
 |----------|--------------|
-| 54 behavioral test cases across 9 categories | Chart execution skipped |
-| 9 command contract checks (helper script validation) | User-interface/styling validation |
+| 63 behavioral test cases across 9 categories | Chart execution skipped |
+| 16 command contract checks (helper script validation) | User-interface/styling validation |
 | Error classification, recovery, and consent flows | Performance/load testing |
 | Cross-skill handoff behavior and intent preservation | Deprecated EcOS workflows |
 
@@ -232,6 +232,8 @@ LIVE-vs-vintage routing.
 | DATA-15 | Write a quick Python script to fetch WEO real GDP growth for USA, 2010-2024. | `imf-ra` -> `imf-ra-data` |
 | DATA-19 | Download confirmed WDI GDP per capita for China, 2000-2023, as refreshable Excel. | `imf-ra` -> `imf-ra-data` |
 | DATA-22 | Download confirmed WEO Live real GDP growth for Atlantis, annual, 2010-2024. | `imf-ra` -> `imf-ra-data` |
+| DEALOGIC-01 | Show me recent DCM bond deals and their announcement dates from Dealogic. The initial response must include the official IMF EconFinData guidance link. | `imf-ra` -> `imf-ra-data` |
+| DEALOGIC-02 | Use Dealogic to get secondary-market bid, ask, and traded bond prices. | `imf-ra` -> `imf-ra-data` |
 
 ### Error Handling
 
@@ -289,6 +291,13 @@ the prompt cases depend on.
 
 | ID | Command | Purpose |
 |---|---|---|
+| CONTRACT-31 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py search "bond announcement date bookrunner" --domain DCM --limit 6` | Dealogic schema search returns documented DCM fields and tables without a database connection. |
+| CONTRACT-32 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py joins DCMDeal DCMDealTranches` | Dealogic join lookup returns the documented deal-to-tranche relationship and confidence. |
+| CONTRACT-33 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py validate-sql --sql "SELECT TOP (20) [DealId], [AnnouncementDate] FROM [Dealogic].[dbo].[DCMDeal]"` | Dealogic SQL validation accepts a bounded, explicit-column read-only preview without executing it. |
+| CONTRACT-34 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py joins ShareECMDealTranches ECMDealTranches` | Dealogic join lookup returns the live-verified ECM-share composite relationship. |
+| CONTRACT-35 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py joins LoanDealTranches DealStatus --from-column StatusId` | Dealogic join lookup returns the live-verified Loan tranche status relationship to shared `DealStatus`. |
+| CONTRACT-36 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py joins DCMDeal Company --from-column IssuerId` | Dealogic join lookup returns the live-verified DCM issuer relationship and partial-name warning. |
+| CONTRACT-37 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py joins DCMDeal DealStatus --from-column CommonStatusId` | Dealogic join lookup returns the live-verified DCM common-status relationship. |
 | CONTRACT-28 | `python3 -c 'import ... catalog_data, catalog_routing, catalog_lookup, catalog_search ...'` | Split catalog helper modules import cleanly and preserve public helper exports. |
 | CONTRACT-11 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json` | Legacy IFS CPI routes to `IMF.STA:CPI`. |
 | CONTRACT-15 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json` | Strict resolve returns WEO Live `NGDP_RPCH`. |

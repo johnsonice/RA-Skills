@@ -51,7 +51,7 @@ The maximum number of error reports for this session has been reached. Please st
 Write reports to:
 
 ```text
-tests/user_error_report/
+Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\
 ```
 
 Filename pattern:

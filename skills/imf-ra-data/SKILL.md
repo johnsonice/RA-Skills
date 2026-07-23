@@ -1,11 +1,12 @@
 ---
 name: imf-ra-data
-description: Use when the user wants to fetch, pull, download, or load IMF data series from any database (WEO, IFS, BOPS, GFS, DOTS, FSI, etc.) using the internal Python SDK. Covers single-series and multi-country panel pulls, frequency conversion, and country selection. See imf-ra for shared conventions.
+description: Use when the user wants to fetch, pull, download, or load IMF data series from iData or Haver, or wants schema-aware Microsoft SQL Server query generation and limited verification for the Dealogic transaction database. Covers single-series and multi-country panel pulls, frequency conversion, country selection, Dealogic field and join discovery, safe TOP (20) SQL previews, and read-only query verification. See imf-ra for shared conventions.
 ---
 
 # IMF RA — Data
 
-Fetching IMF data series via the internal Python SDK.
+Fetch IMF time series through supported helpers and generate schema-aware,
+read-only Dealogic SQL Server previews.
 
 ## Skill relationships
 
@@ -13,15 +14,16 @@ Load these skills in order as needed:
 
 - **`imf-ra`** (umbrella) — load first for shared conventions and cross-skill execution policy: country codes, WEO country group resolution helpers, frequency handling, lookup execution policy, and SDK environment setup.
 - **`imf-ra-catalog`** — load before this skill when the database or indicator is not yet identified. For iData sources it returns a confirmed `(database, dimension_name, code)` identifier; for Haver sources it returns a confirmed `codes: ["CODE@DB", ...]` list after variant disambiguation. Ready for handoff in either case.
-- **`imf-ra-data`** (this skill) — takes over once the identifier is confirmed. Resolves remaining dimensions, builds the iData key, and executes the fetch.
+- **`imf-ra-data`** (this skill) — takes over once a time-series identifier is confirmed, or directly handles an explicit Dealogic request. Resolves remaining iData dimensions, fetches iData/Haver data, and generates or verifies bounded Dealogic SQL.
 - **`imf-ra-charts`** — load after this skill when the user wants to visualize the tidy output.
 
 ## Default decision logic
 
-1. Prefer `idata_utilities` for new IMF workflows.
-2. Use metadata calls (`--explore`, `--dimension-values`) only to resolve remaining dimensions after catalog handoff — not to re-discover the database or indicator, which the catalog already owns.
-3. For databases with both a LIVE and a Vintage version (see ## LIVE databases and private access below), prefer the LIVE database unless the user asks for a specific vintage.
-4. If the user asks for EcOS-based retrieval, explain that EcOS is retired and provide the iData equivalent workflow.
+1. Route Dealogic transaction questions to [Dealogic SQL](#dealogic-sql); do not force them through the iData time-series protocol.
+2. Prefer `idata_utilities` for new IMF time-series workflows.
+3. Use metadata calls (`--explore`, `--dimension-values`) only to resolve remaining dimensions after catalog handoff — not to re-discover the database or indicator, which the catalog already owns.
+4. For databases with both a LIVE and a Vintage version (see ## LIVE databases and private access below), prefer the LIVE database unless the user asks for a specific vintage.
+5. If the user asks for EcOS-based retrieval, explain that EcOS is retired and provide the iData equivalent workflow.
 
 ## LIVE databases and private access
 
@@ -303,6 +305,75 @@ python skills/imf-ra-data/scripts/fetch_haver.py --codes "GDP@USECON" --start "<
 ```
 
 See [references/imf_datatools_agent_api_reference.md § 9](references/imf_datatools_agent_api_reference.md) for the full `haver_utilities` API reference.
+
+## Dealogic SQL
+
+Dealogic is available for primary-market DCM/bond, syndicated-loan, ECM, and
+M&A transaction questions. It does not provide secondary-market bid, ask, or
+traded-price series. Dealogic uses schema-aware SQL generation followed by an
+optional, user-confirmed, read-only preview; it does not use the iData/Haver
+catalog handoff or output-format workflow.
+
+On the first response to a Dealogic request in a conversation, show the user
+the official IMF [Economic and Financial Data at the IMF (EconFinData) guidance](https://apps.powerapps.com/play/e/e56a91a7-5e7c-ed89-bcf7-ca68bdf12f1c/a/b1e30305-b5d9-464d-9ee2-c4b878a86cd5?tenantId=8085fa43-302e-45bd-b171-a6648c3b6be7&hint=859df194-14d0-4956-8376-e4a21185f4a1&ItemId=2693).
+Do not repeat it on every follow-up unless the user asks for the guidance again.
+
+Canonical resources:
+
+- [references/Dealogic/dealogic_overview.md](references/Dealogic/dealogic_overview.md) — read for source coverage, deal/tranche concepts, source-selection boundaries, and connection profile.
+- [references/Dealogic/dealogic_schema.csv](references/Dealogic/dealogic_schema.csv) — extracted fields, business definitions, source types, XML paths, loader tables and columns, entity grain, keys, aliases, and provenance.
+- [references/Dealogic/dealogic_relationships.csv](references/Dealogic/dealogic_relationships.csv) — parent and reference joins with cardinality and confidence.
+- [references/Dealogic/dealogic_sql_patterns.md](references/Dealogic/dealogic_sql_patterns.md) — read before generating SQL; contains performance, grain, aggregation, and live-verification rules.
+- [scripts/dealogic.py](scripts/dealogic.py) — the only supported Dealogic metadata and verification helper.
+
+Workflow:
+
+1. Search the canonical schema before writing SQL:
+
+```bash
+python skills/imf-ra-data/scripts/dealogic.py search "<user concept>" --domain DCM
+```
+
+2. State the output grain and resolve every multi-table join:
+
+```bash
+python skills/imf-ra-data/scripts/dealogic.py joins DCMDeal DCMDealTranches
+```
+
+If direct relationships are ambiguous, add `--from-column <column>`.
+
+3. Generate SQL Server syntax against `[Dealogic].[dbo]` using the patterns
+   reference. Use explicit columns, `TOP (20)` or less, and selective
+   date/key/status constraints where a transaction scan could be broad.
+
+4. Validate and show the SQL, grain, joins, filters, confidence, and
+   assumptions:
+
+```bash
+python skills/imf-ra-data/scripts/dealogic.py validate-sql --sql-file <query.sql>
+```
+
+5. After explicit user approval, verify the bounded preview:
+
+```bash
+python skills/imf-ra-data/scripts/dealogic.py verify --sql-file <query.sql> --confirmed
+```
+
+The verifier permits one `SELECT` or `WITH ... SELECT`, rejects writes, DDL,
+execution commands, `SELECT INTO`, and `SELECT *`, and enforces `TOP (20)` or
+less with a short timeout.
+
+When live-schema drift is suspected, inspect only the required table after
+user approval:
+
+```bash
+python skills/imf-ra-data/scripts/dealogic.py inspect --table DCMDeal
+```
+
+Prefer `database_verified`, then `documented`, then disclosed `derived`
+relationships. Never use `unverified` relationships. Present alternatives and
+ask for confirmation when dates, amounts, roles, statuses, or domains remain
+materially ambiguous.
 
 ## Safe query policy
 
