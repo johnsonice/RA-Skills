@@ -201,7 +201,6 @@ cython_debug/
 
 # Repo issue tracking artifacts
 tests/issue_tracking/
-tests/user_error_report
 tests/results
 
 # Temporary chart workspace; delete after each charting session

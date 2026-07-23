@@ -138,6 +138,26 @@ LEFT JOIN [Dealogic].[dbo].[DealStatus] AS deal_status
 enrichment must use `LEFT JOIN` and retain the numeric `IssuerId` when the name
 is missing.
 
+## Verified DCM ISIN column
+
+Live SQL metadata confirmed that `DCMDealTranchesISINs` stores the identifier
+in `ISIN`. The feed dictionary's loader mapping named `SecurityNumber`, but
+that column does not exist in the deployed table. Use:
+
+```sql
+SELECT TOP (20)
+    i.[DCMDealTrancheDealId],
+    i.[DCMDealTrancheTrancheId],
+    i.[ISIN],
+    i.[SortNumber]
+FROM [Dealogic].[dbo].[DCMDealTranchesISINs] AS i
+ORDER BY i.[DCMDealTrancheDealId], i.[DCMDealTrancheTrancheId], i.[SortNumber];
+```
+
+Do not substitute `DCMDealTranchesSecurityNumbers.SecurityNumber`; that is a
+different child collection containing non-US domestic and foreign security
+numbers rather than the ISIN field.
+
 ## Aggregation guardrail
 
 State the aggregation grain explicitly. When aggregating a deal-level measure,

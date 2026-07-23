@@ -36,6 +36,21 @@ NON_SCHEMA_SHEETS = {"Table Content", "FEED CONTENT", "DATA TYPES"}
 PREVIEW_LIMIT = 20
 DEFAULT_QUERY_TIMEOUT = 20
 
+# Live SQL metadata can differ from the supplied feed dictionary's loader
+# mapping. Keep verified exceptions here so catalog rebuilds preserve the
+# deployed schema rather than reintroducing known-invalid column names.
+LIVE_SCHEMA_FIELD_OVERRIDES: dict[tuple[str, str, str], dict[str, str]] = {
+    ("DCM", "ISIN", "ISIN"): {
+        "physical_columns": "ISIN",
+        "confidence": "database_verified",
+        "notes": (
+            "Live SQL metadata verified in July 2026: "
+            "DCMDealTranchesISINs stores the identifier in ISIN, not "
+            "SecurityNumber."
+        ),
+    },
+}
+
 # Explicit targets cover naming differences that cannot be resolved reliably
 # from the workbook text alone. Values are loader table names.
 REFERENCE_TARGET_TABLES = {
@@ -448,6 +463,12 @@ def build_catalog(source: Path, output_dir: Path) -> dict[str, int]:
                     )
                 ),
             }
+            field.update(
+                LIVE_SCHEMA_FIELD_OVERRIDES.get(
+                    (domain, str(current["record_name"]).strip(), column_b),
+                    {},
+                )
+            )
             fields.append(field)
             current["fields"].append(field)  # type: ignore[union-attr]
 

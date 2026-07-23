@@ -298,6 +298,7 @@ the prompt cases depend on.
 | CONTRACT-35 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py joins LoanDealTranches DealStatus --from-column StatusId` | Dealogic join lookup returns the live-verified Loan tranche status relationship to shared `DealStatus`. |
 | CONTRACT-36 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py joins DCMDeal Company --from-column IssuerId` | Dealogic join lookup returns the live-verified DCM issuer relationship and partial-name warning. |
 | CONTRACT-37 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py joins DCMDeal DealStatus --from-column CommonStatusId` | Dealogic join lookup returns the live-verified DCM common-status relationship. |
+| CONTRACT-38 | `python3 .claude/skills/imf-ra-data/scripts/dealogic.py search "ISIN" --domain DCM --limit 1` | Dealogic schema search returns `DCMDealTranchesISINs.ISIN`, not the invalid feed-dictionary `SecurityNumber` mapping. |
 | CONTRACT-28 | `python3 -c 'import ... catalog_data, catalog_routing, catalog_lookup, catalog_search ...'` | Split catalog helper modules import cleanly and preserve public helper exports. |
 | CONTRACT-11 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py explain-source "IFS CPI for the United States" --json` | Legacy IFS CPI routes to `IMF.STA:CPI`. |
 | CONTRACT-15 | `python3 .claude/skills/imf-ra-catalog/scripts/catalog_search.py resolve "real GDP growth" --json` | Strict resolve returns WEO Live `NGDP_RPCH`. |

@@ -1274,6 +1274,25 @@ cases:
     - dealogic_helper_uses_shared_deal_status
     forbidden:
     - dealogic_helper_maps_common_status_to_dcm_deal_status
+- id: CONTRACT-38
+  category: command_contracts
+  type: command_contract
+  area: Dealogic live-verified DCM ISIN column
+  command: python3 .claude/skills/imf-ra-data/scripts/dealogic.py search "ISIN" --domain DCM --limit 1
+  expected_exit_codes:
+  - 0
+  expected_behavior: 'Returns the live-verified ISIN field from DCMDealTranchesISINs using the deployed ISIN column rather than the invalid feed-dictionary SecurityNumber mapping.
+
+'
+  expected_stdout_contains:
+  - '"table": "DCMDealTranchesISINs"'
+  - '"ISIN"'
+  assertions:
+    required:
+    - dealogic_helper_returns_live_dcm_isin_column
+    - dealogic_helper_distinguishes_isin_from_security_number
+    forbidden:
+    - dealogic_helper_maps_dcm_isin_to_security_number
 - id: CONTRACT-09
   category: command_contracts
   type: command_contract

@@ -76,7 +76,7 @@ For WEO country/group tasks involving ambiguity, membership expansion, compariso
 - Route explicit Dealogic transaction questions directly to the Dealogic path in `imf-ra-data`; Dealogic does not use the iData/Haver catalog handoff. Include the official EconFinData guidance link on the first Dealogic response in the conversation.
 - When the user asks for charts, route to `imf-ra-charts` after data are available or after `imf-ra-data` produces tidy output.
 - When the catalog returns several plausible matches, present the candidates with distinction notes and ask for confirmation before fetching.
-- When a system/execution error blocks the RA workflow, or the user remains unsatisfied after repeated attempts and wants to report it, route to `imf-ra-error-report`. Reports are local JSON files under `tests/user_error_report/`; do not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
+- When a system/execution error blocks the RA workflow, or the user remains unsatisfied after repeated attempts and wants to report it, route to `imf-ra-error-report`. Reports are local JSON files under `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; do not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
 
 ## Handoff Contract
 
