@@ -15,6 +15,8 @@ metadata live in `dealogic_schema.csv` and `dealogic_relationships.csv`.
 7. Run `validate-sql`.
 8. Execute `verify --confirmed` only after the user explicitly approves the
    displayed query.
+9. Do not return the SQL to the user as a final answer until the verification
+   execution succeeds.
 
 ## Preview and performance rules
 
