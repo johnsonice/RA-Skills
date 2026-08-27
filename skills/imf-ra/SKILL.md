@@ -1,6 +1,6 @@
 ---
 name: imf-ra
-description: Use when working as an IMF Research Assistant or doing any task involving IMF data, IMF charts, IMF databases, or user-visible RA-Skills failures. Orients you to the imf-ra-catalog, imf-ra-data, imf-ra-charts, and imf-ra-error-report skills and loads shared conventions for country codes, WEO country groups, frequencies, dates, units, SDK setup, and local failure-report routing.
+description: Use when working as an IMF Research Assistant or doing any task involving IMF data, IMF charts, IMF databases, Dealogic primary-market transactions, or user-visible RA-Skills failures. Orients you to the imf-ra-catalog, imf-ra-data, imf-ra-charts, and imf-ra-error-report skills and loads shared conventions for country codes, WEO country groups, frequencies, dates, units, SDK setup, source routing, and local failure-report routing.
 ---
 
 # IMF RA
@@ -18,13 +18,23 @@ imf-ra -> imf-ra-catalog -> imf-ra-data -> imf-ra-charts
 | Skill | Use when |
 |---|---|
 | `imf-ra-catalog` | The user needs the right dataset, dimension, indicator, variable, commodity, or ticker code. |
-| `imf-ra-data` | The user wants to fetch, pull, download, load, or prepare data from a confirmed identifier. |
+| `imf-ra-data` | The user wants to fetch data from a confirmed iData/Haver identifier, or generate and verify bounded SQL for the Dealogic transaction database. |
 | `imf-ra-charts` | The user wants to plot, chart, or visualize tidy data. |
 | `imf-ra-error-report` | The user wants to report a user-visible RA-Skills system/execution failure or an unsatisfactory answer after repeated attempts. |
 
 The umbrella does not execute the full workflow by itself. Worker skills chain by referencing each other directly.
 
 `imf-ra-error-report` is a support side skill, not a step in the normal catalog/data/chart chain. Use it only for local, consent-based failure reports.
+
+## Available Data Paths
+
+- **iData and Haver:** economic time series resolved through
+  `imf-ra-catalog`, then fetched through `imf-ra-data`.
+- **Dealogic:** primary-market DCM/bond, syndicated-loan, ECM, and M&A
+  transactions queried through the schema-aware SQL path in `imf-ra-data`.
+  Dealogic does not provide secondary-market bid, ask, or traded-price series.
+  On the first response to a Dealogic request in a conversation, include the
+  official IMF [Economic and Financial Data at the IMF (EconFinData) guidance](https://apps.powerapps.com/play/e/e56a91a7-5e7c-ed89-bcf7-ca68bdf12f1c/a/b1e30305-b5d9-464d-9ee2-c4b878a86cd5?tenantId=8085fa43-302e-45bd-b171-a6648c3b6be7&hint=859df194-14d0-4956-8376-e4a21185f4a1&ItemId=2693).
 
 ## Shared Operating Rules
 
@@ -63,9 +73,10 @@ For WEO country/group tasks involving ambiguity, membership expansion, compariso
 
 - When the user is still searching for the right series, route to `imf-ra-catalog`.
 - When the identifier is confirmed, route to `imf-ra-data` and preserve confirmed `database`, `dimension_name`, `code`, geography, frequency, date range, and vintage constraints.
+- Route explicit Dealogic transaction questions directly to the Dealogic path in `imf-ra-data`; Dealogic does not use the iData/Haver catalog handoff. Include the official EconFinData guidance link on the first Dealogic response in the conversation.
 - When the user asks for charts, route to `imf-ra-charts` after data are available or after `imf-ra-data` produces tidy output.
 - When the catalog returns several plausible matches, present the candidates with distinction notes and ask for confirmation before fetching.
-- When a system/execution error blocks the RA workflow, or the user remains unsatisfied after repeated attempts and wants to report it, route to `imf-ra-error-report`. Reports are local JSON files under `tests/user_error_report/`; do not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
+- When a system/execution error blocks the RA workflow, or the user remains unsatisfied after repeated attempts and wants to report it, route to `imf-ra-error-report`. Reports are local JSON files under `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; do not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
 
 ## Handoff Contract
 

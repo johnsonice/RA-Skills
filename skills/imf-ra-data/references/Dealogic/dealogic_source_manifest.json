@@ -1,0 +1,19 @@
+{
+  "source_filename": "IMF Dealogic Feed Data Dictionary.xlsx",
+  "source_sha256": "507b53f84651588abd97b51655ca5e22ed733c5a0678b639bcd53d4666ab53c0",
+  "source_created": "2019-04-22T16:39:36Z",
+  "source_modified": "2026-07-12T21:40:03Z",
+  "generator": "skills/imf-ra-data/scripts/dealogic.py build",
+  "schema_rows": 879,
+  "relationship_rows": 177,
+  "domains": [
+    "COMPANY",
+    "COMPANYSHARE",
+    "DCM",
+    "ECM",
+    "ECMSHARE",
+    "LOAN",
+    "MNA",
+    "REFERENCE_FILES"
+  ]
+}

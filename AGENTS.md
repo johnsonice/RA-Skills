@@ -105,7 +105,7 @@ tests/user_error_report/   # local JSON reports created by imf-ra-error-report
 - **Haver has its own rules.** Search `haver.db` only via `haver_catalog_search.py` (never ad-hoc SQL `LIKE` — the table is unindexed for text). Batch multi-database searches into one call with `--databases ... --limit 300`; one query per search, no rephrasing reruns. Haver identifiers are `CODE@DATABASE` strings — there is no `dimension_name`. Strip the `HAVER:` display prefix before handing codes to `fetch_haver.py`.
 - **Don't guess identifiers.** Database codes, variable codes, country groups, dimensions — never invent. If multiple plausible matches exist, list candidates and ask for confirmation.
 - **LIVE vs vintage data must be honored explicitly** — see `skills/imf-ra-data/SKILL.md`. Never silently default to a dated vintage.
-- **Error reporting is consent-based and local.** Use `imf-ra-error-report` only for user-visible failures, never for normal clarification behavior. Manual report requests count as consent. Reports go to `tests/user_error_report/`; max 5 per conversation.
+- **Error reporting is consent-based and local.** Use `imf-ra-error-report` only for user-visible failures, never for normal clarification behavior. Manual report requests count as consent. Reports go to `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; max 5 per conversation.
 - **`skills/` is the source of truth.** Edit skills under `skills/`, then run `scripts/sync_skills.py` for local discovery. Generated mirrors and globally installed copies derive from it.
 
 ## Editing skills
