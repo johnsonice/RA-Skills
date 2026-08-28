@@ -897,6 +897,12 @@ def validate_preview_sql(sql: str) -> None:
         raise ValueError("SELECT * is not allowed; name the preview columns explicitly.")
     if "[dealogic].[dbo]." not in scrubbed.lower():
         raise ValueError("Preview SQL must reference fully qualified [Dealogic].[dbo] tables.")
+    if re.search(
+        r"\bTOP\s*(?:\(\s*)?\d+\s*\)?\s+(?:PERCENT\b|WITH\s+TIES\b)",
+        scrubbed,
+        re.IGNORECASE,
+    ):
+        raise ValueError("TOP PERCENT and TOP WITH TIES are not allowed in preview SQL.")
     top_values = [int(value) for value in re.findall(r"\bTOP\s*(?:\(\s*)?(\d+)", scrubbed, re.IGNORECASE)]
     if not top_values:
         raise ValueError("Preview SQL must include TOP (20) or a smaller TOP limit.")

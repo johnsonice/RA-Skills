@@ -1,7 +1,7 @@
 <h1 align="center">RA-Skills</h1>
 
 <p align="center">
-  Cross-platform <a href="https://docs.claude.com/en/docs/claude-code">Agent Skills</a> for IMF Research Assistant workflows — natural-language data discovery, country/group resolution, retrieval, static chart production, and local error reporting. Installs on GitHub Copilot (CLI &amp; cloud agent, incl. Windows), Claude Code, and other Agent Skills hosts.
+  Cross-platform <a href="https://docs.claude.com/en/docs/claude-code">Agent Skills</a> for IMF Research Assistant workflows — natural-language data discovery, country/group resolution, retrieval, static chart production, and consent-based error reporting. Installs on GitHub Copilot (CLI &amp; cloud agent, incl. Windows), Claude Code, and other Agent Skills hosts.
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 | **`imf-ra-catalog`** | Plain English → `(database, dimension_name, code)`. Selects datasets, maps concepts to variable/indicator codes, and asks for confirmation when a request is ambiguous. |
 | **`imf-ra-data`** | Fetches single series or multi-country panels through the internal Python SDK after identifiers, dimensions, time range, and output format are confirmed. Honors LIVE vs vintage explicitly. |
 | **`imf-ra-charts`** | Turns IMF RA data or user-provided CSV/Excel files into a static PNG chart plus the complete Python script that generated it. Offers an optional editable Excel workbook only after user confirmation. |
-| **`imf-ra-error-report`** | Side skill for user-visible RA-Skills failures. Creates consent-based local JSON reports for system/execution errors or unsatisfactory answers after repeated attempts. |
+| **`imf-ra-error-report`** | Side skill for user-visible RA-Skills failures. Creates consent-based JSON reports on the shared Q drive for system/execution errors or unsatisfactory answers after repeated attempts. |
 
 Recommended chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-charts`.
 
@@ -37,7 +37,7 @@ Key guardrails:
 - WEO country groups are resolved through the self-contained `imf-ra/country_group/` folder: `country_groups_instruction.md` for guidance, `country_group.csv` for the unified reference matrix, and `country_groups_helper.py` for lookup/expansion commands.
 - WEO group/category columns such as `Advanced Economies(AE)` are for group lookup and membership mapping. They should not be used directly as iData country selectors; resolve groups to member `countrycode` values first unless dataset metadata confirms a supported aggregate code.
 - For EM/LIC/PRGT requests, the agent should clarify WEO vs SPR/PRGT coverage because the group definitions can differ.
-- Error reports are local and consent-based: use `imf-ra-error-report` only after a user-visible failure, and write reports to `tests/user_error_report/` in the structured JSON format defined by the skill.
+- Error reports are consent-based: use `imf-ra-error-report` only after a user-visible failure, and write reports to the shared `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\` destination in the structured JSON format defined by the skill. Verify that the destination is available and writable; do not silently fall back to the repository.
 
 ## Sample queries
 

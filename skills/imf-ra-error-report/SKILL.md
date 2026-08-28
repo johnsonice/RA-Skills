@@ -1,11 +1,11 @@
 ---
 name: imf-ra-error-report
-description: Use when a user wants to report a user-visible RA-Skills failure, including a system or execution error, failed helper/SDK/data fetch, missing output file, crash or timeout, or an unsatisfactory answer after repeated attempts. Creates a structured local JSON error report for the development team only after user consent.
+description: Use when a user wants to report a user-visible RA-Skills failure, including a system or execution error, failed helper/SDK/data fetch, missing output file, crash or timeout, or an unsatisfactory answer after repeated attempts. Creates a structured JSON error report on the shared Q drive for the development team only after user consent.
 ---
 
 # IMF RA Error Report
 
-Use this skill to prepare a local, consent-based JSON report for a user-visible RA-Skills failure.
+Use this skill to prepare a consent-based JSON report on the shared Q drive for a user-visible RA-Skills failure.
 
 This is a side skill for support and product feedback. It does not add telemetry, remote upload, GitHub issue creation, dashboards, background logging, Python wrappers, or report lifecycle tracking.
 
@@ -24,7 +24,7 @@ Do not use this skill for normal RA-Skills clarification behavior, such as askin
 
 Never write a report silently.
 
-After a qualifying failure, offer to prepare a local report and wait for consent before creating the JSON file. Accepted consent includes "yes", "please report it", "send it", "create the report", or "log it".
+After a qualifying failure, offer to prepare a shared-drive report and wait for consent before creating the JSON file. Accepted consent includes "yes", "please report it", "send it", "create the report", or "log it".
 
 If the user declines, acknowledge briefly and do not create a file.
 
@@ -67,7 +67,11 @@ Example filenames in that folder:
 06-05-2026-15-10-41-unsatisfactory-weo-lookup.json
 ```
 
-This repo-local folder is the single report destination for this skill. Do not write reports to the user's Desktop folder unless the user explicitly asks for a different location.
+This shared Q-drive folder is the single report destination for this skill. Before
+writing, verify that the drive is mounted and the folder is writable. If it is not
+available, explain that the report could not be created and preserve the prepared
+report content in the conversation; do not silently fall back to the repository or
+the user's Desktop unless the user explicitly chooses another location.
 
 ## Trigger Rules
 
@@ -90,7 +94,7 @@ Offer a report when one of these occurs:
 Suggested offer:
 
 ```text
-It looks like this hit a system or execution error. Would you like me to prepare a local report for the development team so they can investigate?
+It looks like this hit a system or execution error. Would you like me to prepare a report on the shared Q drive for the development team so they can investigate?
 ```
 
 ### Scenario 2: Unsatisfactory Answer After Repeated Attempts
@@ -107,7 +111,7 @@ Offer a report when one of these occurs:
 Suggested offer:
 
 ```text
-It seems like we still have not gotten you a useful answer after several tries.  Would you like me to prepare a local report so the development team can improve this workflow?
+It seems like we still have not gotten you a useful answer after several tries. Would you like me to prepare a report on the shared Q drive so the development team can improve this workflow?
 ```
 
 ## Classification Taxonomy

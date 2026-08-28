@@ -202,6 +202,8 @@ cython_debug/
 # Repo issue tracking artifacts
 tests/issue_tracking/
 tests/results
+# Legacy error-report destination; reports now belong on the shared Q drive.
+tests/user_error_report/
 
 # Temporary chart workspace; delete after each charting session
 chart-temp/

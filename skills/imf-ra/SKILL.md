@@ -24,7 +24,7 @@ imf-ra -> imf-ra-catalog -> imf-ra-data -> imf-ra-charts
 
 The umbrella does not execute the full workflow by itself. Worker skills chain by referencing each other directly.
 
-`imf-ra-error-report` is a support side skill, not a step in the normal catalog/data/chart chain. Use it only for local, consent-based failure reports.
+`imf-ra-error-report` is a support side skill, not a step in the normal catalog/data/chart chain. Use it only for consent-based failure reports written to the shared Q drive.
 
 ## Available Data Paths
 

@@ -1532,7 +1532,7 @@ cases:
   area: Error report consent flow
   prompt: A system error occurs during data fetch. Describe the exact consent flow the agent should follow before creating an error report.
   expected_primary_skill: imf-ra-error-report
-  expected_behavior: 'After classifying the error as a high-severity category (logic_bug, database_corruption, subprocess_failure, data_format, or transient_exhausted), the agent offers to create a local error report: "It seems like we encountered a system error. Would you like me to prepare a local error report so the development team can improve this workflow?" Waits for user consent (yes/no/clarification) before creating the JSON report file. Never creates a report silently.
+  expected_behavior: 'After classifying the error as a high-severity category (logic_bug, database_corruption, subprocess_failure, data_format, or transient_exhausted), the agent offers to create an error report on the shared Q drive. Waits for user consent (yes/no/clarification) before creating the JSON report file, verifies that the destination is available and writable, and never creates a report silently or silently falls back to another location.
 
 '
   evidence_sources:
@@ -1545,11 +1545,13 @@ cases:
     - ask_for_explicit_consent
     - wait_for_user_response
     - create_report_only_after_consent
-    - save_to_tests/user_error_report/
+    - save_to_shared_q_drive_destination
+    - verify_report_destination_is_available_and_writable
     forbidden:
     - create_report_silently
     - assume_consent_without_asking
     - create_multiple_reports_per_session_without_limit
+    - silently_fallback_to_repo_or_desktop
 - id: ERRREPORT-02
   category: error_reporting
   type: single_turn

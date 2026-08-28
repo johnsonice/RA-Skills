@@ -10,7 +10,7 @@ A family of **Agent Skills** for IMF Research Assistant workflows. The canonical
 - `imf-ra-catalog` — natural-language → confirmed identifier: iData `(database, dimension_name, code)` (plus confirmed frequency/geography passed as handoff constraints) or Haver `codes: ["CODE@DB", ...]`
 - `imf-ra-data` — pull series via internal Python SDK (`fetch_idata.py` for iData, `fetch_haver.py` for Haver)
 - `imf-ra-charts` — turn IMF RA data or user-provided CSV/Excel files into a static PNG chart plus a complete reproducible Python script; optional editable Excel workbook only after confirmation
-- `imf-ra-error-report` — side skill for consent-based local JSON reports after user-visible RA-Skills failures
+- `imf-ra-error-report` — side skill for consent-based JSON reports written to the shared Q drive after user-visible RA-Skills failures
 
 Skill chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-charts`.
 
@@ -92,7 +92,6 @@ docs/specs/   # design + distribution docs
 docs/plans/   # implementation history (ERROR_REPORTING_plan.md, family plan)
 docs/Product_Road_Map.md   # product roadmap
 tests/        # YAML auto-test cases, reviewer catalog, results, issue tracking
-tests/user_error_report/   # local JSON reports created by imf-ra-error-report
 ```
 
 `skills/` is the single source of truth. For in-repo local discovery on every host, `python scripts/sync_skills.py` mirrors `skills/` into `.claude/skills/` (Claude Code) and `.agents/skills/` (Copilot/Codex). Those mirrors are generated and gitignored — **never edit them; edit `skills/`**.
@@ -105,7 +104,7 @@ tests/user_error_report/   # local JSON reports created by imf-ra-error-report
 - **Haver has its own rules.** Search `haver.db` only via `haver_catalog_search.py` (never ad-hoc SQL `LIKE` — the table is unindexed for text). Batch multi-database searches into one call with `--databases ... --limit 300`; one query per search, no rephrasing reruns. Haver identifiers are `CODE@DATABASE` strings — there is no `dimension_name`. Strip the `HAVER:` display prefix before handing codes to `fetch_haver.py`.
 - **Don't guess identifiers.** Database codes, variable codes, country groups, dimensions — never invent. If multiple plausible matches exist, list candidates and ask for confirmation.
 - **LIVE vs vintage data must be honored explicitly** — see `skills/imf-ra-data/SKILL.md`. Never silently default to a dated vintage.
-- **Error reporting is consent-based and local.** Use `imf-ra-error-report` only for user-visible failures, never for normal clarification behavior. Manual report requests count as consent. Reports go to `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; max 5 per conversation.
+- **Error reporting is consent-based and writes to a shared drive.** Use `imf-ra-error-report` only for user-visible failures, never for normal clarification behavior. Manual report requests count as consent. Reports go to `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; verify that the destination is available and writable, never silently fall back to the repo, and create at most 5 reports per conversation.
 - **`skills/` is the source of truth.** Edit skills under `skills/`, then run `scripts/sync_skills.py` for local discovery. Generated mirrors and globally installed copies derive from it.
 
 ## Editing skills
