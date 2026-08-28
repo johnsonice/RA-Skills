@@ -28,7 +28,7 @@ Skills run at three capability tiers. Pick commands the current environment can 
 | **Charts** | `imf-ra-charts` generated Python scripts | `pandas` + `matplotlib`; `xlsxwriter` only for optional Excel workbook output | Anywhere with local CSV/Excel or previously fetched data |
 
 - `haver.db` is **not** in the repo (SQLite, 12M+ rows). Resolution order: `HAVER_DB_PATH` env var → an upward search for `haver.db` beside any ancestor of the script (conventionally one directory above the repo root) → a clear "not found" error. Set `HAVER_DB_PATH` when installed into a global skills dir.
-- The internal `imf_datatools` SDK is IMF-only (installed from an internal location; see `skills/imf-ra-data/references/imf_datatools_agent_api_reference.md`). It is not pip-installable. Catalog lookup and WEO group helpers work without it.
+- The internal `imf_datatools` SDK is IMF-only and not pip-installable; `fetch_idata.py` and `fetch_haver.py` require it. Catalog lookup and WEO group helpers work without it.
 
 ## Interpreter note
 

@@ -105,6 +105,21 @@ claude                           # or open Copilot CLI / Codex with cwd = this r
 
 > Commands use `python`; if your machine only has `python3`, use that instead. For a global install that needs the Haver data tier, point `HAVER_DB_PATH` at your `haver.db`.
 
+### Install dependencies
+
+After installing the skills, install the Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+For the **iData tier** (IMF-internal only), install the `imf_datatools` SDK using the dedicated IMF installer — do **not** `pip install` it:
+
+```bash
+python \\ecnswn12p\ems_shared\pub\datatools\installer.py dev
+```
+
+
 ### Dependency tiers
 
 | Tier | Commands | Needs | Runs where |
