@@ -14,6 +14,15 @@ Haver sources:  codes: ["CODE@DB", ...]
 
 The catalog identifies datasets, dataflows, dimensions, and indicator codes. It does not fetch data. After an identifier is confirmed, hand off to `imf-ra-data` for execution.
 
+## Runtime
+
+Reuse an existing Python; never create an environment explicitly or implicitly
+unless the user requests it. Before executing helpers, read the shared
+[runtime contract](../imf-ra/references/runtime.md) for installed-skill paths, interpreter
+selection, SDK setup authorization, and user output locations. Resolve scripts
+from the loaded skill directory, not the user's working directory.
+
+
 ## Scope
 
 Use this skill when the user needs to:
@@ -178,17 +187,21 @@ H1a. **Build target database list.** Read the Haver Analytics section of `databa
 
 > ⚠️ **Never query `haver.db` with ad-hoc SQL `LIKE` patterns.** The `indicators` table has 12M+ rows with no text index — any `LIKE '%...%'` query does a full-table scan and will be extremely slow. Always use `haver_catalog_search.py` (FTS5) for all Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
 
-H1b. **Search.** Choose ONE query string, then run a **single Bash call** covering all databases in the confirmed dblist using `--databases`. Do not issue separate Bash calls per database — each separate call triggers its own permission prompt.
+H1b. **Search.** Choose ONE query string, then run a **single Bash call** covering all databases in the confirmed dblist using `--databases`. Do not issue separate Bash calls per database — separate calls add avoidable tool overhead.
 
 ```bash
-python skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py search "<query>" --databases DB1 DB2 DB3 ... --limit 300
+python "<CATALOG_SKILL>/scripts/Haver/haver_catalog_search.py" search "<query>" --databases DB1 DB2 DB3 ... --limit 300
 ```
 
 The `--databases` flag is required (haver.db has 12M+ rows and unscoped searches are very slow). The output includes `aggtype` and `datatype` for every candidate. Results from all specified databases are merged into a **single CSV block** with one header row — treat the combined output as one result set.
 
 **Set `--limit` to at least 300 for any multi-country or multi-database search.** The default limit is small and silently truncates results, which causes missed matches and forces re-runs that each trigger a permission prompt. Use `--limit 300` (or higher) whenever the confirmed dblist has 3+ databases or the concept plausibly matches many countries.
 
-**One query, one rephrase maximum.** Decide on the best query string before running. The FTS5 scorer expands synonyms internally (e.g. `treasury` → `government bond yield`), so a well-chosen query rarely needs rephrasing. If the first pass returns fewer than 3 useful candidates, you may run one additional search with an alternative phrasing. Do not run more than two searches per session.
+**One query per scoped lookup.** The FTS5 scorer expands synonyms internally.
+Batch the selected databases in one call. If results are insufficient, inspect
+them and ask for a distinguishing clue; do not rephrase the same lookup. A new
+user scope or substantive clarification permits a new query. See the shared
+[recovery contract](../imf-ra/references/recovery.md).
 
 H2. **Present results with variant choices.** Group all candidates by country. For each candidate, show `code`, `name`, `aggtype`, `datatype`, and `frequency`. Ask the user to:
    1. Select the countries they want.
@@ -306,8 +319,8 @@ Searches the local `haver.db` SQLite database using FTS5 full-text search and sy
 6. **Promote repeated gaps:** Write temporary code only when no helper command covers the task; if the same pattern repeats, add it to `catalog_search.py`.
 7. **Keep responsibilities separate:** Catalog helpers do not fetch data, expand country groups, choose country membership, choose date ranges, transform series, or build charts.
 8. **Never query `haver.db` with ad-hoc SQL `LIKE` patterns.** The `indicators` table has 12M+ rows and no index on `descriptor` — unscoped `LIKE '%...%'` queries do full-table scans and are very slow. Always use `haver_catalog_search.py` (FTS5) for Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
-9. **Batch all Haver database searches into one Bash call.** When the confirmed dblist has multiple databases, use `--databases DB1 DB2 ...` in a single invocation — never one Bash call per database. Each separate call triggers a permission prompt.
-10. **At most two searches per Haver session.** The FTS5 scorer handles synonyms internally. Run one carefully chosen query first; if fewer than 3 useful candidates are returned, one rephrase is permitted. Do not run more than two searches total.
+9. **Batch all Haver database searches into one Bash call.** When the confirmed dblist has multiple databases, use `--databases DB1 DB2 ...` in a single invocation — never one Bash call per database. Separate calls add avoidable tool overhead.
+10. **Search budget:** Follow the single-query rule in H1b; no additional session-wide limit or rephrasing loop.
 11. **Always use `--limit 300` or higher for broad searches.** Never use a small limit (e.g. 15, 20, 30) for multi-country or multi-database searches. A truncated result set forces re-runs, which generate additional permission prompts. Use `--limit 300` as the default for any search covering 3+ databases or concepts that span many countries.
 
 ## Ambiguity and Uncertainty

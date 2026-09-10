@@ -16,15 +16,14 @@ The package retrieves IMF and external time-series data and metadata from multip
 
 ## 0. How an agent should use this file
 
-### Default decision logic
+### Active RA scope
 
-1. **Prefer iData for new IMF data workflows** when the dataset has migrated or is available there.
-2. **Use the EcOS-to-iData mapper** when maintaining old EcOS code or translating old country/series codes.
-3. **Use EcOS only for legacy workflows** or when the target dataset has not yet migrated.
-4. **Use EDI / data.imf.org / Data Mapper** for public-facing IMF APIs where appropriate.
-5. **Use Haver, World Bank, Eurostat, BIS, SQL, DMX/DMXe** only when the requested source is explicit.
-6. **Avoid broad `ALL` queries** unless the user explicitly needs full database extraction; loop over smaller requests to avoid limits and timeouts.
-7. **Use metadata functions first** when database names, dimensions, countries, indicators, or valid codes are unknown.
+Use this file to understand supported helper internals, not as authorization to
+write alternate fetch code. Execute data pulls only through `fetch_idata.py` or
+`fetch_haver.py`; use catalog helpers for identifier discovery. EcOS discovery,
+metadata, mapping, and retrieval commands are prohibited in active RA workflows.
+Historical source documentation is not an execution instruction. For old EcOS
+identifiers, resolve an iData alternative through the current catalog.
 
 ### Common return convention
 
@@ -44,26 +43,6 @@ Most retrieval functions return a `pandas.DataFrame` with a `DatetimeIndex` name
 | `scale_label` | Include scale labels in output column names or metadata where supported. |
 | `freq` | Frequency. Common values: `A`, `Q`, `M`, `D`; some functions allow combined values such as `QA`. |
 
-### Standard safe coding pattern
-
-```python
-import pandas as pd
-from imf_datatools import idata_utilities
-
-# 1. Discover available database / dimensions / valid codes first.
-dbs = idata_utilities.get_databases(keyword="CPI")
-dims = idata_utilities.get_dimensions("IMF.STA:CPI")
-countries = idata_utilities.get_dimension_values("IMF.STA:CPI", "COUNTRY", keyword=["United States", "Japan"])
-
-# 2. Build a valid iData key from dimension values.
-key = "USA+JPN.CPI._T.IX.M"
-
-# 3. Retrieve data.
-df = idata_utilities.get_idata_data("IMF.STA:CPI", key=key, start="2000", end="2025")
-```
-
----
-
 # 1. Installation and environment
 
 > **Tier note.** `imf_datatools` is the **internal IMF SDK** required only by the data tier
@@ -76,85 +55,19 @@ df = idata_utilities.get_idata_data("IMF.STA:CPI", key=key, start="2000", end="2
 
 ## 1.1 Workstation installation (IMF Windows only)
 
-The installer lives on an internal Windows network share (UNC path); it is unreachable
-off the IMF network and has no macOS/Linux equivalent. From a Windows Command Prompt /
-PowerShell on an IMF-managed machine:
+Follow [IMF SDK setup](sdk-setup.md) for the complete check/install/verify
+workflow, authorization scope, and failure handling. The user installs Python
+from Software Center first. A README-directed skillset installation includes
+SDK setup in that existing interpreter.
 
-```powershell
-python \\ecnswn12p\ems_shared\pub\datatools\installer.py dev
+The official stable installer command is:
+
+```cmd
+python \\ecnswn12p\ems_shared\pub\datatools\installer.py
 ```
 
-Test installation (any OS, once the SDK is present):
-
-```python
-import imf_datatools
-```
-
-## 1.2 R integration
-
-R uses Python through `reticulate`. Set the Python path first:
-
-```r
-install.packages("reticulate")
-library(reticulate)
-use_python("C:/ProgramData/Python3", required = TRUE)
-imf_datatools <- import("imf_datatools")
-```
-
-Example:
-
-```r
-df <- imf_datatools$get_haver_data("GDP@USECON")
-tail(df)
-```
-
-If another R package masks `import()`, use:
-
-```r
-reticulate::import("imf_datatools")
-```
-
-## 1.3 Stata integration
-
-Set Python path in Stata:
-
-```stata
-set python_exec C:\ProgramData\Python3\python.exe, perm
-```
-
-Install Stata command wrappers:
-
-```stata
-installdatatools
-```
-
-Useful Stata help commands:
-
-```stata
-help ediuse
-help ecosuse
-help dmxsuse
-help dmxeuse
-help sqlsuse
-```
-
-Test:
-
-```stata
-ediuse data, database(weo-published) country(111) indicator(NGDP) vintage(2023-10) clear
-```
-
-## 1.4 Econometric Support servers
-
-Server environments may already include `imf_datatools`. Test in Command Prompt:
-
-```python
-import imf_datatools
-```
-
-Important limitation: **DMX file access is not available on Econometric Support servers** because required Microsoft Access drivers are unavailable.
-
----
+Do not append `dev`. The same command also updates the library, so skip it when
+the required modules already work unless the user explicitly requests an update.
 
 # 2. Global coding conventions
 
@@ -162,28 +75,13 @@ Important limitation: **DMX file access is not available on Econometric Support 
 
 All retrieved time-series data generally use period-start dates. This makes mixed-frequency merging easier but can surprise users expecting end-of-period dates.
 
-## 2.2 Metadata-first approach
+## 2.2 Metadata and request scope
 
-When a requested series fails, do not guess codes. Use metadata discovery:
-
-```python
-# iData
-idata_utilities.get_databases(keyword="...")
-idata_utilities.get_dimensions(db)
-idata_utilities.get_dimension_values(db, dimension, keyword="...")
-idata_utilities.get_idata_metadata(db,key)
-
-# EcOS
-ecos_sdmx_utilities.get_databases(substr="...")
-ecos_sdmx_utilities.get_countries(dbname)
-ecos_sdmx_utilities.get_ecos_sdmx_metadata(dbname, substr="...")
-```
-
-## 2.3 Avoid excessive requests
-
-EcOS has a 5,000-series response limit. Avoid `country='ALL'` and `var='ALL'` together unless absolutely necessary. Loop over countries, indicators, frequencies, or counterpart countries.
-
----
+Use the catalog for database and indicator selection, then the pre-built fetch
+helper's `--explore` and `--dimension-values` for unresolved dimensions. Avoid
+unbounded queries and preserve the user's requested scope. The iData helper
+chunks large panels; follow the [recovery contract](../../imf-ra/references/recovery.md)
+for failures instead of adding retry loops around it.
 
 # 3. iData API
 
@@ -193,7 +91,7 @@ Use module:
 from imf_datatools import idata_utilities
 ```
 
-iData is the newer Fund-wide data system and is planned to replace several legacy systems such as EcOS, EDI, data.imf.org, and Data Mapper.
+iData is the supported IMF time-series retrieval path in RA-Skills. Legacy source names are catalog routing hints, not authorization to run retired APIs.
 
 ## 3.1 Private / non-public iData access
 
@@ -335,367 +233,6 @@ df_panel = idata_utilities.get_idata_data("IMF.STA:CPI", key="USA+JPN.CPI._T..M"
 ```
 
 Date warning: for monthly or lower-frequency data, use period-level `end` values like `'2020-05'` or the final day of the month. `end='2020-05-30'` will not include May 2020 monthly data.
-
----
-
-# 4. Mapping EcOS to iData
-
-Use module:
-
-```python
-from imf_datatools.idata_mapper import *
-```
-
-Use this module when converting legacy EcOS calls to iData. Major changes in the migration include:
-
-- Country codes are generally ISO3 in iData instead of IMF numeric codes such as `111` for the United States.
-- Series codes may be split across several iData dimensions.
-- Some databases, such as IFS, are split into multiple iData databases.
-- Some legacy series are discontinued.
-
-## 4.1 Functions
-
-### `get_mapping_data(ecos_db: str, ecos_series: str, force_update=False, debug=False)`
-
-Return mapping data between an EcOS database/series and iData equivalents. Mostly a diagnostic utility; agents should usually call `map_db_and_series()` directly.
-
-Special case: `ecos_series='ALL'` retrieves all mappings for the database, which can be large.
-
-```python
-mapping = get_mapping_data("WEO_WEO_PUBLISHED", ecos_series="ALL")
-```
-
-### `get_mapping(ecos_db: str, ecos_series: str, force_update=False, debug=False)`
-
-Return internal mapping objects:
-
-```python
-idata_db, series_mapping, dict_series_idata_db = get_mapping(ecos_db, ecos_series)
-```
-
-Mostly for diagnostics.
-
-### `map_db_and_series(ecos_db, ecos_series)`
-
-Map an EcOS database and series code to iData database and series key fragment.
-
-```python
-from imf_datatools.idata_mapper import map_db_and_series
-
-idata_db, idata_series = map_db_and_series("WEO_WEO_PUBLISHED", "NGDP")
-# Example result: ('IMF.RES.WEO:WEO_LIVE_2025_APR_VINTAGE', 'NGDP')
-```
-
-IFS example:
-
-```python
-idata_db, idata_series = map_db_and_series("ECDATA_IFS_Latest_Published", "PCPI_IX")
-# Example result: ('IMF.STA:CPI', 'CPI._T.SPR_IX')
-```
-
-### `map_bloomberg_ticker(ecos_ticker)`
-
-Map a Bloomberg ticker from EcOS to iData. Internally strips whitespace and converts to uppercase.
-
-```python
-idata_db, idata_ticker = map_bloomberg_ticker("VIX Index")
-# Example result: ('IMF.CSF:BBGDL', 'VIX_INDEX')
-```
-
-### `get_countrylist(idata_db='IMF.RES:WEO')`
-
-Return country dimension values for the specified iData database. Mostly diagnostic.
-
-```python
-countries = get_countrylist("IMF.RES:WEO")
-```
-
-### `translate_ecos_country(ecos_country, idata_db='IMF.RES:WEO')`
-
-Translate an EcOS IMF country code into the iData country equivalent, typically ISO3.
-
-```python
-iso3 = translate_ecos_country("111")
-# 'USA'
-```
-
-Country groups may fail if the group code cannot be matched through Enterprise Business Vocabularies.
-
-### `get_idata_data_using_ecos(ecos_db, ecos_country, ecos_series, freq, ecos_counterpart=None)`
-
-Testing helper that retrieves iData data using EcOS-like arguments. Not recommended for production code; prefer explicit mapping plus `idata_utilities.get_idata_data()`.
-
-```python
-df = get_idata_data_using_ecos(
-    "ECDATA_DOT",
-    ecos_country="111",
-    ecos_series="TXG_FOB_USD",
-    freq="A",
-    ecos_counterpart="193",
-)
-```
-
-## 4.2 Recommended migration pattern
-
-```python
-from imf_datatools import ecos_sdmx_utilities, idata_utilities
-from imf_datatools.idata_mapper import map_db_and_series, translate_ecos_country
-
-# Old EcOS identifiers
-ecos_db = "ECDATA_CPI_LATEST_PUBLISHED"
-ecos_series = "PCPI_IX"
-ecos_country = "111"
-freq = "Q"
-
-# Translate
-data_db, idata_series = map_db_and_series(ecos_db, ecos_series)
-idata_country = translate_ecos_country(ecos_country)
-
-# Build iData key and retrieve
-data_key = f"{idata_country}.{idata_series}.{freq}"
-df_idata = idata_utilities.get_idata_data(data_db, data_key)
-```
-
----
-
-# 5. EcOS API
-
-> **⚠️ RETIRED — do not use for new workflows.**
-> EcOS retrieval is retired in the RA-Skills system. All retrieval functions in this section (`get_ecos_sdmx_data`, `get_ecos_gfs_data`, `get_ecos_commodity_data`, `get_ecos_bloomberg_data`, `get_idata_data_using_ecos`) are disallowed.
-> Use the iData API (§ 3) instead. For EcOS → iData code migration, see the mapper in § 4.
-> This section is retained as a legacy reference only.
-
-Use module:
-
-```python
-from imf_datatools import ecos_sdmx_utilities
-```
-
-EcOS is a legacy IMF data system. It requires Fund authentication. Initial connection may take 10–20 seconds. EcOS database names often start with:
-
-- `WEO_` for RES-owned WEO databases
-- `ECDATA_` for many other departmental databases
-
-Important constraint: EcOS web service returns up to **5,000 series** per request. If too broad a query returns exactly 5,000 series, `imf_datatools` warns instead of returning complete data.
-
-## 5.1 EcOS discovery functions
-
-### `ecos_sdmx_utilities.get_databases(substr=None, debug=False)`
-
-Return sorted list of available EcOS database names. `substr` can be a string or list; list means all substrings must match.
-
-```python
-dbs = ecos_sdmx_utilities.get_databases(substr="WEO")
-dbs_2018 = ecos_sdmx_utilities.get_databases(substr=["WEO", "2018"])
-```
-
-### `ecos_sdmx_utilities.get_weo_databases(debug=False)`
-
-Return available WEO vintages as a `DataFrame`, sorted chronologically.
-
-```python
-weo_dbs = ecos_sdmx_utilities.get_weo_databases()
-```
-
-### `ecos_sdmx_utilities.get_data_structure(database, debug=False)`
-
-Return raw structure for an EcOS database, including countries, indicators, and attributes. Usually used indirectly.
-
-```python
-structure = ecos_sdmx_utilities.get_data_structure("WEO_WEO_PUBLISHED")
-```
-
-### `ecos_sdmx_utilities.get_all_series(dbname, update=True, substr=None, debug=False)`
-
-Return available series codes for a database.
-
-```python
-series = ecos_sdmx_utilities.get_all_series("WEO_WEO_PUBLISHED", substr="GDP")
-```
-
-### `ecos_sdmx_utilities.get_countries(dbname, debug=False)`
-
-Return countries and country codes for a database.
-
-```python
-countries = ecos_sdmx_utilities.get_countries("WEO_WEO_PUBLISHED")
-```
-
-### `ecos_sdmx_utilities.get_ecos_sdmx_metadata(dbname, seriesname=None, substr=None, debug=False)`
-
-Return metadata for EcOS series. Use `seriesname` for exact codes; `substr` for partial matching.
-
-```python
-metadata = ecos_sdmx_utilities.get_ecos_sdmx_metadata(
-    "ECDATA_DOT_LATEST_PUBLISHED",
-    seriesname=["TBG_USD", "TMG_CIF_USD"],
-)
-
-usd_series = ecos_sdmx_utilities.get_ecos_sdmx_metadata(
-    "ECDATA_DOT_LATEST_PUBLISHED",
-    substr="USD",
-)
-```
-
-### `ecos_sdmx_utilities.get_ecos_gfs_metadata(sector, unit, classification, database='ECDATA_GFS_T2_EXPENSE', debug=False)`
-
-Retrieve metadata for GFS databases, which use a different internal structure.
-
-```python
-metadata = ecos_sdmx_utilities.get_ecos_gfs_metadata(
-    sector=["S13", "S1313", "S1311"],
-    unit=["XDC", "XDC_R_B1GQ"],
-    classification=["W0|S1|G2", "W0|S1|G21"],
-)
-```
-
-## 5.2 EcOS retrieval functions
-
-### `ecos_sdmx_utilities.get_ecos_sdmx_data(database, country, var, counterpart=None, freq='A', sector=None, counterpart_sector=None, longformat=False, scale=None, scale_label=None, use_original_indicator=False, get_data=True, debug=False)`
-
-Main EcOS retrieval function.
-
-Parameters:
-
-| Parameter | Use |
-|---|---|
-| `database` | EcOS database name, e.g. `'WEO_WEO_PUBLISHED'`. |
-| `country` | IMF country code, list of codes, or `'ALL'`. |
-| `var` | Series code, list of codes, or `'ALL'`. |
-| `counterpart` | Counterpart country for bilateral datasets such as DOT. |
-| `freq` | Frequency. Default `'A'`; can use `'Q'`, `'M'`, or combined e.g. `'QA'`. |
-| `sector`, `counterpart_sector` | For datasets needing sector/counterpart sector. |
-| `longformat` | Return long/tidy format. |
-| `scale`, `scale_label` | Apply/include scale details where supported. |
-| `use_original_indicator` | Useful for special GAS behavior where returned indicator differs from requested code. |
-| `get_data` | If `False`, returns attributes instead of observations. |
-| `debug` | Diagnostics. |
-
-Basic WEO example:
-
-```python
-df = ecos_sdmx_utilities.get_ecos_sdmx_data(
-    "WEO_WEO_PUBLISHED",
-    country="111",
-    var="NGDP",
-)
-```
-
-Quarterly data:
-
-```python
-df_q = ecos_sdmx_utilities.get_ecos_sdmx_data(
-    "WEO_WEO_PUBLISHED",
-    "111",
-    "NGDP",
-    freq="Q",
-)
-```
-
-Multiple countries / variables:
-
-```python
-df = ecos_sdmx_utilities.get_ecos_sdmx_data(
-    "WEO_WEO_PUBLISHED",
-    country=["111", "193"],
-    var=["NGDP", "PPPPC"],
-)
-```
-
-DOT bilateral example:
-
-```python
-df = ecos_sdmx_utilities.get_ecos_sdmx_data(
-    "ECDATA_DOT_LATEST_PUBLISHED",
-    country="111",
-    var="TBG_USD",
-    counterpart="193",
-)
-```
-
-Special GAS example:
-
-```python
-# Preserve requested indicator name in output
-fuel = ecos_sdmx_utilities.get_ecos_sdmx_data(
-    "WEO_GAS_LIVE",
-    "001",
-    "POILAPSP",
-    use_original_indicator=True,
-)
-```
-
-### `ecos_sdmx_utilities.get_series_attributes(database, country, var, counterpart=None, freq='A', sector=None, counterpart_sector=None, longformat=False, debug=False)`
-
-Return attributes for an EcOS series. Especially useful in WEO for scale, source, latest actual data, and forecast identification.
-
-```python
-attrs = ecos_sdmx_utilities.get_series_attributes("WEO_WEO_PUBLISHED", "111", "NGDP")
-```
-
-### `ecos_sdmx_utilities.get_ecos_gfs_data(country, sector=None, unit=None, classification=None, scale=None, scale_label=None, longformat=False, freq='A', database='ECDATA_GFS_T2_EXPENSE', debug=False)`
-
-Retrieve GFS data. Use GFS metadata first to identify valid `sector`, `unit`, and `classification` values.
-
-```python
-df = ecos_sdmx_utilities.get_ecos_gfs_data(
-    country="111",
-    sector="S13",
-    unit="XDC",
-    classification="W0|S1|G2",
-)
-```
-
-### `ecos_sdmx_utilities.get_ecos_commodity_data(database, commodity, datatype=None, freq='A', longformat=False, scale=None, scale_label=False, debug=False)`
-
-Retrieve commodity data from EcOS commodity-style databases. These do not use country codes and therefore are not compatible with the EcOS-to-iData mapper.
-
-```python
-df = ecos_sdmx_utilities.get_ecos_commodity_data(
-    database="...",
-    commodity="...",
-    datatype="...",
-    freq="M",
-)
-```
-
-### `ecos_sdmx_utilities.get_ecos_bloomberg_data(ticker, field, freq='D', debug=False)`
-
-Retrieve Bloomberg data from EcOS.
-
-```python
-df = ecos_sdmx_utilities.get_ecos_bloomberg_data("VIX Index", "PX_LAST")
-```
-
-Ticker and field can be lists. Field can be `'ALL'`, but broad queries may be expensive.
-
-Bloomberg daily data are business-day observations converted to daily frequency; weekends become `NaN`. To keep only business days:
-
-```python
-df_bday = df.resample("B").mean()
-# or drop all NaN values
-clean = df.dropna()
-```
-
-### `ecos_sdmx_utilities.get_weo_country_codes(save=False)`
-
-Return WEO country and group codes, merged with World Bank country information where available.
-
-```python
-codes = ecos_sdmx_utilities.get_weo_country_codes(save=True)
-```
-
-### `ecos_sdmx_utilities.get_ebv_country_info(save=False)`
-
-Return country information from Enterprise Business Vocabularies merged with World Bank information.
-
-```python
-ebv = ecos_sdmx_utilities.get_ebv_country_info(save=True)
-```
-
-### `ecos_sdmx_utilities._get_time_series_attributes(database, country, var, counterpart=None, sector=None, counterpart_sector=None, freq='A', debug=False)`
-
-Internal/advanced function returning detailed time-series attributes. Use only when `get_series_attributes()` is insufficient.
 
 ---
 
@@ -1405,7 +942,7 @@ Merge multiple DataFrames by index.
 ```python
 from imf_datatools import dataframe_utilities as idt_utils
 
-df_all = idt_utils.merge_dfs([df_ecos, df_sql, df_dmx], how="outer")
+df_all = idt_utils.merge_dfs([df_idata, df_sql, df_dmx], how="outer")
 ```
 
 ---
@@ -1429,75 +966,12 @@ df = idata_utilities.get_idata_data(
 )
 ```
 
-## 18.2 Convert old EcOS WEO retrieval to iData
-
-```python
-from imf_datatools import idata_utilities
-from imf_datatools.idata_mapper import map_db_and_series, translate_ecos_country
-
-ecos_db = "WEO_WEO_PUBLISHED"
-ecos_country = "111"
-ecos_series = "NGDP"
-freq = "A"
-
-idata_db, idata_series = map_db_and_series(ecos_db, ecos_series)
-iso3 = translate_ecos_country(ecos_country)
-key = f"{iso3}.{idata_series}.{freq}"
-
-df = idata_utilities.get_idata_data(idata_db, key)
-```
-
-## 18.3 Retrieve legacy EcOS WEO data
-
-```python
-from imf_datatools import ecos_sdmx_utilities
-
-df = ecos_sdmx_utilities.get_ecos_sdmx_data(
-    "WEO_WEO_PUBLISHED",
-    country="111",
-    var="NGDP",
-    freq="A",
-)
-```
-
-## 18.4 Retrieve DOT bilateral data from EcOS
-
-```python
-from imf_datatools import ecos_sdmx_utilities
-
-df = ecos_sdmx_utilities.get_ecos_sdmx_data(
-    "ECDATA_DOT_LATEST_PUBLISHED",
-    country="111",          # United States in IMF numeric code
-    var="TXG_FOB_USD",
-    counterpart="193",      # Australia in IMF numeric code
-    freq="A",
-)
-```
-
-## 18.5 Search metadata before retrieval
-
-```python
-from imf_datatools import ecos_sdmx_utilities
-
-# Find candidate database names
-dbs = ecos_sdmx_utilities.get_databases(substr="DOT")
-
-# Find candidate series containing USD
-metadata = ecos_sdmx_utilities.get_ecos_sdmx_metadata(
-    "ECDATA_DOT_LATEST_PUBLISHED",
-    substr="USD",
-)
-
-# Find countries in that database
-countries = ecos_sdmx_utilities.get_countries("ECDATA_DOT_LATEST_PUBLISHED")
-```
-
 ## 18.6 Merge data from multiple sources
 
 ```python
 from imf_datatools import dataframe_utilities as idt_utils
 
-combined = idt_utils.merge_dfs([df_idata, df_ecos, df_haver], how="outer")
+combined = idt_utils.merge_dfs([df_idata, df_haver], how="outer")
 ```
 
 ---
@@ -1506,13 +980,12 @@ combined = idt_utils.merge_dfs([df_idata, df_ecos, df_haver], how="outer")
 
 | Symptom | Likely issue | Action |
 |---|---|---|
-| Import error for `imf_datatools` | Package not installed or wrong Python path | Re-run installer and confirm `C:/ProgramData/Python3/python.exe`. |
+| Import error for `imf_datatools` | Package not installed or wrong Python path | Check the selected existing interpreter; follow [SDK setup](sdk-setup.md). Do not blindly reinstall. |
 | R cannot import package | `reticulate` using wrong Python or masked `import()` | Use `use_python(...)`; call `reticulate::import("imf_datatools")`. |
 | Stata datatools commands fail | Stata Python path or old `installdatatools.ado` | Set Python path; remove old ado files; rerun installer. |
-| iData non-public data fails | Token not acquired or expired | Set `idata_utilities.PRIVATE = True` and retry. |
+| iData non-public data fails | Token not acquired or expired | The supported helper sets private access. Inspect authentication and follow the recovery contract; do not blindly rerun. |
 | iData query returns unexpected columns | Open dimension in key | Check key; blank dimensions return multiple values. |
 | iData period missing at end | End date not at period end | Use period strings like `'2020-05'` or final day of month. |
-| EcOS returns warning around 5,000 series | Query too broad | Split request into loops. |
 | DMX fails on server | Access/ODBC driver unavailable | Use workstation or DMXe/SQL alternative. |
 | Bloomberg daily output has weekend NaNs | Business-day data expanded to daily dates | Use `df.resample('B').mean()` or `df.dropna()`. |
 
@@ -1527,37 +1000,6 @@ idata_utilities.get_databases(keyword=None, searchmode='or', refresh=False, debu
 idata_utilities.get_dimensions(db: str, keyword=None, searchmode='or', refresh=False, debug=False)
 idata_utilities.get_dimension_values(db, dimension, keyword=None, searchmode='or', refresh=False, debug=False)
 idata_utilities.get_idata_data(db: str, key, start=None, end=None, params=None, longformat=False, panel=None, debug=False)
-```
-
-## EcOS to iData mapper
-
-```python
-get_mapping_data(ecos_db: str, ecos_series: str, force_update=False, debug=False)
-get_mapping(ecos_db: str, ecos_series: str, force_update=False, debug=False)
-map_db_and_series(ecos_db, ecos_series)
-map_bloomberg_ticker(ecos_ticker)
-get_countrylist(idata_db='IMF.RES:WEO')
-translate_ecos_country(ecos_country, idata_db='IMF.RES:WEO')
-get_idata_data_using_ecos(ecos_db, ecos_country, ecos_series, freq, ecos_counterpart=None)
-```
-
-## EcOS
-
-```python
-ecos_sdmx_utilities.get_databases(substr=None, debug=False)
-ecos_sdmx_utilities.get_weo_databases(debug=False)
-ecos_sdmx_utilities.get_data_structure(database, debug=False)
-ecos_sdmx_utilities.get_all_series(dbname, update=True, substr=None, debug=False)
-ecos_sdmx_utilities.get_countries(dbname, debug=False)
-ecos_sdmx_utilities.get_ecos_sdmx_metadata(dbname, seriesname=None, substr=None, debug=False)
-ecos_sdmx_utilities.get_ecos_gfs_metadata(sector, unit, classification, database='ECDATA_GFS_T2_EXPENSE', debug=False)
-ecos_sdmx_utilities.get_series_attributes(database, country, var, counterpart=None, freq='A', sector=None, counterpart_sector=None, longformat=False, debug=False)
-ecos_sdmx_utilities.get_ecos_sdmx_data(database, country, var, counterpart=None, freq='A', sector=None, counterpart_sector=None, longformat=False, scale=None, scale_label=None, use_original_indicator=False, get_data=True, debug=False)
-ecos_sdmx_utilities.get_ecos_gfs_data(country, sector=None, unit=None, classification=None, scale=None, scale_label=None, longformat=False, freq='A', database='ECDATA_GFS_T2_EXPENSE', debug=False)
-ecos_sdmx_utilities.get_ecos_commodity_data(database, commodity, datatype=None, freq='A', longformat=False, scale=None, scale_label=False, debug=False)
-ecos_sdmx_utilities.get_ecos_bloomberg_data(ticker, field, freq='D', debug=False)
-ecos_sdmx_utilities.get_weo_country_codes(save=False)
-ecos_sdmx_utilities.get_ebv_country_info(save=False)
 ```
 
 ## DMX / DMXe / SQL / Haver

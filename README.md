@@ -69,6 +69,70 @@ Send this to your coding agent (GitHub Copilot, Claude Code, Codex, …) — it 
 
 > Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment.
 
+Before sending this message, IMF Windows users should install the latest
+company-provided Python from **Software Center**, then reopen their terminal or
+VS Code if necessary. The agent does not install Python itself.
+
+### Required agent installation workflow
+
+The installation request above includes both **all five skills** and **initial
+IMF data SDK setup**. Explain this scope briefly, then complete both without a
+separate SDK permission question, subject to the host's execution permissions.
+If the user explicitly requests skills only, honor that narrower scope.
+
+1. Install the complete family using the appropriate method below. Installing
+   only `imf-ra-catalog` is not a complete data-pull setup.
+2. Follow [IMF SDK setup](skills/imf-ra-data/references/sdk-setup.md) using the
+   user's existing Python. Check first, install the missing SDK from the official
+   IMF stable installer, then verify the data modules and fetch helpers. Reuse
+   a working installation; do not automatically update it or create a virtual
+   environment. This SDK setup is part of installation, not a task deferred to
+   the user or to their first data request.
+3. Report the installed skills, verified Python executable, SDK check results,
+   and any remaining network/access or Haver database prerequisites. If setup
+   is blocked, finish the skills installation and clearly distinguish it from
+   incomplete data setup. Do not claim data access was verified from imports alone.
+
+The normal SDK setup commands are shown here so the installation does not
+rely on a link being followed. `python` means the selected existing executable;
+`<DATA_SKILL>` means the actual installed `imf-ra-data` directory (substitute
+before running). Keep the user's workspace as the working directory.
+
+```cmd
+python "<DATA_SKILL>/scripts/check_environment.py" --profile data
+```
+
+If the report shows the **SDK itself is missing**, and the official share is
+readable on the IMF Windows workstation, run the stable installer once:
+
+```cmd
+python \\ecnswn12p\ems_shared\pub\datatools\installer.py
+```
+
+Do not append `dev` or reinstall a working SDK. Recheck; install only missing
+pandas/openpyxl with the same interpreter's `-m pip` as detailed in SDK setup.
+Then save a readiness report in the user's local configuration directory and
+verify the installed helpers:
+
+```cmd
+python "<DATA_SKILL>/scripts/check_environment.py" --profile data --output "<USER_LOCAL_CONFIG>/RA-Skills/runtime.json"
+python "<DATA_SKILL>/scripts/fetch_idata.py" --help
+python "<DATA_SKILL>/scripts/fetch_haver.py" --help
+```
+
+`<USER_LOCAL_CONFIG>` is the actual Windows Local AppData directory; use the
+host's existing user-local notes/config location if supplied. The report stores
+paths and check results, not credentials. Exit 0 from the check means local
+Python dependencies passed, not that a live data pull succeeded. On another OS,
+reuse an existing SDK or report the internal installer unavailable. See
+[the runtime contract](skills/imf-ra/references/runtime.md) for interpreter
+precedence, other-platform report locations, and output paths.
+
+The host installation commands below install skill files; they do not themselves
+run an SDK post-install hook. An agent following this README must complete the
+workflow above. For a manual/plugin-menu install, ask the agent to complete this
+README's SDK setup afterward.
+
 ### Install manually
 
 **GitHub Copilot** (CLI or cloud agent, incl. Windows) — install into your personal skills dir with GitHub CLI ≥ 2.90:
@@ -105,13 +169,29 @@ claude                           # or open Copilot CLI / Codex with cwd = this r
 
 > Commands use `python`; if your machine only has `python3`, use that instead. For a global install that needs the Haver data tier, point `HAVER_DB_PATH` at your `haver.db`.
 
+### Python environment policy
+
+RA-Skills uses an existing configured Python installation. Users do not need to
+create a virtual environment for each skill or task. An existing virtual/Conda
+environment is supported. Agents must not create environments (including through tools that create them
+implicitly) or bypass package-manager protections. Environment creation requires
+an explicit user request. The installation workflow above authorizes the bounded
+SDK and missing data-dependency setup in the existing interpreter. Ordinary data
+or chart requests do not authorize unrelated package installation or upgrades.
+
+This policy is included in every distributed `SKILL.md`, so direct worker
+invocation is covered. Skill instructions constrain agent behavior; they are not
+an execution-level security boundary. A hard technical block requires the host's
+command execution policy or a controlled runner that mediates all execution
+paths; a denylist of a few shell command strings alone is insufficient.
+
 ### Dependency tiers
 
 | Tier | Commands | Needs | Runs where |
 |---|---|---|---|
 | **Catalog** | discovery, WEO groups | Python 3.9+ (stdlib + bundled CSVs) | anywhere — laptops, CI, cloud, off-network |
 | **Data – iData** | `fetch_idata.py` | internal `imf_datatools` SDK + pandas | IMF-managed Windows / cloud |
-| **Data – Haver** | `fetch_haver.py` | `haver.db` (+ pandas) | IMF machines with Haver access |
+| **Data – Haver** | `fetch_haver.py` | `imf_datatools` SDK + pandas + `haver.db` | IMF machines with Haver access |
 | **Charts** | `imf-ra-charts` generated scripts | pandas + matplotlib; xlsxwriter only for optional Excel output | anywhere with local CSV/Excel or previously fetched data |
 
 The catalog tier works everywhere; the data tiers require IMF-internal infrastructure. See [AGENTS.md](AGENTS.md) → *Dependencies & environments*.

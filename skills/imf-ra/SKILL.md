@@ -7,6 +7,15 @@ description: Use when working as an IMF Research Assistant or doing any task inv
 
 Family entry point for IMF Research Assistant workflows. Use this skill to load shared conventions and route the task to the right worker skill.
 
+## Runtime
+
+Reuse an existing Python; never create an environment explicitly or implicitly
+unless the user requests it. Before executing helpers, read the shared
+[runtime contract](references/runtime.md) for installed-skill paths, interpreter
+selection, SDK setup authorization, and user output locations. Resolve scripts
+from the loaded skill directory, not the user's working directory.
+
+
 ## Skill Map
 
 Recommended sequence:

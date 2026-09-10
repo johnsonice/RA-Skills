@@ -7,6 +7,15 @@ description: Use when the user wants to turn IMF RA data or user-provided CSV/Ex
 
 Chart-production worker for the RA Skills family. Use this skill to turn available data into a static economics chart, with optional interactive HTML output when the user asks for it.
 
+## Runtime
+
+Reuse an existing Python; never create an environment explicitly or implicitly
+unless the user requests it. Before executing helpers, read the shared
+[runtime contract](../imf-ra/references/runtime.md) for installed-skill paths, interpreter
+selection, SDK setup authorization, and user output locations. Resolve scripts
+from the loaded skill directory, not the user's working directory.
+
+
 ## Load The Right References
 
 - Workflow, output files, routing, QA, failure behavior, and optional outputs:
@@ -23,10 +32,9 @@ Chart-production worker for the RA Skills family. Use this skill to turn availab
   a new pull.
 - Pull data only when no usable data are available and the user explicitly asks
   the agent to pull data.
-- Confirm before creating or writing to `chart-temp/` in the current working
-  directory. In that confirmation, tell the user `chart-temp/` will be deleted
-  after the charting session ends and that they should save anything they need
-  to keep.
+- Save final outputs in the user's requested location, or a persistent
+  `charts/` directory in their workspace. No routine folder confirmation is
+  needed. Never delete final PNGs, scripts, or their required input data.
 - Required outputs are a PNG and the complete Python script that generated it.
 - Interactive HTML and editable Excel are optional outputs. Create either one
   only when the user asks for it or confirms the post-PNG offer.

@@ -28,35 +28,29 @@ explicitly wants the agent to pull data. When pulling, follow `imf-ra-data` and
 
 ## Output Folder
 
-Before writing artifacts, ask the user to confirm that outputs should be saved
-under `chart-temp/` in the current working directory. Tell the user this folder
-is temporary, will be deleted after the charting session, and anything they need
-to keep should be saved elsewhere. Do not create or overwrite `chart-temp/`
-without confirmation.
+Save final files in the user's requested location, or a persistent `charts/`
+folder in the user's workspace. Create it as part of the chart request without
+a separate confirmation. If the workspace is unknown or unwritable, ask for a
+destination. Do not save outputs under the installed skill directory.
 
-Use a short confirmation prompt such as:
-
-```text
-I can save the chart outputs in `chart-temp/`. This folder is temporary and will
-be deleted after this charting session, so save anything you need to keep. Is
-that okay?
-```
-
-Use stable, readable, lowercase file names based on the chart topic:
+Use stable, readable topic-based names, for example:
 
 ```text
-chart-temp/
+charts/
   real_gdp_growth_selected_economies.png
   real_gdp_growth_selected_economies_generate.py
   real_gdp_growth_selected_economies_interactive.html   # optional
   real_gdp_growth_selected_economies.xlsx               # optional
 ```
 
-If a file already exists, avoid accidental overwrite by adding a version suffix
-such as `_v2`, unless the user explicitly asks to replace the prior output.
-
-Before deleting `chart-temp/`, make sure any deliverables the user wants to keep
-have been moved, attached, or otherwise handed off.
+Avoid overwriting existing files by adding `_v2`, unless replacement was
+requested. Final deliverables persist after the session. A generated script
+must read persistent input files: use paths resolved relative to the script or
+explicit configurable paths, not ephemeral files or an assumed launch directory.
+If intermediate files are necessary, create a unique temporary directory and
+clean up only those intermediates after success. Never delete user inputs or
+pre-existing directories. Preserve required cleaned data alongside the script
+if reproducing the chart depends on them.
 
 ## Required Outputs
 
@@ -101,7 +95,7 @@ Rules:
 - Apply the same chart (including chart type, title, axis labels, units, source note, and series colors as)
   the PNG.
 - Add hover templates showing year and value with unit label.
-- Save as `<topic>_interactive.html` beside the PNG in `chart-temp/`.
+- Save as `<topic>_interactive.html` beside the PNG in the persistent output directory.
 - Include the HTML generation code in the same Python script as the PNG, gated
   by an `INTERACTIVE = True` flag at the top so the script is self-documenting.
 - If the local host supports browser opening, open the HTML after saving so the
@@ -132,7 +126,7 @@ Recommended sheets:
 
 ## Execution Flow
 
-1. Confirm the output folder before writing artifacts.
+1. Resolve the user's output folder, or use persistent `charts/` in the workspace; ask only when the destination is unknown or unusable.
 2. Load data from `imf-ra-data` output or user-provided Excel/CSV.
 3. If no usable data are available, ask whether the user wants to provide data
    or explicitly wants the agent to pull data.
@@ -149,7 +143,7 @@ Recommended sheets:
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
 14. After the session ends and retained deliverables have been handed off,
-    delete `chart-temp/`.
+    delete only agent-created temporary intermediates; keep all final deliverables.
 
 ## Data Preparation
 

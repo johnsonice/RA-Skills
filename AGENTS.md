@@ -30,6 +30,19 @@ Skills run at three capability tiers. Pick commands the current environment can 
 - `haver.db` is **not** in the repo (SQLite, 12M+ rows). Resolution order: `HAVER_DB_PATH` env var → an upward search for `haver.db` beside any ancestor of the script (conventionally one directory above the repo root) → a clear "not found" error. Set `HAVER_DB_PATH` when installed into a global skills dir.
 - The internal `imf_datatools` SDK is IMF-only (installed from an internal location; see `skills/imf-ra-data/references/imf_datatools_agent_api_reference.md`). It is not pip-installable. Catalog lookup and WEO group helpers work without it.
 
+## Python environment policy
+
+RA skill execution must reuse an existing Python interpreter, including an
+already configured virtual/Conda environment. Do not create or bootstrap a new
+environment, explicitly or implicitly, unless the user explicitly requests it.
+A request to install the skillset following the README includes the bounded
+[SDK setup](skills/imf-ra-data/references/sdk-setup.md), without a separate SDK
+confirmation. Outside that setup, missing imports are not authorization to
+create an environment or install or upgrade packages. Identify the interpreter and missing dependency, reuse a known
+working interpreter, or give targeted setup guidance for the user/IMF IT.
+Apply this rule to generated scripts as well. See
+[the skill runtime policy](skills/imf-ra/references/runtime.md).
+
 ## Interpreter note
 
 Commands use `python`. If your machine only exposes `python3` (some macOS/Linux setups), use `python3` instead — the arguments are identical.
@@ -62,7 +75,7 @@ python skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py databases
 # Pre-built fetch utilities (never write new retrieval scripts)
 python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
 python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "USA"
-python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA+GBR.NGDP_RPCH..A" --start 2000 --end 2026 --format refreshable
+python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA+GBR.NGDP_RPCH.A" --start 2000 --end 2026 --format refreshable
 python skills/imf-ra-data/scripts/fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" --start 2000 --end 2024 --format refreshable
 ```
 
@@ -146,5 +159,5 @@ Example: `feat/chengyu_0509_auto-testing-steps`. Older remote branches without t
 - `imf-ra-error-report` is a side skill, not core infrastructure: no telemetry, remote upload, GitHub issue creation, dashboard, Python logging wrapper, or report lifecycle workflow belongs in v1.
 - `haver.db` is machine-dependent and may be absent (it is not committed; it lives one directory above the repo root, or wherever `HAVER_DB_PATH` points). If Haver catalog search or `fetch_haver.py` fails because the file is missing, say so — don't fall back to guessing Haver codes.
 - Actual data pulls require the internal `imf_datatools` SDK (IMF environment only). Catalog lookup and WEO group helpers work anywhere; `fetch_idata.py` / `fetch_haver.py` do not.
-- EcOS retrieval is retired — never use `get_ecos_*` paths. The supported fetch workflow is Python-only (no R/Stata).
+- EcOS is retired — no active EcOS discovery, mapping, metadata, or retrieval commands. The supported fetch workflow is Python-only (no R/Stata).
 - `projects/`, `docs/decks/svg/`, `.claude/settings.local.json`, the generated `.claude/skills/` and `.agents/skills/` mirrors, and `tests/{results,issue_tracking,user_error_report}` contents are gitignored local artifacts — they exist locally but must not be committed.
