@@ -15,8 +15,10 @@ metadata live in `dealogic_schema.csv` and `dealogic_relationships.csv`.
 7. Run `validate-sql`.
 8. Execute `verify --confirmed` only after the user explicitly approves the
    displayed query.
-9. Do not return the SQL to the user as a final answer until the verification
-   execution succeeds.
+9. Deliver the SQL with the execution status defined in the data skill
+   [Dealogic workflow](../../SKILL.md#dealogic-sql). SQL that passes static
+   validation may be delivered as unverified when execution is declined,
+   unavailable, or unsuccessful; disclose the reason and unresolved errors.
 
 ## Preview and performance rules
 
@@ -57,8 +59,9 @@ is declared as a SQL primary key, and live index metadata returned no index
 involving either column. Treat `DealId` as the feed-documented logical key, not
 as a database-enforced unique key. Avoid a full duplicate scan unless the user
 explicitly accepts the potential cost.
-Replace date placeholders with validated ISO `YYYY-MM-DD` literals before
-validation or verification.
+Replace date placeholders with validated ISO `YYYY-MM-DD` literals and
+`<DEAL_ID>` with a user-supplied or previously verified integer deal identifier
+before validation or verification. Do not invent a deal ID for a live check.
 
 ## Parent-child join
 
@@ -109,7 +112,8 @@ SELECT TOP (20)
 FROM [Dealogic].[dbo].[ShareECMDealTranches] AS s
 INNER JOIN [Dealogic].[dbo].[ECMDealTranches] AS e
     ON e.[ECMDealDealId] = s.[ShareECMDealDealId]
-   AND e.[TrancheId] = s.[TrancheId];
+   AND e.[TrancheId] = s.[TrancheId]
+WHERE s.[ShareECMDealDealId] = <DEAL_ID>;
 ```
 
 Treat this as a logical one-to-one relationship. The 20-row verification sample
@@ -153,6 +157,7 @@ SELECT TOP (20)
     i.[ISIN],
     i.[SortNumber]
 FROM [Dealogic].[dbo].[DCMDealTranchesISINs] AS i
+WHERE i.[DCMDealTrancheDealId] = <DEAL_ID>
 ORDER BY i.[DCMDealTrancheDealId], i.[DCMDealTrancheTrancheId], i.[SortNumber];
 ```
 

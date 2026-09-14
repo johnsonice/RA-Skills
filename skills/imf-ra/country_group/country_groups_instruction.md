@@ -6,9 +6,9 @@
 
 ### Critical Rules (Read First)
 1. **Never invent country codes** — use `resolve` or lookup `country_group.csv`
-2. **Never use group names as iData selectors** — expand to `countrycode` values first
-3. **Always clarify WEO vs SPR/PRGT** when refering emerging market(EM/EMDE), low income(LIC/LIDC)  — membership definitions differ
-4. **Always confirm IMF scope** — (191) sovereign vs (198) including territories
+2. **Expand groups to country codes** unless dataset metadata confirms a supported aggregate selector
+3. **Clarify WEO vs SPR/PRGT when unresolved** for EM/EMDE or LIC/LIDC requests; preserve an explicitly supplied framework
+4. **Clarify ambiguous IMF-wide scope** — (191) sovereign vs (198) including territories; do not re-ask when the scope is explicit
 
 See **Commands Reference** below for full syntax and examples.
 
@@ -48,7 +48,7 @@ See **Commands Reference** below for full syntax and examples.
 
 | ⚠️ Problem | Implication | Action |
 |---|---|---|
-| **WEO vs SPR/PRGT differ** | `EM` and `LIC` have different members in each framework. `EMDE` = `EM` + `LIC` + Syria in WEO; differs in SPR. | Ask: *"Which framework—WEO or SPR/PRGT?"* before committing to group membership. |
+| **WEO vs SPR/PRGT differ** | `EM` and `LIC` have different members in each framework. `EMDE` = `EM` + `LIC` + Syria in WEO; differs in SPR. | Ask which framework is intended before committing when the request has not already specified it. |
 | **IMF scope ambiguity** | Two definitions: (191) sovereign members vs (198) including territories (Anguilla, Aruba, Curaçao, HK SAR, Macao SAR, Montserrat, Sint Maarten). WEO has 201 = 198 + Puerto Rico + Taiwan + West Bank/Gaza. | Ask: *"Do you mean 191 sovereign or 198 including territories?"* when user says "all IMF countries." |
 | **iData rejects group names** | Group column names (e.g., `Advanced Economies(AE)`) are **not valid** iData country selectors. Most datasets require expanded codes. | Use `expand-for-idata <GROUP> --codes-only` to generate `+`-joined member codes ready for direct use as an iData dimension value. Exception: verify dataset metadata supports aggregates first. |
 | **G20 scope ambiguity** | CSV stores 19 country-members. Official G20 also includes EU + African Union (21 total). | Ask: *"19 country-members or 21 including EU and AU?"* when user requests G20. |
@@ -70,7 +70,7 @@ Response: "I found two Congos: Republic of Congo (COG) or Democratic Republic of
 
 ### Pattern 2: Expand Group for iData Pull
 ```
-User: "Pull data for all EMDE countries"
+User: "Pull data for all WEO EMDE countries"
 You: "Let me expand the EMDE group..."
 $ expand-for-idata "Emerging Market and Developing Economies(EMDE)" --codes-only
 # Output: AFG+ALB+DZA+...+ZWE  (160 codes, +-joined — paste directly into iData key)
@@ -103,7 +103,7 @@ Response: "USA is in: Advanced Economies(AE), IMF member Countries(191), America
 | Hardcode alias mappings in temporary code | Duplicates source; breaks on update | Use `resolve` command |
 | Guess country codes (e.g., invent `CONGO` for Congo) | Silent failures in pulls; hard to debug | Use `resolve` or CSV lookup |
 | Pass group name directly to iData selectors | Most databases reject; data pull fails silently | Use `expand-for-idata` first |
-| Assume WEO EM = SPR EM | Different definitions; wrong data set returned | Always ask user: which framework? |
+| Assume WEO EM = SPR EM | Different definitions; wrong data set returned | Ask which framework only when unresolved |
 | Not confirming IMF scope ("all IMF members") | Returns 191 or 198; user gets wrong count | Ask: 191 sovereign or 198 with territories? |
 | Infer group membership from name | "Latin America" ≠ actual LAC membership | Use `members` command or CSV |
 | Reimplement comparison logic (WEO vs SPR) | Code diverges from source; maintenance burden | Use `compare` command |
@@ -121,7 +121,8 @@ Refer to `COUNTRY_ALIASES` dict in [`country_groups_helper.py`](country_groups_h
 
 | Ambiguous | Resolution | Code |
 |---|---|---|
-| `Congo`, `Congo-Brazzaville`, `Republic of Congo` | Use `resolve Congo` → pick | COG or COD |
+| `Congo` | Use `resolve Congo` → pick | COG or COD |
+| `Congo-Brazzaville`, `Republic of Congo` | Resolve the supplied name | COG |
 | `Korea`, `South Korea` | Use `resolve Korea` | KOR |
 | `UK`, `Great Britain` | Normalize | GBR |
 | `US`, `USA`, `America` | Normalize | USA |
@@ -156,7 +157,7 @@ For complete list, reference the Python script's `GROUP_ALIASES` and `AMBIGUOUS_
 A: Use `members <GROUP>` or filter the group column in `country_group.csv` to rows marked `1`.
 
 **Q: Why do WEO EM and SPR EM have different countries?**  
-A: Different analytical frameworks have different membership criteria. Always confirm which the user needs.
+A: Different analytical frameworks have different membership criteria. Confirm the framework only when the request leaves it unresolved.
 
 **Q: Can I use "Advanced Economies(AE)" directly in an iData pull?**  
 A: Only if the dataset metadata explicitly supports aggregate codes. Usually, no. Use `expand-for-idata` to generate member codes instead.

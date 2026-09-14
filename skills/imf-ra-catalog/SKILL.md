@@ -16,8 +16,8 @@ The catalog identifies datasets, dataflows, dimensions, and indicator codes. It 
 
 ## Runtime
 
-Reuse an existing Python; never create an environment explicitly or implicitly
-unless the user requests it. Before executing helpers, read the shared
+Use the company Python on IMF Windows; do not create or use virtual/Conda
+environments. Before executing helpers, read the shared
 [runtime contract](../imf-ra/references/runtime.md) for installed-skill paths, interpreter
 selection, SDK setup authorization, and user output locations. Resolve scripts
 from the loaded skill directory, not the user's working directory.
@@ -73,7 +73,7 @@ Haver metadata is stored in a SQLite database, not a CSV. Use `scripts/Haver/hav
 
 | Resource | Location |
 |---|---|
-| `haver.db` | One level above the RA-Skills repo root. |
+| `haver.db` | `HAVER_DB_PATH` when set; otherwise ancestor discovery from the installed helper, as defined in the shared runtime contract. |
 | `scripts/Haver/haver_catalog_search.py` | Haver-specific catalog search CLI (FTS5 + scoring over SQLite). |
 
 
@@ -149,14 +149,22 @@ Use this catalog-specific workflow after the umbrella `imf-ra` policy routes the
 
 Haver's data model differs fundamentally from iData: each series code resolves to exactly one country and one measurement variant. There is no multi-dimensional key. Disambiguation and confirmation happen here in the catalog, before any handoff.
 
-**GATE: Do not run any search until H1 scoping is complete and a dblist is confirmed.**
+**Exact-code path:** When the user supplies `CODE@DB`, validate it with
+`haver_catalog_search.py code CODE --database DB`. Use returned metadata for
+geography, frequency, and variant checks. If it matches the requested series,
+hand off directly without fuzzy search or asking the user to reselect it. Ask
+only if the supplied code conflicts with the request or cannot be resolved.
+
+**Discovery gate:** For natural-language searches, complete H1 scoping and
+confirm the target database list before searching.
 
 H1. **Collect country/region and frequency.** Two inputs are required to build the target database list. Do not ask for aggtype or datatype at this stage — those are surfaced from search results in H2.
 
    - **Country/region:** Which countries or geographic scope? (e.g. US, Euro area, G10, emerging markets)
    - **Frequency:** D (daily), W (weekly), M (monthly), Q (quarterly), or A (annual)?
 
-   If either is not stated in the user's request, ask for both in a single message. Do not proceed to H1a until both are confirmed.
+   Ask only for missing country/region or frequency, combining missing inputs in
+   one message. Preserve details already supplied. Proceed to H1a once both are known.
 
 H1a. **Build target database list.** Read the Haver Analytics section of `databases/database_overview.md`. Using the confirmed country/region and frequency from H1, identify which sub-databases to search. Produce a confirmed dblist before any search.
 
@@ -170,7 +178,9 @@ H1a. **Build target database list.** Read the Haver Analytics section of `databa
    | M/Q/A | Emerging markets | `EMERGE`, `EMERGELA`, `EMERGEPR`, `EMERGECW`, `EMERGEMA` |
    | M/Q/A | US | `USECON`, `G10`, and US-specific databases |
 
-   **Known EM sub-database coverage (use directly — do not rely on the `databases` command, which is unreliable):**
+   **Curated EM sub-database coverage:** Use this guidance for source routing. The
+   `databases` command reports the local metadata inventory; it does not establish
+   live access or complete service coverage.
 
    | Database | Geographic scope |
    |---|---|
@@ -183,11 +193,12 @@ H1a. **Build target database list.** Read the Haver Analytics section of `databa
    | `MENAR` | MENA region |
    | `SUBAFR` | Sub-Saharan Africa |
 
-   Do not search databases outside the confirmed dblist, and do not re-search the same database with different query variations.
+   Do not search databases outside the confirmed dblist. H1b owns the query budget.
 
-> ⚠️ **Never query `haver.db` with ad-hoc SQL `LIKE` patterns.** The `indicators` table has 12M+ rows with no text index — any `LIKE '%...%'` query does a full-table scan and will be extremely slow. Always use `haver_catalog_search.py` (FTS5) for all Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
+> **Use `haver_catalog_search.py` for every Haver catalog lookup**, including exact codes and metadata. Do not issue ad-hoc SQL against `haver.db`. Use the helper's FTS5 search for text queries and its `code` command for exact identifiers.
 
-H1b. **Search.** Choose ONE query string, then run a **single Bash call** covering all databases in the confirmed dblist using `--databases`. Do not issue separate Bash calls per database — separate calls add avoidable tool overhead.
+H1b. **Search.** Run one helper invocation with one query covering all selected
+databases using `--databases`. This works with the host shell; Bash is not required.
 
 ```bash
 python "<CATALOG_SKILL>/scripts/Haver/haver_catalog_search.py" search "<query>" --databases DB1 DB2 DB3 ... --limit 300
@@ -195,7 +206,8 @@ python "<CATALOG_SKILL>/scripts/Haver/haver_catalog_search.py" search "<query>" 
 
 The `--databases` flag is required (haver.db has 12M+ rows and unscoped searches are very slow). The output includes `aggtype` and `datatype` for every candidate. Results from all specified databases are merged into a **single CSV block** with one header row — treat the combined output as one result set.
 
-**Set `--limit` to at least 300 for any multi-country or multi-database search.** The default limit is small and silently truncates results, which causes missed matches and forces re-runs that each trigger a permission prompt. Use `--limit 300` (or higher) whenever the confirmed dblist has 3+ databases or the concept plausibly matches many countries.
+**Use `--limit 300` or higher for discovery searches.** Small limits can omit
+relevant countries or variants. Host permissions are independent of the result limit.
 
 **One query per scoped lookup.** The FTS5 scorer expands synonyms internally.
 Batch the selected databases in one call. If results are insufficient, inspect
@@ -204,10 +216,11 @@ user scope or substantive clarification permits a new query. See the shared
 [recovery contract](../imf-ra/references/recovery.md).
 
 H2. **Present results with variant choices.** Group all candidates by country. For each candidate, show `code`, `name`, `aggtype`, `datatype`, and `frequency`. Ask the user to:
-   1. Select the countries they want.
+   1. Select countries only if the requested geographic scope remains unresolved.
    2. Confirm the variant (aggtype and datatype) if multiple variants exist for the same country.
 
-   Do not pre-filter by aggtype or datatype — surface all variants so the user can choose.
+   Preserve an explicitly requested aggtype/datatype and show matching candidates.
+   When the variant is unspecified, surface the alternatives for user selection.
 
 H3. **Hand off.** Once the user selects specific codes, produce a `codes: ["CODE@DB", ...]` list and pass to `imf-ra-data`. There is no `dimension_name` in a Haver handoff — the `CODE@DATABASE` format is the complete identifier.
 
@@ -252,11 +265,10 @@ Searches the local `haver.db` SQLite database using FTS5 full-text search and sy
 
 | If the user wants to... | Use this helper command | Key input |
 |---|---|---|
-| Search Haver indicators by plain-English keywords | `search "<query>"` | natural-language metric request |
-| Search across multiple Haver databases in one call | `search "<query>" --databases DB1 DB2 DB3` | query + list of DB codes |
-| Filter to a single Haver database | `search "<query>" --database USECON` | query + one Haver DB code |
-| Look up an exact Haver code | `code <code>` | Haver series code |
-| List available Haver databases | `databases` | none |
+| Search across multiple Haver databases in one call | `search "<query>" --databases DB1 DB2 DB3 --limit 300` | query + list of DB codes |
+| Filter to a single Haver database | `search "<query>" --databases USECON --limit 300` | query + one Haver DB code |
+| Look up an exact Haver code | `code <code> --database <DB>` | Haver series code and database |
+| Inspect database coverage recorded in local metadata | `databases` | Diagnostic inventory only; does not establish licensed/live access or replace the routing overview |
 | Show SQLite build metadata | `info` | none |
 
 ### Detailed Helper Capabilities
@@ -313,15 +325,12 @@ Searches the local `haver.db` SQLite database using FTS5 full-text search and sy
 
 1. **No code guessing:** Do not invent `database`, `dimension_name`, or `code`; validate through CSVs or helper output.
 2. **No redundant snippets:** Do not write temporary Python that reimplements routing, fuzzy ranking, exact code lookup, dimension discovery, or code comparison.
-3. **Resolve before handoff:** For iData sources, pass only `resolve --json` output with `status=resolved` and a `handoff` object to `imf-ra-data`. For Haver sources, pass only a confirmed `codes: ["CODE@DB", ...]` list produced after completing the full Haver Lookup Path (H1–H3). Do not hand off from either path until confirmation is complete.
+3. **Resolve before handoff:** For iData sources, pass only `resolve --json` output with `status=resolved` and a `handoff` object to `imf-ra-data`. For Haver sources, pass only a confirmed `codes: ["CODE@DB", ...]` list validated through the exact-code path or selected through H1–H3. Do not hand off from either path until confirmation is complete.
 4. **Preserve dimensions:** Never assume the code dimension is `INDICATOR`; carry the returned `dimension_name`.
 5. **Use direct references only for small exact checks:** CSV/Markdown inspection is fine for one-row confirmation or schema guidance; use helper commands for fuzzy, routed, comparative, vintage, or handoff workflows.
 6. **Promote repeated gaps:** Write temporary code only when no helper command covers the task; if the same pattern repeats, add it to `catalog_search.py`.
 7. **Keep responsibilities separate:** Catalog helpers do not fetch data, expand country groups, choose country membership, choose date ranges, transform series, or build charts.
-8. **Never query `haver.db` with ad-hoc SQL `LIKE` patterns.** The `indicators` table has 12M+ rows and no index on `descriptor` — unscoped `LIKE '%...%'` queries do full-table scans and are very slow. Always use `haver_catalog_search.py` (FTS5) for Haver text search. Only write direct SQL for exact lookups on indexed columns (`database`, `code`, `frequency`).
-9. **Batch all Haver database searches into one Bash call.** When the confirmed dblist has multiple databases, use `--databases DB1 DB2 ...` in a single invocation — never one Bash call per database. Separate calls add avoidable tool overhead.
-10. **Search budget:** Follow the single-query rule in H1b; no additional session-wide limit or rephrasing loop.
-11. **Always use `--limit 300` or higher for broad searches.** Never use a small limit (e.g. 15, 20, 30) for multi-country or multi-database searches. A truncated result set forces re-runs, which generate additional permission prompts. Use `--limit 300` as the default for any search covering 3+ databases or concepts that span many countries.
+8. **Follow the Haver lookup restrictions:** see [Haver Lookup Path](#haver-lookup-path) for permitted queries and batching rules.
 
 ## Ambiguity and Uncertainty
 
@@ -365,7 +374,7 @@ name: <human-readable name>
 notes: <brief reason this is the best match>
 ```
 
-**Haver — confirmed selections (after Haver Lookup Path H1–H3):**
+**Haver — confirmed selections (exact-code validation or H1–H3 discovery):**
 
 ```text
 codes: ["CODE1@DB", "CODE2@DB", ...]

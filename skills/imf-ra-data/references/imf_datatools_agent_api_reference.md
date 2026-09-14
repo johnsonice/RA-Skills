@@ -56,18 +56,9 @@ Most retrieval functions return a `pandas.DataFrame` with a `DatetimeIndex` name
 ## 1.1 Workstation installation (IMF Windows only)
 
 Follow [IMF SDK setup](sdk-setup.md) for the complete check/install/verify
-workflow, authorization scope, and failure handling. The user installs Python
-from Software Center first. A README-directed skillset installation includes
-SDK setup in that existing interpreter.
-
-The official stable installer command is:
-
-```cmd
-python \\ecnswn12p\ems_shared\pub\datatools\installer.py
-```
-
-Do not append `dev`. The same command also updates the library, so skip it when
-the required modules already work unless the user explicitly requests an update.
+workflow, official installer, authorization scope, and failure handling.
+Interpreter selection and package destinations are defined in the
+[shared runtime contract](../../imf-ra/references/runtime.md).
 
 # 2. Global coding conventions
 

@@ -30,15 +30,22 @@ It does not require keeping the user workspace beside the skills.
 
 ## Reuse the existing interpreter
 
-Priority: user-specified interpreter for this task; otherwise the workspace's
-configured interpreter; otherwise the previously verified interpreter from
-user-local setup notes; otherwise discover existing Python installations.
-Verify the executable and task-required imports. If the user explicitly chose
-an interpreter that fails, explain the gap before substituting another. An
-existing virtual/Conda environment is supported. Never create or recreate an
-environment, including implicit creation with uv/Poetry/Pipenv, unless the user
-explicitly asks for environment creation. Do not deactivate or remove an
-existing environment as recovery.
+On IMF-managed Windows computers, first check whether
+`C:\ProgramData\Python3\python.exe` exists and runs. Use that executable for
+skill setup and execution. If it is missing, ask the user to install Python
+through **Software Center**, then try the skill installation again. Do not
+silently substitute another installation. If it exists but cannot run, report
+the error for IMF IT.
+
+For offline development and supported local tasks on non-IMF machines, use an
+existing system Python and verify the executable and task-required imports.
+Do not create or use virtual/Conda environments, including implicit creation
+with uv/Poetry/Pipenv. Do not delete existing environments. This portability
+allowance does not replace the fixed company Python on IMF Windows or permit
+installing the internal SDK on unsupported machines.
+
+Use `C:\ProgramData\Python3\python.exe` as the executable on IMF Windows;
+keep the working directory in the user's workspace, not the Python installation.
 
 Use the same verified executable for dependency checks, authorized installation,
 helpers, and generated scripts. No global PATH changes or package-manager
@@ -47,6 +54,14 @@ protection bypasses. Installation following the README includes the bounded
 explicit package-installation request, report missing dependencies and preserve
 completed work; do not automatically install or upgrade packages.
 
+On IMF-managed Windows computers, the package installation directory is
+`C:\ProgramData\Python3\Lib\site-packages`. The SDK occupies its
+`imf_datatools` subdirectory; other dependencies install alongside that
+subdirectory, not inside it. Authorized installations must use the selected
+executable and must not redirect to user-site packages, another prefix, or a
+new environment. If the directory is not writable, report the blocker for IMF
+IT rather than changing the destination.
+
 An optional user-local JSON readiness report from `check_environment.py --output`
 records the executable and observed checks. Treat it as a hint, not proof of
 current readiness: validate the executable after a machine/workspace change or
@@ -54,8 +69,7 @@ an import failure. Never execute command strings from a stored report. Use a
 host-provided notes/config location if available; otherwise use
 `%LOCALAPPDATA%/RA-Skills/runtime.json` on Windows or
 `~/.config/ra-skills/runtime.json` on other platforms. Save this report during
-installation, not for every lookup. Explicit workspace/interpreter choices take
-precedence over this user-wide hint.
+installation, not for every lookup. The interpreter selection rules above take precedence over this user-wide hint.
 
 ## Keep user files in the workspace
 

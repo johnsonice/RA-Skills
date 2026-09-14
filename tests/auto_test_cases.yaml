@@ -1636,7 +1636,7 @@ cases:
   area: Existing Python environment
   prompt: "Use my current configured Conda environment for this confirmed pull."
   fixture:
-    environment: "Current Conda interpreter has SDK and pandas; harness supplies confirmed fetch inputs."
+    environment: "Non-company environment: current Conda interpreter has SDK and pandas; harness supplies confirmed fetch inputs."
   expected_primary_skill: imf-ra-data
   expected_behavior: "Reuse the current interpreter without deactivating, deleting, recreating, or replacing it."
   evidence_sources:
@@ -1722,9 +1722,9 @@ cases:
   area: README-directed SDK setup
   prompt: "Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment."
   fixture:
-    environment: "No executable Python exists; command lookup includes a Windows Store alias."
+    environment: "IMF Windows: company Python executable is missing; another Python or a Store alias may be discoverable."
   expected_primary_skill: imf-ra-data
-  expected_behavior: "Complete skill files; report Python prerequisite and Software Center action; do not download Python."
+  expected_behavior: "Complete skill files; ask the user to install Python through Software Center and retry skill installation; do not download Python or substitute another interpreter."
   evidence_sources:
     required_files:
     - README.md
@@ -1735,6 +1735,7 @@ cases:
     - finish_skill_installation
     forbidden:
     - install_python
+    - substitute_another_python_when_company_python_missing
     - execute_store_alias_as_working_python
     - create_environment
 
@@ -2017,3 +2018,60 @@ cases:
     forbidden:
       - "cosmetic_rephrase_rerun"
       - "conversation_wide_search_cap"
+
+- id: REVIEW-01
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Dealogic optional verification
+  prompt: "Draft the requested Dealogic SQL, but do not execute it."
+  fixture:
+    environment: "Canonical fields and documented joins resolve the requested query; validate-sql passes."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Deliver SQL labeled unverified, disclose that execution was declined, and do not invoke verify or live inspection."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-data/SKILL.md
+    - skills/imf-ra-data/references/Dealogic/dealogic_sql_patterns.md
+  assertions:
+    required:
+    - deliver_statically_validated_sql_with_unverified_status
+    forbidden:
+    - execute_without_approval
+    - claim_live_verification_from_static_validation
+
+- id: REVIEW-02
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Haver exact lookup
+  prompt: "Look up GDP in Haver USECON."
+  fixture:
+    environment: "Readable haver.db and the Haver catalog helper are available."
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: "Use haver_catalog_search.py code GDP --db USECON; do not issue direct SQL against haver.db."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-catalog/SKILL.md
+  assertions:
+    required:
+    - use_haver_helper_for_exact_lookup
+    forbidden:
+    - ad_hoc_sql_against_haver_db
+
+- id: REVIEW-03
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Default chart header layout
+  prompt: "Make a line chart from this CSV."
+  fixture:
+    environment: "Persistent CSV with date/value columns, chart dependencies, and writable workspace; no formatting overrides."
+  expected_primary_skill: imf-ra-charts
+  expected_behavior: "Generate PNG and reproducible script with centered title/subtitle, left-aligned source relative to the plot, and default plot top at 0.82 or lower when extra space is required."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-charts/references/chart-formatting-rules.md
+  assertions:
+    required:
+    - centered_headers_and_consistent_top_margin
+    - png_and_reproducible_script
+    forbidden:
+    - conflicting_header_alignment

@@ -10,8 +10,8 @@ read-only Dealogic SQL Server previews.
 
 ## Runtime
 
-Reuse an existing Python; never create an environment explicitly or implicitly
-unless the user requests it. Before executing helpers, read the shared
+Use the company Python on IMF Windows; do not create or use virtual/Conda
+environments. Before executing helpers, read the shared
 [runtime contract](../imf-ra/references/runtime.md) for installed-skill paths, interpreter
 selection, SDK setup authorization, and user output locations. Resolve scripts
 from the loaded skill directory, not the user's working directory.
@@ -24,7 +24,7 @@ Load these skills in order as needed:
 - **`imf-ra`** (umbrella) — load first for shared conventions and cross-skill execution policy: country codes, WEO country group resolution helpers, frequency handling, lookup execution policy, and SDK environment setup.
 - **`imf-ra-catalog`** — load before this skill when the database or indicator is not yet identified. For iData sources it returns a confirmed `(database, dimension_name, code)` identifier; for Haver sources it returns a confirmed `codes: ["CODE@DB", ...]` list after variant disambiguation. Ready for handoff in either case.
 - **`imf-ra-data`** (this skill) — takes over once a time-series identifier is confirmed, or directly handles an explicit Dealogic request. Resolves remaining iData dimensions, fetches iData/Haver data, and generates or verifies bounded Dealogic SQL.
-- **`imf-ra-charts`** — load after this skill when the user wants to visualize the tidy output.
+- **`imf-ra-charts`** — owns visualization of fetched data; continue through [Retrieval completion and chart handoff](#retrieval-completion-and-chart-handoff) when the original request includes a chart.
 
 ## Default decision logic
 
@@ -38,7 +38,7 @@ Load these skills in order as needed:
 
 Databases can come in two forms — distinguish them by whether the resource ID contains `VINTAGE`:
 
-- **LIVE** (current data): resource ID does **not** contain `VINTAGE` — e.g. `IMF.RES.WEO:WEO_LIVE`, `IMF.RES:GAS_LIVE`, `IMF.RES:GEE_LIVE`.
+- **LIVE** (current data): resource ID does **not** contain `VINTAGE` — e.g. `IMF.RES.WEO:WEO_LIVE`, `IMF.RES.GAS:GAS_LIVE`, `IMF.RES.GEE:GEE_LIVE`.
 - **Vintage** (historical snapshot): resource ID contains `VINTAGE` — e.g. `IMF.RES.WEO:WEO_LIVE_2026_APR_VINTAGE`.
 
 Do **not** use `_LIVE_` as the sole discriminator — vintage resource IDs also contain this substring.
@@ -70,7 +70,7 @@ Disallowed retrieval paths include (non-exhaustive):
 
 ## Python-only scope
 
-This skill's supported and tested fetch workflow is Python-only through the pre-built `fetch_idata.py` utility. Do not present R or Stata as a supported RA-skill retrieval path.
+This skill's supported and tested time-series fetch workflow is Python-only through `fetch_idata.py` for iData and `fetch_haver.py` for Haver. Do not present R or Stata as a supported RA-skill retrieval path.
 
 If the user explicitly asks for R or Stata code:
 
@@ -85,14 +85,18 @@ If the user explicitly asks for R or Stata code:
 
 **Never create a new Python script to explore or fetch data.** A pre-built fetch utility already exists.
 
-**Fast-path check:** Before following the seven steps, check whether all inputs are already known. If the catalog handoff contains confirmed `database`, `dimension_name`, `code`, `geo`, and `frequency`, AND the user has specified `start`, `end`, and output format in this conversation, skip Steps 1–6 and go directly to Step 7.
+**Fast-path check:** Go directly to Step 7 only when the identifier, complete
+dimension order, every required dimension selection, time range, and output
+layout/container are already confirmed. Geography and frequency alone do not
+resolve additional dataset dimensions. If any required input is unresolved,
+follow the applicable steps below.
 
 ### Step 1 — Confirm the catalog handoff
 
 If the identifier or `dimension_name` is missing, invoke **`imf-ra-catalog`** — do **not** search catalog files directly from this skill.
 
 - **iData path:** the catalog uses `resolve "<query>" --json`. If it returns `status=resolved` with a `handoff` object (`database`, `dimension_name`, `code`), proceed to Step 2. If `status=ambiguous`, surface the clarification and wait.
-- **Haver path:** the catalog uses the Haver Lookup Path (H1–H3: scope → build dblist → search → surface variants → confirm). When the `codes` list is confirmed, skip Steps 2–7 entirely and go to [Haver Fetch](#haver-fetch).
+- **Haver path:** the catalog uses the Haver Lookup Path (H1–H3: scope → build dblist → search → surface variants → confirm). An explicitly supplied `CODE@DB` may use the catalog's exact-code validation path. When the `codes` list is confirmed, skip Steps 2–7 entirely and go to [Haver Fetch](#haver-fetch).
 
 If you are arriving from a confirmed catalog handoff, check its shape: `database + code` fields → Step 2; `codes` list → Haver Fetch.
 
@@ -169,22 +173,18 @@ The iData key is a dot-separated string of all dimension values in the exact ord
 
 Before executing, ask for any missing output choice: layout (Refreshable, Wide, or Long) and, for Wide/Long, CSV versus Excel. A previously supplied complete choice is already confirmed; do not ask again. “Excel” or “CSV” alone does not determine the layout. Do **not** assume the missing choice.
 
-> **Output format** — which would you like?
-> - **Refreshable** — RA enriched Excel (`.xlsx`) with human-readable indicator labels; `COUNTRY`, `ISO3`, `IFSCODE` added when a country dimension is present. Layout auto-selected by data shape:
->   - **Multi-sheet card** (triggered when indicators > 1 AND countries > 1 AND time periods > 1): one tab per indicator; each tab is card format (first column = `Label` with metadata + date rows, one column per series/country).
->   - **Wide** (single indicator): single sheet, dates as columns, one row per series.
->   - **Card** (multiple indicators, but not all three dimensions plural): single sheet, card format (first column = `Label` with metadata + date rows, one column per series across all indicators).
->
->   Always `.xlsx`.
+Offer these choices:
 
-> - **Wide** — raw API output as-is, dates as rows, series as columns.
-> - **Long** — raw API output as-is, one row per observation.
->
-> For Wide or Long: would you like **CSV** or **Excel**?
+- **Refreshable:** enriched `.xlsx` with indicator labels and country metadata
+  where applicable. Layout is selected by data shape; see
+  [output layouts](references/output-formats.md) for the exact contract.
+- **Wide:** dates as rows and series as columns, saved as CSV or Excel.
+- **Long:** one row per observation, saved as CSV or Excel.
 
-**Refreshable is not the same as the raw API wide or long format** — it adds RA metadata columns and human-readable indicator labels that raw formats do not have.
-
-If the user has already stated a format preference at any point in the conversation, use it directly — do not ask again.
+Wide and Long preserve the API's basic layout, but the helper may rescale
+values using metadata and adds `SCALE` and `UNIT` columns. They are not unchanged
+API responses. Reuse a complete prior choice; ask only for a missing layout or
+container choice.
 
 ### Step 7 — Execute with the pre-built fetch utility
 
@@ -206,12 +206,16 @@ Add `--excel` to save Wide or Long output as `.xlsx` instead of `.csv`. Always p
 
 For failures, follow the shared [recovery contract](../imf-ra/references/recovery.md). Do not wrap a helper that already retries in another retry loop. Report partial output as incomplete.
 
-**`--indicator-dim`** — pass the `dimension_name` value from the catalog handoff. The catalog resolves the correct indicator dimension name for every database (e.g. `INDICATOR` for WEO/IFS, `TICKER` for BBG, `SERIES` for WDI). Always use what the catalog returns — do not guess or hardcode.
+**`--indicator-dim`** — for refreshable output, pass the confirmed `dimension_name`
+from the catalog handoff (e.g. `INDICATOR` for WEO, `TICKER` for BBG, `SERIES`
+for WDI). IFS replacement datasets have their own dimensions; do not hardcode them.
 
 **Always use this script — never return raw SDK output directly.**
 
 For refreshable workbook structure and metadata, read
 [output layouts](references/output-formats.md).
+
+Continue to [Retrieval completion and chart handoff](#retrieval-completion-and-chart-handoff).
 
 ## Haver Fetch
 
@@ -234,19 +238,36 @@ layout/container choices, and preserve choices already supplied in the conversat
 ### Step 3 — Execute with `fetch_haver.py`
 
 ```bash
-python "<DATA_SKILL>/scripts/fetch_haver.py" --codes "GDP@USECON" "UNRATE@USECON" --start "<YYYY>" --end "<YYYY>" --format refreshable --output <filename>.xlsx
+python "<DATA_SKILL>/scripts/fetch_haver.py" --codes "GDP@USECON" "UNRATE@USECON" --start "<YYYY>" --end "<YYYY>" --format refreshable --output "<OUTPUT_FILE>"
 ```
 
 ```bash
-python "<DATA_SKILL>/scripts/fetch_haver.py" --codes "GDP@USECON" --start "<YYYY>" --end "<YYYY>" --format wide
+python "<DATA_SKILL>/scripts/fetch_haver.py" --codes "GDP@USECON" --start "<YYYY>" --end "<YYYY>" --format wide --output "<OUTPUT_FILE>"
 ```
 
 ```bash
-python "<DATA_SKILL>/scripts/fetch_haver.py" --codes "GDP@USECON" --start "<YYYY>" --end "<YYYY>" --format long
+python "<DATA_SKILL>/scripts/fetch_haver.py" --codes "GDP@USECON" --start "<YYYY>" --end "<YYYY>" --format long --output "<OUTPUT_FILE>"
 ```
 
 See [references/imf_datatools_agent_api_reference.md § 9](references/imf_datatools_agent_api_reference.md)
 for the full Haver API reference.
+
+Continue to [Retrieval completion and chart handoff](#retrieval-completion-and-chart-handoff).
+
+## Retrieval completion and chart handoff
+
+After either iData or Haver retrieval, use the original user request to
+determine the next step:
+
+- **Data only:** deliver the saved data and report any coverage limitations.
+- **Chart or visualization requested:** retrieval is an intermediate step.
+  Load [imf-ra-charts](../imf-ra-charts/SKILL.md) and its required references
+  before writing plotting code, then continue through its chart workflow.
+
+For chart requests, pass the existing output paths and available metadata,
+preserving the requested countries, indicators or maturities, date range,
+frequency, units, source, and any coverage gaps. Reuse the fetched data;
+routine cleaning and reshaping belong in the chart skill's generated script.
 
 ## Dealogic SQL
 
@@ -295,22 +316,25 @@ If direct relationships are ambiguous, add `--from-column <column>`.
 python "<DATA_SKILL>/scripts/dealogic.py" validate-sql --sql-file <query.sql>
 ```
 
-5. Do not return the SQL as final guidance until it has been executed
-   successfully. After explicit user approval, verify the bounded preview:
+5. Offer optional execution of the displayed query. After explicit user
+   approval, verify the bounded preview:
 
 ```bash
 python "<DATA_SKILL>/scripts/dealogic.py" verify --sql-file <query.sql> --confirmed
 ```
 
-5a. If verification fails, diagnose and correct the query before returning it.
-   - Read the verification error and determine whether the failure is syntax,
-     schema, join, filter, or timeout related.
-   - Use `dealogic.py inspect --table <table>` or the canonical schema search to
-     confirm live column names and relationships.
-   - Fix the query, re-run `validate-sql`, and then re-run
-     `verify --confirmed`.
-   - Do not return the SQL to the user as a final answer until verification
-     succeeds.
+6. If verification fails, diagnose the error. Correct evidenced query defects
+   and re-run `validate-sql`; retry execution only within the approved scope
+   and the shared [recovery contract](../imf-ra/references/recovery.md).
+   Live metadata inspection still requires user approval as described below.
+
+7. Deliver the SQL with its execution status:
+   - **Verified:** the delivered query executed successfully; state the preview
+     scope and any limitations.
+   - **Unverified:** execution was declined, unavailable, or unsuccessful.
+     Deliver only SQL that passes `validate-sql`, label it as unverified, and
+     disclose the reason, assumptions, and any unresolved execution error.
+     Static validation is not proof of database correctness or data access.
 
 The verifier permits one `SELECT` or `WITH ... SELECT`, rejects writes, DDL,
 execution commands, `SELECT INTO`, and `SELECT *`, and enforces `TOP (20)` or

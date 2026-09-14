@@ -9,24 +9,23 @@ by itself authorize package installation.
 
 ## 1. Select an existing Python
 
-The user must install the latest company-provided Python through **Software
-Center** first. The official instructions recorded Python 3.11.11 as of June
-2026; that is a dated reference, not a permanent version pin. Do not install
-Python through another channel or create a virtual/Conda environment.
+On IMF-managed Windows computers, check whether
+`C:\ProgramData\Python3\python.exe` exists before running setup. If it is
+missing, finish the skill-file installation, report SDK setup as incomplete,
+and ask the user to install Python through **Software Center**, then try the
+skill installation again. Do not install Python through another channel,
+create an environment, or substitute a different Python installation.
 
-Check the current interpreter:
+If the executable exists, verify that it runs:
 
 ```cmd
-python -c "import sys; print(sys.executable); print(sys.version)"
+"C:\ProgramData\Python3\python.exe" -c "import sys; print(sys.executable); print(sys.version)"
 ```
 
-If `python` is unavailable, inspect existing interpreter discovery mechanisms
-(e.g. `where.exe python`, `py -0p`, or the editor's selected Python) before
-concluding Python is absent. Ignore Store launcher aliases that do not execute
-Python. Prefer the existing IMF-configured interpreter; reuse an already working
-SDK environment. Do not scan the whole disk or change global PATH. If Python is
-absent, complete skill-file installation and tell the user to install Python
-from Software Center and reopen the terminal/editor, then resume these steps.
+If it cannot run, report the error for IMF IT. Do not change global PATH.
+For other environments, follow the shared runtime contract's existing
+interpreter selection rules; the internal installer remains limited to
+supported IMF Windows/network access.
 
 Use the resolved executable for **all** checks, installation, and fetch commands.
 The examples use `python` as shorthand. For a path containing spaces, use
@@ -51,8 +50,9 @@ access and Haver metadata schema are not verified by this check.
 
 If the SDK checks work, skip the SDK installer. If an import fails because of a
 missing dependency or another runtime error, preserve the actual exception and
-diagnose it; do not classify every import exception as an absent SDK. Check a
-known existing configured interpreter before installing anything.
+diagnose it; do not classify every import exception as an absent SDK. For interpreter
+selection or recovery, follow the shared runtime contract; do not substitute
+another installation on IMF-managed Windows.
 
 ## 3. Install only what is missing
 
@@ -78,11 +78,16 @@ do not add a broad upgrade step. An existing broken SDK is a repair case: report
 the diagnostic rather than silently reinstalling/upgrading it.
 
 After the SDK step, recheck pandas and openpyxl. If either is still absent, install
-only the absent package(s) with this same interpreter's pip, for example:
+only the absent package(s) with this same interpreter's pip. On IMF-managed
+Windows computers, the destination is
+`C:\ProgramData\Python3\Lib\site-packages`; dependencies sit alongside
+`imf_datatools`, not inside it. Do not use `--user`, `--target`, or `--prefix`
+to redirect installation. Disable pip's automatic user-site fallback with
+`--no-user`, for example:
 
 ```cmd
-python -m pip install pandas
-python -m pip install openpyxl
+python -m pip install --no-user pandas
+python -m pip install --no-user openpyxl
 ```
 
 Execute each example only when that package is missing. These two packages cover
@@ -127,10 +132,10 @@ Finish with a short status containing:
 - Network/data access: verified by an actual requested pull, or not tested.
 - Haver metadata path: available, missing, or not checked.
 
-Save the readiness report during installation and use its verified interpreter
-for subsequent pulls, subject to explicit user/workspace overrides in the
-runtime contract. If a stored path is stale, rediscover an existing interpreter
-and recheck; do not reinstall just because the conversation context was lost.
+Save the readiness report during installation. For subsequent pulls, validate
+its interpreter against the shared runtime contract, including the company
+Windows path requirement. A stale report requires rechecking under that
+contract, not automatic reinstallation.
 
 ## Source
 

@@ -8,7 +8,7 @@
 
 A family of Claude Code skills that helps IMF Research Assistants do day-to-day work. The skills are knowledge-and-glue layers that teach Claude how to use existing internal tools — they do not reimplement data access or charting.
 
-**Current implementation note:** this document records the original April 2026 scaffold design. The live repository now keeps skills project-local under `.claude/skills/`, uses CSV catalogs plus helper scripts instead of placeholder Markdown templates, and consolidates WEO country/group truth under `.claude/skills/imf-ra/country_group/`.
+**Current implementation note:** this document records the original April 2026 scaffold design. The canonical source is now `skills/`; `.claude/skills/` and `.agents/skills/` are generated discovery mirrors. Current catalog and country-group conventions are defined by the canonical skills, not the historical layout below.
 
 ## 2. Scope
 

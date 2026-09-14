@@ -11,8 +11,8 @@ This is a side skill for support and product feedback. It does not add telemetry
 
 ## Runtime
 
-Reuse an existing Python; never create an environment explicitly or implicitly
-unless the user requests it. Before executing helpers, read the shared
+Use the company Python on IMF Windows; do not create or use virtual/Conda
+environments. Before executing helpers, read the shared
 [runtime contract](../imf-ra/references/runtime.md) for installed-skill paths, interpreter
 selection, SDK setup authorization, and user output locations. Resolve scripts
 from the loaded skill directory, not the user's working directory.

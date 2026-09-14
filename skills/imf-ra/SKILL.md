@@ -9,8 +9,8 @@ Family entry point for IMF Research Assistant workflows. Use this skill to load 
 
 ## Runtime
 
-Reuse an existing Python; never create an environment explicitly or implicitly
-unless the user requests it. Before executing helpers, read the shared
+Use the company Python on IMF Windows; do not create or use virtual/Conda
+environments. Before executing helpers, read the shared
 [runtime contract](references/runtime.md) for installed-skill paths, interpreter
 selection, SDK setup authorization, and user output locations. Resolve scripts
 from the loaded skill directory, not the user's working directory.
@@ -28,7 +28,7 @@ imf-ra -> imf-ra-catalog -> imf-ra-data -> imf-ra-charts
 |---|---|
 | `imf-ra-catalog` | The user needs the right dataset, dimension, indicator, variable, commodity, or ticker code. |
 | `imf-ra-data` | The user wants to fetch data from a confirmed iData/Haver identifier, or generate and verify bounded SQL for the Dealogic transaction database. |
-| `imf-ra-charts` | The user wants to plot, chart, or visualize tidy data. |
+| `imf-ra-charts` | The user wants an economics chart, using supplied data or data that must first be retrieved. |
 | `imf-ra-error-report` | The user wants to report a user-visible RA-Skills system/execution failure or an unsatisfactory answer after repeated attempts. |
 
 The umbrella does not execute the full workflow by itself. Worker skills chain by referencing each other directly.
@@ -82,14 +82,22 @@ For WEO country/group tasks involving ambiguity, membership expansion, compariso
 
 - When the user is still searching for the right series, route to `imf-ra-catalog`.
 - When the identifier is confirmed, route to `imf-ra-data` and preserve confirmed `database`, `dimension_name`, `code`, geography, frequency, date range, and vintage constraints.
-- Route explicit Dealogic transaction questions directly to the Dealogic path in `imf-ra-data`; Dealogic does not use the iData/Haver catalog handoff. Include the official EconFinData guidance link on the first Dealogic response in the conversation.
-- When the user asks for charts, route to `imf-ra-charts` after data are available or after `imf-ra-data` produces tidy output.
+- Route explicit Dealogic transaction questions directly to the Dealogic path in `imf-ra-data`; Dealogic does not use the iData/Haver catalog handoff.
+- When the user asks for charts, route to `imf-ra-charts`; it reuses available data or follows its input routing through catalog and data skills before charting.
 - When the catalog returns several plausible matches, present the candidates with distinction notes and ask for confirmation before fetching.
 - When a system/execution error blocks the RA workflow, or the user remains unsatisfied after repeated attempts and wants to report it, route to `imf-ra-error-report`. Reports are local JSON files under `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; do not add telemetry, remote upload, GitHub issue creation, dashboards, or background logging.
 
 ## Handoff Contract
 
-The canonical inter-skill handoff object. All skills must produce and consume these exact field names and formats.
+The identifier fields below are canonical. `resolve --json` produces the iData
+identifier plus descriptive metadata such as `name`, `notes`, and, for vintage
+lookups, `indicator_source_database`. The agent carries confirmed request
+constraints alongside that result; the helper does not infer them.
+
+Preserve confirmed start/end dates, complete dimension order and selections,
+output choices, and source constraints from the conversation. Missing constraints
+remain unresolved and are completed by the data skill. Do not discard helper
+metadata or require it to emit fields supplied by the user.
 
 **iData handoff:**
 
@@ -97,9 +105,9 @@ The canonical inter-skill handoff object. All skills must produce and consume th
 database:        string   — iData resource ID (e.g. IMF.RES.WEO:WEO_LIVE)
 dimension_name:  string   — indicator dimension name (e.g. INDICATOR, TICKER, SERIES)
 code:            string   — indicator code (e.g. NGDP_RPCH)
-geo:             string?  — +-joined ISO3 codes (e.g. USA+GBR+DEU); absent if not geography-constrained
+geo:             string?  — +-joined dataset country codes (e.g. USA+GBR+DEU); absent if not geography-constrained
 frequency:       string?  — A | Q | M | D; absent if multi-frequency or not yet confirmed
-vintage:         string?  — full resource ID of a specific vintage; absent when using LIVE
+vintage:         string?  — optional request constraint; when resolved, database itself is the exact vintage resource ID
 ```
 
 **Haver handoff:**
@@ -109,4 +117,6 @@ codes:           list     — ["CODE@DB", ...] using bare DB code without HAVER:
 frequency:       string   — A | Q | M | W | D
 ```
 
-`geo` is always `+`-joined ISO3 codes — never comma-separated. Use `expand-for-idata <GROUP> --codes-only` to produce a valid `geo` value from a WEO group.
+`geo` uses `+`-joined country codes from the reference and dataset metadata —
+never comma-separated. These are usually ISO3, but include source conventions
+such as `KOS` and `WBG`; do not replace them with guessed ISO codes. Use `expand-for-idata <GROUP> --codes-only` to produce a valid `geo` value from a WEO group.

@@ -24,24 +24,24 @@ Skills run at three capability tiers. Pick commands the current environment can 
 |------|-------------------|----------|------------|
 | **Catalog** (discovery) | `imf-ra-catalog` (`catalog_search.py`), WEO `country_groups_helper.py` | Python 3.9+ only (stdlib + bundled CSVs) | Anywhere — laptops, CI, cloud agents, off-network |
 | **Data – iData** | `imf-ra-data` `fetch_idata.py` | Internal `imf_datatools` SDK + `pandas` | IMF-managed Windows / cloud only |
-| **Data – Haver** | `imf-ra-data` `fetch_haver.py`, `haver_catalog_search.py` lookups | `haver.db` (SQLite) + `pandas` (metadata for fetch) | IMF machines with `haver.db` access |
-| **Charts** | `imf-ra-charts` generated Python scripts | `pandas` + `matplotlib`; `xlsxwriter` only for optional Excel workbook output | Anywhere with local CSV/Excel or previously fetched data |
+| **Haver catalog** | `haver_catalog_search.py` | Python stdlib + readable `haver.db` | Anywhere with the metadata file |
+| **Data – Haver** | `imf-ra-data` `fetch_haver.py` | `imf_datatools` SDK + `pandas` + readable `haver.db` | IMF machines with Haver access |
+| **Charts** | `imf-ra-charts` generated Python scripts | `pandas` + `matplotlib`; `openpyxl` for `.xlsx` input; `plotly` for optional HTML; `xlsxwriter` for optional Excel output | Anywhere with local CSV/Excel or previously fetched data |
 
 - `haver.db` is **not** in the repo (SQLite, 12M+ rows). Resolution order: `HAVER_DB_PATH` env var → an upward search for `haver.db` beside any ancestor of the script (conventionally one directory above the repo root) → a clear "not found" error. Set `HAVER_DB_PATH` when installed into a global skills dir.
 - The internal `imf_datatools` SDK is IMF-only (installed from an internal location; see `skills/imf-ra-data/references/imf_datatools_agent_api_reference.md`). It is not pip-installable. Catalog lookup and WEO group helpers work without it.
 
 ## Python environment policy
 
-RA skill execution must reuse an existing Python interpreter, including an
-already configured virtual/Conda environment. Do not create or bootstrap a new
-environment, explicitly or implicitly, unless the user explicitly requests it.
-A request to install the skillset following the README includes the bounded
-[SDK setup](skills/imf-ra-data/references/sdk-setup.md), without a separate SDK
-confirmation. Outside that setup, missing imports are not authorization to
-create an environment or install or upgrade packages. Identify the interpreter and missing dependency, reuse a known
-working interpreter, or give targeted setup guidance for the user/IMF IT.
-Apply this rule to generated scripts as well. See
-[the skill runtime policy](skills/imf-ra/references/runtime.md).
+Follow [the shared runtime policy](skills/imf-ra/references/runtime.md) for
+interpreter selection and package destinations, including the fixed company
+Python at `C:\ProgramData\Python3\python.exe` on IMF-managed Windows and
+packages in `C:\ProgramData\Python3\Lib\site-packages`. Do not create or use
+virtual/Conda environments. Other machines may use an existing system Python
+for supported local tasks. README-directed installation includes the bounded
+[SDK setup](skills/imf-ra-data/references/sdk-setup.md); ordinary execution does
+not authorize package installation or upgrades. These rules also apply to
+generated scripts.
 
 ## Interpreter note
 
@@ -118,12 +118,11 @@ tests/        # YAML auto-test cases, reviewer catalog, results, issue tracking
 - **Don't guess identifiers.** Database codes, variable codes, country groups, dimensions — never invent. If multiple plausible matches exist, list candidates and ask for confirmation.
 - **LIVE vs vintage data must be honored explicitly** — see `skills/imf-ra-data/SKILL.md`. Never silently default to a dated vintage.
 - **Error reporting is consent-based and writes to a shared drive.** Use `imf-ra-error-report` only for user-visible failures, never for normal clarification behavior. Manual report requests count as consent. Reports go to `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; verify that the destination is available and writable, never silently fall back to the repo, and create at most 5 reports per conversation.
-- **`skills/` is the source of truth.** Edit skills under `skills/`, then run `scripts/sync_skills.py` for local discovery. Generated mirrors and globally installed copies derive from it.
 
 ## Editing skills
 
 - A skill = directory with `SKILL.md` (YAML frontmatter `name` + `description` + body), optionally `scripts/`, `references/`, and data files. The folder name is the skill name.
-- To work on a skill locally, edit under `skills/`, then run `python scripts/sync_skills.py` so every host re-discovers it.
+- Follow the canonical-source and synchronization instructions in [Layout](#layout).
 
 ## Branch / commit conventions
 

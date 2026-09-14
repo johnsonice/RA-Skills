@@ -19,12 +19,17 @@ Use available data before attempting any pull:
 
 1. data already produced by `imf-ra-data`;
 2. user-provided Excel or CSV data;
-3. a new data pull only if no usable data are available and the user explicitly
-   asks the agent to pull data.
+3. a new data pull through `imf-ra-catalog` and `imf-ra-data` when no usable
+   data are available and retrieval is needed to fulfill the chart request.
 
-If no usable data are available, ask whether the user wants to provide data or
-explicitly wants the agent to pull data. When pulling, follow `imf-ra-data` and
-`imf-ra-catalog`; do not create new retrieval scripts.
+A request to chart specified economic series authorizes the retrieval needed
+for that chart; no separate permission to fetch is required. Honor any
+user-imposed source or retrieval restrictions. If the user limits the task to
+supplied files and those files are missing or unusable, ask for the required
+input. Resolve ambiguous series or missing specifications through the catalog
+and data skills' normal clarification rules. Use their supported fetch helpers;
+do not create new retrieval scripts. This authorization does not extend to
+environment creation or package installation; follow the shared runtime contract.
 
 ## Output Folder
 
@@ -73,7 +78,8 @@ The Python script is the reproducibility record. It must include:
 ## Optional Outputs
 
 Create optional outputs only when the user asks for them up front or confirms
-the post-PNG offer. Generate the same chart as the PNG in both html and excel. Use this short prompt when neither optional output has
+the post-PNG offer. Generate only the requested optional output(s), preserving
+the PNG chart's meaning and styling. Use this short prompt when neither optional output has
 already been requested:
 
 ```text
@@ -104,7 +110,7 @@ Rules:
 
 ### Excel Workbook
 
-Produce an editable Excel workbook only after user confirmation. 
+Produce an editable Excel workbook when the user requests it or confirms the offer.
 
 The workbook does not replace the required PNG or Python script.
 
@@ -128,8 +134,8 @@ Recommended sheets:
 
 1. Resolve the user's output folder, or use persistent `charts/` in the workspace; ask only when the destination is unknown or unusable.
 2. Load data from `imf-ra-data` output or user-provided Excel/CSV.
-3. If no usable data are available, ask whether the user wants to provide data
-   or explicitly wants the agent to pull data.
+3. If no usable data are available, follow [Input Order](#input-order) to
+   retrieve the required series or resolve missing input, then resume charting.
 4. Inspect columns, data types, grain, units, source, frequency, and date range.
 5. Ask clarification only if the chart would otherwise be wrong or misleading.
 6. Clean and transform data according to the transformation rules.
@@ -142,8 +148,8 @@ Recommended sheets:
 12. Offer optional outputs not already requested.
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
-14. After the session ends and retained deliverables have been handed off,
-    delete only agent-created temporary intermediates; keep all final deliverables.
+14. Before ending the turn, clean up agent-created temporary intermediates
+    according to [Output Folder](#output-folder); keep all final deliverables.
 
 ## Data Preparation
 
@@ -176,6 +182,9 @@ For optional outputs, also check that:
 - Excel opens and contains the required sheets when requested.
 
 ## Failure Behavior
+
+Follow the shared [recovery contract](../../imf-ra/references/recovery.md) for
+script execution limits, corrections, and reporting after exhausted recovery.
 
 If chart generation fails, tell the user:
 

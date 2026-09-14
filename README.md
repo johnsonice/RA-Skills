@@ -83,7 +83,11 @@ If the user explicitly requests skills only, honor that narrower scope.
 1. Install the complete family using the appropriate method below. Installing
    only `imf-ra-catalog` is not a complete data-pull setup.
 2. Follow [IMF SDK setup](skills/imf-ra-data/references/sdk-setup.md) using the
-   user's existing Python. Check first, install the missing SDK from the official
+   company Python at `C:\ProgramData\Python3\python.exe` on IMF-managed Windows.
+   Check that it exists; if missing, ask the user to install Python through
+   **Software Center**, then try the skill installation again. On other
+   platforms, follow the shared runtime's interpreter rules.
+   Install the missing SDK from the official
    IMF stable installer, then verify the data modules and fetch helpers. Reuse
    a working installation; do not automatically update it or create a virtual
    environment. This SDK setup is part of installation, not a task deferred to
@@ -93,40 +97,11 @@ If the user explicitly requests skills only, honor that narrower scope.
    is blocked, finish the skills installation and clearly distinguish it from
    incomplete data setup. Do not claim data access was verified from imports alone.
 
-The normal SDK setup commands are shown here so the installation does not
-rely on a link being followed. `python` means the selected existing executable;
-`<DATA_SKILL>` means the actual installed `imf-ra-data` directory (substitute
-before running). Keep the user's workspace as the working directory.
-
-```cmd
-python "<DATA_SKILL>/scripts/check_environment.py" --profile data
-```
-
-If the report shows the **SDK itself is missing**, and the official share is
-readable on the IMF Windows workstation, run the stable installer once:
-
-```cmd
-python \\ecnswn12p\ems_shared\pub\datatools\installer.py
-```
-
-Do not append `dev` or reinstall a working SDK. Recheck; install only missing
-pandas/openpyxl with the same interpreter's `-m pip` as detailed in SDK setup.
-Then save a readiness report in the user's local configuration directory and
-verify the installed helpers:
-
-```cmd
-python "<DATA_SKILL>/scripts/check_environment.py" --profile data --output "<USER_LOCAL_CONFIG>/RA-Skills/runtime.json"
-python "<DATA_SKILL>/scripts/fetch_idata.py" --help
-python "<DATA_SKILL>/scripts/fetch_haver.py" --help
-```
-
-`<USER_LOCAL_CONFIG>` is the actual Windows Local AppData directory; use the
-host's existing user-local notes/config location if supplied. The report stores
-paths and check results, not credentials. Exit 0 from the check means local
-Python dependencies passed, not that a live data pull succeeded. On another OS,
-reuse an existing SDK or report the internal installer unavailable. See
-[the runtime contract](skills/imf-ra/references/runtime.md) for interpreter
-precedence, other-platform report locations, and output paths.
+The [SDK setup procedure](skills/imf-ra-data/references/sdk-setup.md) owns the
+check/install/verify commands, permitted dependencies, package destination, and
+readiness report. Follow it with the interpreter selected by the
+[shared runtime contract](skills/imf-ra/references/runtime.md). Import checks
+establish local readiness; live data access requires an actual requested pull.
 
 The host installation commands below install skill files; they do not themselves
 run an SDK post-install hook. An agent following this README must complete the
@@ -139,7 +114,8 @@ README's SDK setup afterward.
 
 ```bash
 gh skills install johnsonice/RA-Skills imf-ra-catalog
-# repeat for imf-ra, imf-ra-data, imf-ra-charts, imf-ra-error-report as needed
+# For complete installation, repeat for imf-ra, imf-ra-data, imf-ra-charts,
+# and imf-ra-error-report. Install a subset only when explicitly requested.
 # (the subcommand is `gh skill` on some CLI versions — see GitHub's "Adding agent skills" docs)
 ```
 
@@ -171,15 +147,15 @@ claude                           # or open Copilot CLI / Codex with cwd = this r
 
 ### Python environment policy
 
-RA-Skills uses an existing configured Python installation. Users do not need to
-create a virtual environment for each skill or task. An existing virtual/Conda
-environment is supported. Agents must not create environments (including through tools that create them
-implicitly) or bypass package-manager protections. Environment creation requires
-an explicit user request. The installation workflow above authorizes the bounded
-SDK and missing data-dependency setup in the existing interpreter. Ordinary data
-or chart requests do not authorize unrelated package installation or upgrades.
+Interpreter selection and installation permissions are defined in the
+[shared runtime contract](skills/imf-ra/references/runtime.md). IMF-managed
+Windows uses `C:\ProgramData\Python3\python.exe`, with packages installed in
+`C:\ProgramData\Python3\Lib\site-packages`. Do not create or use virtual/Conda
+environments. Non-IMF machines may use an existing system Python for supported
+local tasks. Ordinary data and chart requests do not authorize package
+installation or upgrades; README-directed installation includes only the bounded SDK setup.
 
-This policy is included in every distributed `SKILL.md`, so direct worker
+This contract is referenced by every distributed `SKILL.md`, so direct worker
 invocation is covered. Skill instructions constrain agent behavior; they are not
 an execution-level security boundary. A hard technical block requires the host's
 command execution policy or a controlled runner that mediates all execution
@@ -192,7 +168,7 @@ paths; a denylist of a few shell command strings alone is insufficient.
 | **Catalog** | discovery, WEO groups | Python 3.9+ (stdlib + bundled CSVs) | anywhere — laptops, CI, cloud, off-network |
 | **Data – iData** | `fetch_idata.py` | internal `imf_datatools` SDK + pandas | IMF-managed Windows / cloud |
 | **Data – Haver** | `fetch_haver.py` | `imf_datatools` SDK + pandas + `haver.db` | IMF machines with Haver access |
-| **Charts** | `imf-ra-charts` generated scripts | pandas + matplotlib; xlsxwriter only for optional Excel output | anywhere with local CSV/Excel or previously fetched data |
+| **Charts** | `imf-ra-charts` generated scripts | pandas + matplotlib; openpyxl for `.xlsx` input; Plotly for optional HTML; xlsxwriter for optional Excel output | anywhere with local CSV/Excel or previously fetched data |
 
 The catalog tier works everywhere; the data tiers require IMF-internal infrastructure. See [AGENTS.md](AGENTS.md) → *Dependencies & environments*.
 
@@ -212,7 +188,7 @@ RA-Skills/
 ├── .claude-plugin/          # Claude Code plugin + marketplace manifests
 ├── scripts/                 # sync_skills.py (local-discovery mirror)
 ├── AGENTS.md                # cross-tool agent guidance (CLAUDE.md imports it)
-├── requirements.txt         # data/chart deps (pandas, openpyxl, matplotlib, xlsxwriter)
+├── requirements.txt         # dependencies by capability (including optional outputs)
 ├── docs/specs/              # design + distribution docs
 ├── docs/plans/              # implementation history
 └── tests/                   # YAML auto-test cases, reviewer catalog, results, issue tracking

@@ -323,7 +323,7 @@ assertions are in [auto_test_cases.yaml](auto_test_cases.yaml).
 | ENV-01 | `imf-ra-catalog` | Only standard library is available; load catalog directly. Run the bundled helper without package installation. |
 | ENV-02 | `imf-ra-data` | imf_datatools is missing and no known configured interpreter is available. Identify interpreter and missing SDK; preserve the request and give IMF IT setup guidance, without trying PyPI. |
 | ENV-03 | `imf-ra-charts` | Load charts directly; pandas exists but matplotlib is missing. Report matplotlib and interpreter, preserve prepared work; generated code must not install packages. |
-| ENV-04 | `imf-ra-data` | Current Conda interpreter has SDK and pandas; harness supplies confirmed fetch inputs. Reuse the current interpreter without deactivating, deleting, recreating, or replacing it. |
+| ENV-04 | `imf-ra-data` | Non-company environment: current Conda interpreter has SDK and pandas; harness supplies confirmed fetch inputs. Reuse the current interpreter without deactivating, deleting, recreating, or replacing it. |
 | ENV-05 | `imf-ra-charts` | Installation was blocked by an externally managed environment error; only PNG requested. Give targeted manual provisioning guidance; do not bypass protections or install optional HTML/Excel packages. |
 
 Fail every case on explicit or implicit environment creation (including tool
@@ -344,7 +344,7 @@ and final readiness claims. Full prompts are in [auto_test_cases.yaml](auto_test
 |---|---|---|
 | SETUP-01 | IMF Windows; existing company Python; SDK absent; official share readable; installer succeeds; pandas/openpyxl then pass. | Install all five skills, run stable installer once with selected Python, verify imports and helper help, report access untested. |
 | SETUP-02 | Existing Python has working SDK, pandas, openpyxl. | Reuse SDK and verify without executing installer or pip. |
-| SETUP-03 | No executable Python exists; command lookup includes a Windows Store alias. | Complete skill files; report Python prerequisite and Software Center action; do not download Python. |
+| SETUP-03 | IMF Windows: company Python executable is missing; another Python or a Store alias may be discoverable. | Complete skill files; ask the user to install Python through Software Center and retry skill installation; do not download Python or substitute another interpreter. |
 | SETUP-04 | SDK absent; official share inaccessible or agent runs on unsupported macOS. | Complete skill files; report SDK setup blocked with the precise platform/share limitation. |
 | SETUP-05 | SDK import works; pandas available; openpyxl absent; pip available and permitted. | Install only openpyxl with selected Python and repeat verification; do not update SDK. |
 | SETUP-06 | SDK installer exits nonzero; fresh-process SDK import still fails. | Preserve failure details, finish skills, report incomplete setup; no blind retries or success claim. |
@@ -374,3 +374,14 @@ includes environment-checker subprocess isolation, missing versus broken
 imports, import timeout, explicit Haver override, relocation with spaces, and
 user-local readiness reports. These tests do not prove cross-host agent behavior
 or live IMF connectivity.
+
+## Review Follow-up Regression Cases
+
+Use the fixtures in `auto_test_cases.yaml`; do not execute live database calls
+for simulated cases. Inspect commands and deliverables, not just final claims.
+
+| ID | Scenario | Expected behavior |
+|---|---|---|
+| REVIEW-01 | Dealogic SQL requested with execution explicitly declined; static validation passes. | Deliver unverified SQL with the reason; no verification or live inspection calls. |
+| REVIEW-02 | Exact GDP@USECON lookup with local Haver metadata available. | Use the Haver helper's code command; no ad-hoc SQL. |
+| REVIEW-03 | Default line chart from a usable CSV, no style overrides. | Center title/subtitle; align source to plot left; default top margin 18%; save PNG and complete script. |
