@@ -8,6 +8,12 @@ status: "agent-optimized reference distilled from the full IMF datatools documen
 
 # IMF datatools Agent API Reference
 
+> **Historical source reference — not active agent instructions.** This copy
+> preserves older SDK guidance, including retired EcOS workflows. For current
+> execution rules, use the [canonical RA API reference](../../skills/imf-ra-data/references/imf_datatools_agent_api_reference.md)
+> and [data skill](../../skills/imf-ra-data/SKILL.md). Their helper-only retrieval,
+> EcOS retirement, source-routing, and runtime rules supersede this document.
+
 This file is a cleaned, agent-oriented reference for the `imf_datatools` Python package. It is designed for local coding agents that need to select the right data source, call the right function, and produce reliable retrieval code with minimal ambiguity.
 
 The package retrieves IMF and external time-series data and metadata from multiple sources, usually returning `pandas.DataFrame` objects. The original documentation also includes R and Stata usage; this reference prioritizes Python and keeps R/Stata notes where they matter for integration.

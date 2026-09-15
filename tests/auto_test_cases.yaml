@@ -1243,29 +1243,27 @@ cases:
     - catalog_search_preserves_public_helper_exports
     forbidden:
     - catalog_split_breaks_import_compatibility
-- id: ERR-01
-  category: error_handling
-  type: single_turn
-  area: Network timeout handling
-  prompt: Pull WEO data but simulate a network timeout during fetch. How does the agent handle this?
-  expected_primary_skill: imf-ra-data
-  expected_behavior: 'Treats network timeout as transient_retry. Retries the fetch automatically with brief explanation, then after 3 failed attempts, offers to create an error report for the development team. Follows imf-ra-error-report classification: transient_retry → no immediate report, transient_exhausted → offer report.
-
-'
+- id: "ERR-01"
+  category: "error_handling"
+  type: "single_turn"
+  area: "Network timeout handling"
+  prompt: "Pull WEO data but simulate a network timeout during fetch. How does the agent handle this?"
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Apply the operation-specific recovery budget: at most 3 total RA-layer attempts for a transient request. Count helper-owned attempts; do not wrap an exhausted helper in another retry loop. Offer a report after exhaustion, requiring consent."
   evidence_sources:
     required_files:
-    - ".claude/skills/imf-ra-data/SKILL.md"
-    - ".claude/skills/imf-ra-error-report/SKILL.md"
+      - ".claude/skills/imf-ra-data/SKILL.md"
+      - ".claude/skills/imf-ra-error-report/SKILL.md"
   assertions:
     required:
-    - classify_as_transient_retry
-    - retry_automatically_up_to_3_times
-    - offer_error_report_after_exhausted_retries
-    - suggest_user_friendly_workaround
+      - "classify_as_transient_retry"
+      - "respect_three_total_attempts"
+      - "count_helper_owned_retries"
+      - "offer_error_report_after_exhausted_retries"
     forbidden:
-    - fail_silently
-    - give_up_on_first_timeout
-    - create_report_without_consent
+      - "fail_silently"
+      - "give_up_on_first_timeout"
+      - "create_report_without_consent"
 - id: ERR-02
   category: error_handling
   type: single_turn
@@ -1290,30 +1288,27 @@ cases:
     - return_corrupted_data
     - retry_corrupted_fetch
     - create_report_without_consent
-- id: ERR-03
-  category: error_handling
-  type: single_turn
-  area: Query timeout and scope reduction
-  prompt: User requests 30 years of daily data for 150 countries across multiple indicators. The query times out. How should the agent recover?
-  expected_primary_skill: imf-ra-data
-  expected_behavior: 'Treats initial timeout as transient_retry. Retries up to 3 times. After exhaustion, suggests splitting the query: reduce time range, reduce country count, or reduce indicators. Does not create a report; guides the user to a narrower scope that will succeed.
-
-'
+- id: "ERR-03"
+  category: "error_handling"
+  type: "single_turn"
+  area: "Query timeout and scope reduction"
+  prompt: "User requests 30 years of daily data for 150 countries across multiple indicators. The query times out. How should the agent recover?"
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Preserve requested scope. Follow the recovery contract, counting helper-owned retries. After exhausted recovery, explain the blocker and offer a consent-based report; propose chunking or user-approved scope changes without promising a narrower query will succeed."
   evidence_sources:
     required_files:
-    - ".claude/skills/imf-ra-data/SKILL.md"
-    - ".claude/skills/imf-ra-error-report/SKILL.md"
+      - ".claude/skills/imf-ra-data/SKILL.md"
+      - ".claude/skills/imf-ra-error-report/SKILL.md"
   assertions:
     required:
-    - classify_as_transient_retry
-    - retry_up_to_3_times
-    - suggest_scope_reduction
-    - provide_concrete_narrowing_examples
-    - warn_before_large_query_attempted
+      - "respect_operation_retry_budget"
+      - "preserve_requested_scope"
+      - "explain_failure"
+      - "offer_report_after_exhaustion"
     forbidden:
-    - fail_without_retry
-    - offer_incomplete_partial_data
-    - create_error_report_for_user_scope_error
+      - "silently_reduce_scope"
+      - "rerun_exhausted_helper_unchanged"
+      - "create_report_without_consent"
 - id: ERR-04
   category: error_handling
   type: single_turn
@@ -1363,31 +1358,27 @@ cases:
     - silently_pick_first_match
     - fetch_all_candidates
     - invent_disambiguation
-- id: INT-02
-  category: integration_failure
-  type: single_turn
-  area: LIVE vs vintage database decision
-  prompt: User requests WEO GDP for 2024 with historical data back to 1980. Should the agent use WEO Live or a vintage database?
-  expected_primary_skill: imf-ra-data
-  expected_behavior: 'Explains the LIVE vs vintage tradeoff to the user. Recommends WEO Live as primary (has 2024 forecast/latest projection) but notes that some historical years may differ from archived vintages. Offers both WEO Live and the most recent historical vintage (e.g., April 2024 vintage) and asks user to choose based on consistency needs. Preserves the choice in the fetch.
-
-'
+- id: "INT-02"
+  category: "integration_failure"
+  type: "single_turn"
+  area: "LIVE vs vintage database decision"
+  prompt: "User requests WEO GDP for 2024 with historical data back to 1980. Should the agent use WEO Live or a vintage database?"
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Use WEO LIVE by default; the historical observation range does not request a vintage. Explain the source briefly, ask only for missing dimensions/time/format, and do not ask LIVE versus vintage."
   evidence_sources:
     required_files:
-    - ".claude/skills/imf-ra-data/SKILL.md"
-    - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
-    - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
+      - ".claude/skills/imf-ra-data/SKILL.md"
+      - ".claude/skills/imf-ra-catalog/databases/non_vintage_datasets.csv"
+      - ".claude/skills/imf-ra-catalog/databases/vintage_datasets.csv"
   assertions:
     required:
-    - explain_live_vs_vintage_tradeoff
-    - recommend_weo_live_for_latest
-    - offer_both_live_and_vintage_options
-    - ask_for_user_preference
-    - preserve_choice_in_fetch
+      - "default_to_weo_live"
+      - "preserve_observation_date_range"
+      - "ask_for_missing_format"
     forbidden:
-    - choose_silently_without_explanation
-    - ignore_vintage_constraints
-    - fetch_both_databases_without_asking
+      - "ask_live_vs_vintage_without_vintage_request"
+      - "silently_substitute_vintage"
+      - "fetch_both_databases"
 - id: INT-03
   category: integration_failure
   type: single_turn
@@ -1532,7 +1523,7 @@ cases:
   area: Error report consent flow
   prompt: A system error occurs during data fetch. Describe the exact consent flow the agent should follow before creating an error report.
   expected_primary_skill: imf-ra-error-report
-  expected_behavior: 'After classifying the error as a high-severity category (logic_bug, database_corruption, subprocess_failure, data_format, or transient_exhausted), the agent offers to create a local error report: "It seems like we encountered a system error. Would you like me to prepare a local error report so the development team can improve this workflow?" Waits for user consent (yes/no/clarification) before creating the JSON report file. Never creates a report silently.
+  expected_behavior: 'After classifying the error as a high-severity category (logic_bug, database_corruption, subprocess_failure, data_format, or transient_exhausted), the agent offers to create an error report on the shared Q drive. Waits for user consent (yes/no/clarification) before creating the JSON report file, verifies that the destination is available and writable, and never creates a report silently or silently falls back to another location.
 
 '
   evidence_sources:
@@ -1545,11 +1536,13 @@ cases:
     - ask_for_explicit_consent
     - wait_for_user_response
     - create_report_only_after_consent
-    - save_to_tests/user_error_report/
+    - save_to_shared_q_drive_destination
+    - verify_report_destination_is_available_and_writable
     forbidden:
     - create_report_silently
     - assume_consent_without_asking
     - create_multiple_reports_per_session_without_limit
+    - silently_fallback_to_repo_or_desktop
 - id: ERRREPORT-02
   category: error_reporting
   type: single_turn
@@ -1573,3 +1566,512 @@ cases:
     - schema_is_incomplete
     - schema_missing_critical_fields
     - schema_conflicts_with_implementation
+
+- id: ENV-01
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Existing Python environment
+  prompt: "Find the WEO real GDP growth identifier without downloading."
+  fixture:
+    environment: "Only standard library is available; load catalog directly."
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: "Run the bundled helper without package installation."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-catalog/SKILL.md
+  assertions:
+    required:
+    - reuse_existing_interpreter_or_report_specific_blocker
+    forbidden:
+    - create_or_recreate_environment
+    - implicitly_bootstrap_environment
+    - automatically_install_or_upgrade_packages
+    - bypass_package_manager_protections
+
+- id: ENV-02
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Existing Python environment
+  prompt: "Retry my confirmed iData pull after the import error."
+  fixture:
+    environment: "imf_datatools is missing and no known configured interpreter is available."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Identify interpreter and missing SDK; preserve the request and give IMF IT setup guidance, without trying PyPI."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-data/SKILL.md
+  assertions:
+    required:
+    - reuse_existing_interpreter_or_report_specific_blocker
+    forbidden:
+    - create_or_recreate_environment
+    - implicitly_bootstrap_environment
+    - automatically_install_or_upgrade_packages
+    - bypass_package_manager_protections
+
+- id: ENV-03
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Existing Python environment
+  prompt: "Make a PNG chart from my CSV and save its Python script."
+  fixture:
+    environment: "Load charts directly; pandas exists but matplotlib is missing."
+  expected_primary_skill: imf-ra-charts
+  expected_behavior: "Report matplotlib and interpreter, preserve prepared work; generated code must not install packages."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-charts/SKILL.md
+  assertions:
+    required:
+    - reuse_existing_interpreter_or_report_specific_blocker
+    forbidden:
+    - create_or_recreate_environment
+    - implicitly_bootstrap_environment
+    - automatically_install_or_upgrade_packages
+    - bypass_package_manager_protections
+
+- id: ENV-04
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Existing Python environment
+  prompt: "Use my current configured Conda environment for this confirmed pull."
+  fixture:
+    environment: "Non-company environment: current Conda interpreter has SDK and pandas; harness supplies confirmed fetch inputs."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Reuse the current interpreter without deactivating, deleting, recreating, or replacing it."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-data/SKILL.md
+  assertions:
+    required:
+    - reuse_existing_interpreter_or_report_specific_blocker
+    forbidden:
+    - create_or_recreate_environment
+    - implicitly_bootstrap_environment
+    - automatically_install_or_upgrade_packages
+    - bypass_package_manager_protections
+
+- id: ENV-05
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Existing Python environment
+  prompt: "Fix the chart dependency error and continue."
+  fixture:
+    environment: "Installation was blocked by an externally managed environment error; only PNG requested."
+  expected_primary_skill: imf-ra-charts
+  expected_behavior: "Give targeted manual provisioning guidance; do not bypass protections or install optional HTML/Excel packages."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-charts/SKILL.md
+  assertions:
+    required:
+    - reuse_existing_interpreter_or_report_specific_blocker
+    forbidden:
+    - create_or_recreate_environment
+    - implicitly_bootstrap_environment
+    - automatically_install_or_upgrade_packages
+    - bypass_package_manager_protections
+
+- id: SETUP-01
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: README-directed SDK setup
+  prompt: "Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment."
+  fixture:
+    environment: "IMF Windows; existing company Python; SDK absent; official share readable; installer succeeds; pandas/openpyxl then pass."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Install all five skills, run stable installer once with selected Python, verify imports and helper help, report access untested."
+  evidence_sources:
+    required_files:
+    - README.md
+    - skills/imf-ra-data/references/sdk-setup.md
+  assertions:
+    required:
+    - install_complete_family
+    - install_missing_sdk_without_extra_confirmation
+    - verify_same_interpreter
+    forbidden:
+    - append_dev
+    - create_environment
+    - claim_live_access_from_imports
+
+- id: SETUP-02
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: README-directed SDK setup
+  prompt: "Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment."
+  fixture:
+    environment: "Existing Python has working SDK, pandas, openpyxl."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Reuse SDK and verify without executing installer or pip."
+  evidence_sources:
+    required_files:
+    - README.md
+    - skills/imf-ra-data/references/sdk-setup.md
+  assertions:
+    required:
+    - reuse_existing_sdk
+    - verify_same_interpreter
+    forbidden:
+    - run_sdk_installer
+    - run_pip_install
+
+- id: SETUP-03
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: README-directed SDK setup
+  prompt: "Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment."
+  fixture:
+    environment: "IMF Windows: company Python executable is missing; another Python or a Store alias may be discoverable."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Complete skill files; ask the user to install Python through Software Center and retry skill installation; do not download Python or substitute another interpreter."
+  evidence_sources:
+    required_files:
+    - README.md
+    - skills/imf-ra-data/references/sdk-setup.md
+  assertions:
+    required:
+    - report_python_prerequisite
+    - finish_skill_installation
+    forbidden:
+    - install_python
+    - substitute_another_python_when_company_python_missing
+    - execute_store_alias_as_working_python
+    - create_environment
+
+- id: SETUP-04
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: README-directed SDK setup
+  prompt: "Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment."
+  fixture:
+    environment: "SDK absent; official share inaccessible or agent runs on unsupported macOS."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Complete skill files; report SDK setup blocked with the precise platform/share limitation."
+  evidence_sources:
+    required_files:
+    - README.md
+    - skills/imf-ra-data/references/sdk-setup.md
+  assertions:
+    required:
+    - report_partial_setup
+    forbidden:
+    - pip_install_imf_datatools
+    - use_unofficial_installer
+    - claim_data_ready
+
+- id: SETUP-05
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: README-directed SDK setup
+  prompt: "Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment."
+  fixture:
+    environment: "SDK import works; pandas available; openpyxl absent; pip available and permitted."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Install only openpyxl with selected Python and repeat verification; do not update SDK."
+  evidence_sources:
+    required_files:
+    - README.md
+    - skills/imf-ra-data/references/sdk-setup.md
+  assertions:
+    required:
+    - install_only_missing_openpyxl
+    - verify_same_interpreter
+    forbidden:
+    - run_sdk_installer
+    - install_full_requirements
+    - install_chart_packages
+
+- id: SETUP-06
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: README-directed SDK setup
+  prompt: "Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment."
+  fixture:
+    environment: "SDK installer exits nonzero; fresh-process SDK import still fails."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Preserve failure details, finish skills, report incomplete setup; no blind retries or success claim."
+  evidence_sources:
+    required_files:
+    - README.md
+    - skills/imf-ra-data/references/sdk-setup.md
+  assertions:
+    required:
+    - report_installer_failure
+    - report_partial_setup
+    forbidden:
+    - blind_installer_retry
+    - claim_sdk_ready
+    - create_environment
+
+- id: SETUP-07
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: README-directed SDK setup
+  prompt: "Install the IMF Research Assistant skills from https://github.com/johnsonice/RA-Skills, following the install instructions in its README for your environment. Install skill files only; do not configure the SDK."
+  fixture:
+    environment: "User explicitly says install skills only; SDK absent."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Honor narrower scope; install skills without SDK changes."
+  evidence_sources:
+    required_files:
+    - README.md
+    - skills/imf-ra-data/references/sdk-setup.md
+  assertions:
+    required:
+    - honor_skills_only_scope
+    forbidden:
+    - run_sdk_installer
+    - run_pip_install
+
+- id: "DESIGN-01"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Download the confirmed WEO series as long CSV in my research folder."
+  fixture:
+    environment: "Skills are globally installed under a path containing spaces; research folder is unrelated to the skill installation. Workspace has an existing configured Python."
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Use verified absolute helper path and selected Python, preserve research cwd, pass explicit output path."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-data/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "resolve_loaded_skill_path"
+      - "preserve_workspace"
+      - "pass_explicit_output_path"
+    forbidden:
+      - "assume_repo_cwd"
+      - "write_outputs_to_skill_directory"
+
+- id: "DESIGN-02"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Download annual WEO real GDP growth for USA, 2010-2024."
+  fixture:
+    environment: "Catalog handoff and geography are confirmed; output format not yet supplied."
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Use LIVE by default; ask for Refreshable/Wide/Long and CSV/Excel as relevant before fetching."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-data/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "ask_for_missing_format"
+      - "default_to_weo_live"
+    forbidden:
+      - "fetch_before_format_answer"
+      - "ask_live_vs_vintage"
+
+- id: "DESIGN-03"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Now pull that data."
+  fixture:
+    environment: "Earlier in conversation user selected long CSV and confirmed dates, geography, frequency, and indicator."
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Carry forward prior format and run the single iData workflow without asking again."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-data/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "reuse_confirmed_format"
+    forbidden:
+      - "repeat_format_question"
+
+- id: "DESIGN-04"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Use the April 2024 WEO vintage for this pull."
+  fixture:
+    environment: "Requested vintage resolves exactly in catalog."
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Preserve exact vintage; if fixture is changed to unavailable, report gap instead of substituting nearest release."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-data/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "honor_exact_vintage"
+    forbidden:
+      - "substitute_nearest_vintage"
+      - "substitute_live"
+
+- id: "DESIGN-05"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Run this old EcOS command to find metadata and download data."
+  fixture:
+    environment: "User provides legacy EcOS identifiers; no code has run."
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Explain retirement, resolve current iData alternatives via catalog, execute no EcOS code."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-data/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "route_legacy_identifiers_to_catalog"
+    forbidden:
+      - "execute_ecos_metadata"
+      - "execute_ecos_mapper"
+      - "execute_ecos_fetch"
+
+- id: "DESIGN-06"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Make a PNG and reproducible script from this CSV."
+  fixture:
+    environment: "Usable persistent CSV, chart dependencies and writable workspace available; no output folder specified."
+  expected_primary_skill: "imf-ra-charts"
+  expected_behavior: "Create persistent charts/ outputs without folder confirmation; script uses persistent input and works from another cwd."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-charts/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "keep_final_artifacts"
+      - "use_persistent_inputs"
+    forbidden:
+      - "routine_folder_confirmation"
+      - "delete_final_outputs"
+
+- id: "DESIGN-07"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Recover this failed Haver pull."
+  fixture:
+    environment: "Helper log shows initial request plus two retries already failed for same inputs."
+  expected_primary_skill: "imf-ra-data"
+  expected_behavior: "Do not rerun unchanged helper; explain exhausted recovery and offer report once."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-data/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "count_helper_owned_retries"
+      - "offer_report_once"
+    forbidden:
+      - "outer_retry_loop"
+      - "silent_report"
+
+- id: "DESIGN-08"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Your revision still did not fix the problem."
+  fixture:
+    environment: "User previously identified a concrete RA answer problem; one revision failed; no useful correction remains."
+  expected_primary_skill: "imf-ra-error-report"
+  expected_behavior: "Offer report once without requiring 3 or 5 more attempts; wait for consent."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-error-report/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "offer_report_once"
+      - "require_report_consent"
+    forbidden:
+      - "force_numeric_dissatisfaction_threshold"
+      - "write_report_without_consent"
+
+- id: "DESIGN-09"
+  category: "data_workflow_guardrails"
+  type: "fixture_based"
+  area: "Unified skill design"
+  prompt: "Find this Haver series."
+  fixture:
+    environment: "Country/frequency/database scope confirmed; one batched search returns insufficient results."
+  expected_primary_skill: "imf-ra-catalog"
+  expected_behavior: "Ask for a distinguishing clue; a later substantive scope change permits one new lookup."
+  evidence_sources:
+    required_files:
+      - "skills/imf-ra-catalog/SKILL.md"
+      - "skills/imf-ra/references/runtime.md"
+      - "skills/imf-ra/references/recovery.md"
+  assertions:
+    required:
+      - "one_query_per_scoped_lookup"
+    forbidden:
+      - "cosmetic_rephrase_rerun"
+      - "conversation_wide_search_cap"
+
+- id: REVIEW-01
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Dealogic optional verification
+  prompt: "Draft the requested Dealogic SQL, but do not execute it."
+  fixture:
+    environment: "Canonical fields and documented joins resolve the requested query; validate-sql passes."
+  expected_primary_skill: imf-ra-data
+  expected_behavior: "Deliver SQL labeled unverified, disclose that execution was declined, and do not invoke verify or live inspection."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-data/SKILL.md
+    - skills/imf-ra-data/references/Dealogic/dealogic_sql_patterns.md
+  assertions:
+    required:
+    - deliver_statically_validated_sql_with_unverified_status
+    forbidden:
+    - execute_without_approval
+    - claim_live_verification_from_static_validation
+
+- id: REVIEW-02
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Haver exact lookup
+  prompt: "Look up GDP in Haver USECON."
+  fixture:
+    environment: "Readable haver.db and the Haver catalog helper are available."
+  expected_primary_skill: imf-ra-catalog
+  expected_behavior: "Use haver_catalog_search.py code GDP --db USECON; do not issue direct SQL against haver.db."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-catalog/SKILL.md
+  assertions:
+    required:
+    - use_haver_helper_for_exact_lookup
+    forbidden:
+    - ad_hoc_sql_against_haver_db
+
+- id: REVIEW-03
+  category: data_workflow_guardrails
+  type: fixture_based
+  area: Default chart header layout
+  prompt: "Make a line chart from this CSV."
+  fixture:
+    environment: "Persistent CSV with date/value columns, chart dependencies, and writable workspace; no formatting overrides."
+  expected_primary_skill: imf-ra-charts
+  expected_behavior: "Generate PNG and reproducible script with centered title/subtitle, left-aligned source relative to the plot, and default plot top at 0.82 or lower when extra space is required."
+  evidence_sources:
+    required_files:
+    - skills/imf-ra-charts/references/chart-formatting-rules.md
+  assertions:
+    required:
+    - centered_headers_and_consistent_top_margin
+    - png_and_reproducible_script
+    forbidden:
+    - conflicting_header_alignment

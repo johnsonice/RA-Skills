@@ -1,13 +1,22 @@
 ---
 name: imf-ra-error-report
-description: Use when a user wants to report a user-visible RA-Skills failure, including a system or execution error, failed helper/SDK/data fetch, missing output file, crash or timeout, or an unsatisfactory answer after repeated attempts. Creates a structured local JSON error report for the development team only after user consent.
+description: Use when a user wants to report a user-visible RA-Skills failure, including a system or execution error, failed helper/SDK/data fetch, missing output file, crash or timeout, or an unsatisfactory answer after repeated attempts. Creates a structured JSON error report on the shared Q drive for the development team only after user consent.
 ---
 
 # IMF RA Error Report
 
-Use this skill to prepare a local, consent-based JSON report for a user-visible RA-Skills failure.
+Use this skill to prepare a consent-based JSON report on the shared Q drive for a user-visible RA-Skills failure.
 
 This is a side skill for support and product feedback. It does not add telemetry, remote upload, GitHub issue creation, dashboards, background logging, Python wrappers, or report lifecycle tracking.
+
+## Runtime
+
+Use the company Python on IMF Windows; do not create or use virtual/Conda
+environments. Before executing helpers, read the shared
+[runtime contract](../imf-ra/references/runtime.md) for installed-skill paths, interpreter
+selection, SDK setup authorization, and user output locations. Resolve scripts
+from the loaded skill directory, not the user's working directory.
+
 
 ## Scope
 
@@ -24,7 +33,7 @@ Do not use this skill for normal RA-Skills clarification behavior, such as askin
 
 Never write a report silently.
 
-After a qualifying failure, offer to prepare a local report and wait for consent before creating the JSON file. Accepted consent includes "yes", "please report it", "send it", "create the report", or "log it".
+After a qualifying failure, offer to prepare a shared-drive report and wait for consent before creating the JSON file. Accepted consent includes "yes", "please report it", "send it", "create the report", or "log it".
 
 If the user declines, acknowledge briefly and do not create a file.
 
@@ -67,7 +76,11 @@ Example filenames in that folder:
 06-05-2026-15-10-41-unsatisfactory-weo-lookup.json
 ```
 
-This repo-local folder is the single report destination for this skill. Do not write reports to the user's Desktop folder unless the user explicitly asks for a different location.
+This shared Q-drive folder is the single report destination for this skill. Before
+writing, verify that the drive is mounted and the folder is writable. If it is not
+available, explain that the report could not be created and preserve the prepared
+report content in the conversation; do not silently fall back to the repository or
+the user's Desktop unless the user explicitly chooses another location.
 
 ## Trigger Rules
 
@@ -90,78 +103,49 @@ Offer a report when one of these occurs:
 Suggested offer:
 
 ```text
-It looks like this hit a system or execution error. Would you like me to prepare a local report for the development team so they can investigate?
+It looks like this hit a system or execution error. Would you like me to prepare a report on the shared Q drive for the development team so they can investigate?
 ```
 
 ### Scenario 2: Unsatisfactory Answer After Repeated Attempts
 
 Use this when the system does not crash, but the user still cannot get a useful result after repeated attempts.
 
-Offer a report when one of these occurs:
-
-- The user asks the same or very similar query repeatedly and still does not get a useful answer.
-- The user says the answer is wrong, unsatisfactory, not ideal, or not what they need after 5 attempts or revisions.
-- The agent has tried several self-corrections on the same topic without progress after 3 attempts.
-- The agent keeps asking the same clarification question and does not move the task forward.
+Offer once when a revision has left a user-identified problem unresolved, or
+when the agent cannot identify a useful next correction. Do not force the user
+through a fixed number of unsatisfactory answers. An explicit report request
+counts as consent immediately after a visible failure. Do not repeat an offer
+after refusal for the same failure.
 
 Suggested offer:
 
 ```text
-It seems like we still have not gotten you a useful answer after several tries.  Would you like me to prepare a local report so the development team can improve this workflow?
+It seems like we still have not gotten you a useful answer after several tries. Would you like me to prepare a report on the shared Q drive so the development team can improve this workflow?
 ```
 
 ## Classification Taxonomy
 
-Use this taxonomy to decide when to offer a report, when to retry or guide the user first, and when to wait until recovery attempts are exhausted.
+Use the shared [recovery contract](../imf-ra/references/recovery.md) for attempt counting, retry ownership, and stopping conditions. This table is the single classification-to-report decision map; the trigger examples above are symptoms to classify, not separate retry rules.
 
 | Category | Should offer report? | Severity | How to handle |
 |---|---|---|---|
 | `user_error` | No | Low | User input is invalid or incomplete. Explain and ask for corrected input. |
 | `config_fixable` | No | Low | Environment issue the user can fix directly, such as an obviously missing package, checkout, or local resource like `haver.db`. Give setup guidance. |
 | `config_unfixable` | Yes, after recovery fails | Medium | Environment issue that needs development review, such as missing expected local resources or unclear setup contract. |
-| `transient_retry` | No | Low | Temporary network, tool, or API issue while fewer than three retries have been attempted. Retry or self-correct first. |
-| `transient_exhausted` | Yes | High | Temporary issue persists after three retries or self-correction attempts. |
+| `transient_retry` | No | Low | Evidenced temporary failure with attempts remaining under the recovery contract. Let its designated owner retry. |
+| `transient_exhausted` | Yes | High | The designated recovery budget is exhausted and the failure still blocks the task. |
 | `data_format` | Yes | High | Data schema, API contract, parser, or field mismatch. |
 | `logic_bug` | Yes | High | Agent or helper code logic error, such as `IndexError`, `AttributeError`, impossible branch, or invalid assumption. |
 | `subprocess_failure` | Yes | High | Required helper script crashes or returns blocking nonzero status. |
 | `database_corruption` | Yes | High | Reference data appears corrupt, missing required columns, or internally inconsistent. |
 | `rate_limit` | No | Low | API or session usage limit. Explain limitation and possible retry timing. |
 | `file_io_error` | Usually no | Medium | File permission, disk, sandbox, or path issue. Give guidance first; report only if expected output remains blocked after correction attempts. |
-| `custom_script_first_attempt` | No | Low | First, second, or third failure in an ad hoc script written during the session. Debug and retry first. |
-| `custom_script_exhausted` | Yes | High | Three custom-script attempts fail and the RA workflow remains blocked. |
-| `unsatisfactory_answer` | Yes | Medium | User remains unsatisfied after three repeated attempts or the agent cannot make progress. |
+| `custom_script_first_attempt` | No | Low | First or second execution fails and a concrete correction is available; fix before retrying. |
+| `custom_script_exhausted` | Yes | High | Third execution fails, or no useful correction remains earlier; explain the blocker. |
+| `unsatisfactory_answer` | Yes | Medium | A revision leaves a user-identified problem unresolved, or no useful correction remains; offer once. |
 | `unknown` | Yes, after brief triage | Medium | Failure is unclassifiable but user-visible and blocks or degrades the task. |
 
-Offer a report immediately for:
-
-```text
-logic_bug
-database_corruption
-subprocess_failure
-data_format
-transient_exhausted
-custom_script_exhausted
-```
-
-Offer a report only after retry, self-correction, or user guidance has failed for:
-
-```text
-config_unfixable
-file_io_error
-unknown
-```
-
-Do not offer a report by default for:
-
-```text
-user_error
-config_fixable
-transient_retry
-rate_limit
-custom_script_first_attempt
-```
-
-In no-report cases, explain the issue, retry when appropriate, or give the user a concrete next step. If the user explicitly asks to report anyway after a visible failure, allow a manual `unsatisfactory_answer` report.
+In no-report cases, explain the issue or follow the recovery contract. An
+explicit user request to report a visible failure still counts as consent.
 
 ## Severity And Area
 
@@ -274,7 +258,7 @@ Each report is a single JSON file. Preserve raw stdout, stderr, or tool output f
     "files_involved": ["<path or Unknown>"],
     "attempt_count": "Unknown",
     "retry_count": "Unknown",
-    "retry_limit": "3 for system/code errors; 5 for unsatisfactory-answer reports",
+    "retry_limit": "Operation-specific recovery budget; not applicable to answer dissatisfaction",
     "retry_status": "not_applicable | not_retried | retry_succeeded | retries_exhausted | Unknown"
   },
   "reproduction_notes": {

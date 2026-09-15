@@ -24,14 +24,14 @@ Default PNG export:
 - Size: `2000 x 1125` pixels.
 - Aspect ratio: `16:9`.
 - Matplotlib equivalent: `figsize=(13.333, 7.5)`, `dpi=150`.
-- Plot-area margins: left `8%`, right `4%`, top `16%`, bottom `14%`.
+- Plot-area margins: left `8%`, right `4%`, top `18%`, bottom `14%`.
 - Use extra bottom margin when source notes, footnotes, or long x-axis labels
   need more room.
 
 Placement:
 
-- Align title, subtitle, plot area, and source note to the same left edge.
-- Place title at the top-center above the plot area.
+- Center the title and subtitle horizontally on the figure above the plot area.
+- Align source and notes to the plot area's left edge.
 - Place subtitle directly below the title with enough vertical separation that
   the two lines read as distinct elements, not one stacked title block.
 - On the default `2000 x 1125` PNG canvas, use these baseline vertical

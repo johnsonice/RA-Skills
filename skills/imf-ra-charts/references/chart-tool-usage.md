@@ -19,44 +19,43 @@ Use available data before attempting any pull:
 
 1. data already produced by `imf-ra-data`;
 2. user-provided Excel or CSV data;
-3. a new data pull only if no usable data are available and the user explicitly
-   asks the agent to pull data.
+3. a new data pull through `imf-ra-catalog` and `imf-ra-data` when no usable
+   data are available and retrieval is needed to fulfill the chart request.
 
-If no usable data are available, ask whether the user wants to provide data or
-explicitly wants the agent to pull data. When pulling, follow `imf-ra-data` and
-`imf-ra-catalog`; do not create new retrieval scripts.
+A request to chart specified economic series authorizes the retrieval needed
+for that chart; no separate permission to fetch is required. Honor any
+user-imposed source or retrieval restrictions. If the user limits the task to
+supplied files and those files are missing or unusable, ask for the required
+input. Resolve ambiguous series or missing specifications through the catalog
+and data skills' normal clarification rules. Use their supported fetch helpers;
+do not create new retrieval scripts. This authorization does not extend to
+environment creation or package installation; follow the shared runtime contract.
 
 ## Output Folder
 
-Before writing artifacts, ask the user to confirm that outputs should be saved
-under `chart-temp/` in the current working directory. Tell the user this folder
-is temporary, will be deleted after the charting session, and anything they need
-to keep should be saved elsewhere. Do not create or overwrite `chart-temp/`
-without confirmation.
+Save final files in the user's requested location, or a persistent `charts/`
+folder in the user's workspace. Create it as part of the chart request without
+a separate confirmation. If the workspace is unknown or unwritable, ask for a
+destination. Do not save outputs under the installed skill directory.
 
-Use a short confirmation prompt such as:
-
-```text
-I can save the chart outputs in `chart-temp/`. This folder is temporary and will
-be deleted after this charting session, so save anything you need to keep. Is
-that okay?
-```
-
-Use stable, readable, lowercase file names based on the chart topic:
+Use stable, readable topic-based names, for example:
 
 ```text
-chart-temp/
+charts/
   real_gdp_growth_selected_economies.png
   real_gdp_growth_selected_economies_generate.py
   real_gdp_growth_selected_economies_interactive.html   # optional
   real_gdp_growth_selected_economies.xlsx               # optional
 ```
 
-If a file already exists, avoid accidental overwrite by adding a version suffix
-such as `_v2`, unless the user explicitly asks to replace the prior output.
-
-Before deleting `chart-temp/`, make sure any deliverables the user wants to keep
-have been moved, attached, or otherwise handed off.
+Avoid overwriting existing files by adding `_v2`, unless replacement was
+requested. Final deliverables persist after the session. A generated script
+must read persistent input files: use paths resolved relative to the script or
+explicit configurable paths, not ephemeral files or an assumed launch directory.
+If intermediate files are necessary, create a unique temporary directory and
+clean up only those intermediates after success. Never delete user inputs or
+pre-existing directories. Preserve required cleaned data alongside the script
+if reproducing the chart depends on them.
 
 ## Required Outputs
 
@@ -79,7 +78,8 @@ The Python script is the reproducibility record. It must include:
 ## Optional Outputs
 
 Create optional outputs only when the user asks for them up front or confirms
-the post-PNG offer. Generate the same chart as the PNG in both html and excel. Use this short prompt when neither optional output has
+the post-PNG offer. Generate only the requested optional output(s), preserving
+the PNG chart's meaning and styling. Use this short prompt when neither optional output has
 already been requested:
 
 ```text
@@ -101,7 +101,7 @@ Rules:
 - Apply the same chart (including chart type, title, axis labels, units, source note, and series colors as)
   the PNG.
 - Add hover templates showing year and value with unit label.
-- Save as `<topic>_interactive.html` beside the PNG in `chart-temp/`.
+- Save as `<topic>_interactive.html` beside the PNG in the persistent output directory.
 - Include the HTML generation code in the same Python script as the PNG, gated
   by an `INTERACTIVE = True` flag at the top so the script is self-documenting.
 - If the local host supports browser opening, open the HTML after saving so the
@@ -110,7 +110,7 @@ Rules:
 
 ### Excel Workbook
 
-Produce an editable Excel workbook only after user confirmation. 
+Produce an editable Excel workbook when the user requests it or confirms the offer.
 
 The workbook does not replace the required PNG or Python script.
 
@@ -132,10 +132,10 @@ Recommended sheets:
 
 ## Execution Flow
 
-1. Confirm the output folder before writing artifacts.
+1. Resolve the user's output folder, or use persistent `charts/` in the workspace; ask only when the destination is unknown or unusable.
 2. Load data from `imf-ra-data` output or user-provided Excel/CSV.
-3. If no usable data are available, ask whether the user wants to provide data
-   or explicitly wants the agent to pull data.
+3. If no usable data are available, follow [Input Order](#input-order) to
+   retrieve the required series or resolve missing input, then resume charting.
 4. Inspect columns, data types, grain, units, source, frequency, and date range.
 5. Ask clarification only if the chart would otherwise be wrong or misleading.
 6. Clean and transform data according to the transformation rules.
@@ -148,8 +148,8 @@ Recommended sheets:
 12. Offer optional outputs not already requested.
 13. If the user requests changes, update the chart and version or overwrite
     outputs according to the file naming rule.
-14. After the session ends and retained deliverables have been handed off,
-    delete `chart-temp/`.
+14. Before ending the turn, clean up agent-created temporary intermediates
+    according to [Output Folder](#output-folder); keep all final deliverables.
 
 ## Data Preparation
 
@@ -182,6 +182,9 @@ For optional outputs, also check that:
 - Excel opens and contains the required sheets when requested.
 
 ## Failure Behavior
+
+Follow the shared [recovery contract](../../imf-ra/references/recovery.md) for
+script execution limits, corrections, and reporting after exhausted recovery.
 
 If chart generation fails, tell the user:
 

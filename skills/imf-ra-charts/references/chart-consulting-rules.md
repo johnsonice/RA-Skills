@@ -22,10 +22,12 @@ Do not over-ask. Ask before charting only when:
 - there is no clear time, category, or geography axis;
 - multiple plausible indicators or series could answer the request;
 - units or frequencies are incompatible;
-- the requested chart requires a Tier 2 or Tier 3 transformation;
+- a Tier 2 or Tier 3 transformation lacks the authorization or assumptions
+  required by the transformation policy below;
 - the requested chart type would be unreadable for the number of series;
-- no usable data are available and the user has not asked the agent to fetch
-  data.
+- required input remains unavailable under the
+  [input routing rules](chart-tool-usage.md#input-order), including user
+  restrictions on retrieval.
 
 Otherwise, create the best reasonable default chart and briefly explain the
 choice.
@@ -53,8 +55,9 @@ confirmation when needed to make the data chartable:
 
 ### Tier 2: Suggest Or Ask First
 
-These change analytical meaning. Suggest them if useful, but ask for
-confirmation before applying:
+These change analytical meaning. Apply them when the user has requested or
+confirmed them and the required assumptions are clear. Otherwise, suggest them
+if useful and ask for confirmation before applying:
 
 - percent change, growth rate, year-over-year, or quarter-over-quarter change;
 - index to 100;
@@ -102,7 +105,8 @@ Decision tree:
 2. Otherwise infer the analytical task.
 3. Confirm the data shape supports that task.
 4. Choose the simplest accurate chart from the tables below.
-5. Ask before applying any Tier 2 or Tier 3 transformation.
+5. Apply the transformation policy above; ask only for missing authorization
+   or material assumptions.
 6. Reject anti-patterns that add clutter, distort scale, or hide assumptions.
 
 | User wants to see | Default chart |

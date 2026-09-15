@@ -10,7 +10,7 @@ A family of **Agent Skills** for IMF Research Assistant workflows. The canonical
 - `imf-ra-catalog` — natural-language → confirmed identifier: iData `(database, dimension_name, code)` (plus confirmed frequency/geography passed as handoff constraints) or Haver `codes: ["CODE@DB", ...]`
 - `imf-ra-data` — pull series via internal Python SDK (`fetch_idata.py` for iData, `fetch_haver.py` for Haver)
 - `imf-ra-charts` — turn IMF RA data or user-provided CSV/Excel files into a static PNG chart plus a complete reproducible Python script; optional editable Excel workbook only after confirmation
-- `imf-ra-error-report` — side skill for consent-based local JSON reports after user-visible RA-Skills failures
+- `imf-ra-error-report` — side skill for consent-based JSON reports written to the shared Q drive after user-visible RA-Skills failures
 
 Skill chain: `imf-ra` → `imf-ra-catalog` → `imf-ra-data` → `imf-ra-charts`.
 
@@ -24,11 +24,24 @@ Skills run at three capability tiers. Pick commands the current environment can 
 |------|-------------------|----------|------------|
 | **Catalog** (discovery) | `imf-ra-catalog` (`catalog_search.py`), WEO `country_groups_helper.py` | Python 3.9+ only (stdlib + bundled CSVs) | Anywhere — laptops, CI, cloud agents, off-network |
 | **Data – iData** | `imf-ra-data` `fetch_idata.py` | Internal `imf_datatools` SDK + `pandas` | IMF-managed Windows / cloud only |
-| **Data – Haver** | `imf-ra-data` `fetch_haver.py`, `haver_catalog_search.py` lookups | `haver.db` (SQLite) + `pandas` (metadata for fetch) | IMF machines with `haver.db` access |
-| **Charts** | `imf-ra-charts` generated Python scripts | `pandas` + `matplotlib`; `xlsxwriter` only for optional Excel workbook output | Anywhere with local CSV/Excel or previously fetched data |
+| **Haver catalog** | `haver_catalog_search.py` | Python stdlib + readable `haver.db` | Anywhere with the metadata file |
+| **Data – Haver** | `imf-ra-data` `fetch_haver.py` | `imf_datatools` SDK + `pandas` + readable `haver.db` | IMF machines with Haver access |
+| **Charts** | `imf-ra-charts` generated Python scripts | `pandas` + `matplotlib`; `openpyxl` for `.xlsx` input; `plotly` for optional HTML; `xlsxwriter` for optional Excel output | Anywhere with local CSV/Excel or previously fetched data |
 
 - `haver.db` is **not** in the repo (SQLite, 12M+ rows). Resolution order: `HAVER_DB_PATH` env var → an upward search for `haver.db` beside any ancestor of the script (conventionally one directory above the repo root) → a clear "not found" error. Set `HAVER_DB_PATH` when installed into a global skills dir.
 - The internal `imf_datatools` SDK is IMF-only (installed from an internal location; see `skills/imf-ra-data/references/imf_datatools_agent_api_reference.md`). It is not pip-installable. Catalog lookup and WEO group helpers work without it.
+
+## Python environment policy
+
+Follow [the shared runtime policy](skills/imf-ra/references/runtime.md) for
+interpreter selection and package destinations, including the fixed company
+Python at `C:\ProgramData\Python3\python.exe` on IMF-managed Windows and
+packages in `C:\ProgramData\Python3\Lib\site-packages`. Do not create or use
+virtual/Conda environments. Other machines may use an existing system Python
+for supported local tasks. README-directed installation includes the bounded
+[SDK setup](skills/imf-ra-data/references/sdk-setup.md); ordinary execution does
+not authorize package installation or upgrades. These rules also apply to
+generated scripts.
 
 ## Interpreter note
 
@@ -62,7 +75,7 @@ python skills/imf-ra-catalog/scripts/Haver/haver_catalog_search.py databases
 # Pre-built fetch utilities (never write new retrieval scripts)
 python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --explore
 python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --dimension-values COUNTRY --keyword "USA"
-python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA+GBR.NGDP_RPCH..A" --start 2000 --end 2026 --format refreshable
+python skills/imf-ra-data/scripts/fetch_idata.py --db "IMF.RES.WEO:WEO_LIVE" --key "USA+GBR.NGDP_RPCH.A" --start 2000 --end 2026 --format refreshable
 python skills/imf-ra-data/scripts/fetch_haver.py --codes "GDP@USECON" "UNRATE@USECON" --start 2000 --end 2024 --format refreshable
 ```
 
@@ -92,7 +105,6 @@ docs/specs/   # design + distribution docs
 docs/plans/   # implementation history (ERROR_REPORTING_plan.md, family plan)
 docs/Product_Road_Map.md   # product roadmap
 tests/        # YAML auto-test cases, reviewer catalog, results, issue tracking
-tests/user_error_report/   # local JSON reports created by imf-ra-error-report
 ```
 
 `skills/` is the single source of truth. For in-repo local discovery on every host, `python scripts/sync_skills.py` mirrors `skills/` into `.claude/skills/` (Claude Code) and `.agents/skills/` (Copilot/Codex). Those mirrors are generated and gitignored — **never edit them; edit `skills/`**.
@@ -105,13 +117,12 @@ tests/user_error_report/   # local JSON reports created by imf-ra-error-report
 - **Haver has its own rules.** Search `haver.db` only via `haver_catalog_search.py` (never ad-hoc SQL `LIKE` — the table is unindexed for text). Batch multi-database searches into one call with `--databases ... --limit 300`; one query per search, no rephrasing reruns. Haver identifiers are `CODE@DATABASE` strings — there is no `dimension_name`. Strip the `HAVER:` display prefix before handing codes to `fetch_haver.py`.
 - **Don't guess identifiers.** Database codes, variable codes, country groups, dimensions — never invent. If multiple plausible matches exist, list candidates and ask for confirmation.
 - **LIVE vs vintage data must be honored explicitly** — see `skills/imf-ra-data/SKILL.md`. Never silently default to a dated vintage.
-- **Error reporting is consent-based and local.** Use `imf-ra-error-report` only for user-visible failures, never for normal clarification behavior. Manual report requests count as consent. Reports go to `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; max 5 per conversation.
-- **`skills/` is the source of truth.** Edit skills under `skills/`, then run `scripts/sync_skills.py` for local discovery. Generated mirrors and globally installed copies derive from it.
+- **Error reporting is consent-based and writes to a shared drive.** Use `imf-ra-error-report` only for user-visible failures, never for normal clarification behavior. Manual report requests count as consent. Reports go to `Q:\DATA\SPRAI\SPRAI_Projects\RA-Skill\user_error_reports\`; verify that the destination is available and writable, never silently fall back to the repo, and create at most 5 reports per conversation.
 
 ## Editing skills
 
 - A skill = directory with `SKILL.md` (YAML frontmatter `name` + `description` + body), optionally `scripts/`, `references/`, and data files. The folder name is the skill name.
-- To work on a skill locally, edit under `skills/`, then run `python scripts/sync_skills.py` so every host re-discovers it.
+- Follow the canonical-source and synchronization instructions in [Layout](#layout).
 
 ## Branch / commit conventions
 
@@ -147,5 +158,5 @@ Example: `feat/chengyu_0509_auto-testing-steps`. Older remote branches without t
 - `imf-ra-error-report` is a side skill, not core infrastructure: no telemetry, remote upload, GitHub issue creation, dashboard, Python logging wrapper, or report lifecycle workflow belongs in v1.
 - `haver.db` is machine-dependent and may be absent (it is not committed; it lives one directory above the repo root, or wherever `HAVER_DB_PATH` points). If Haver catalog search or `fetch_haver.py` fails because the file is missing, say so — don't fall back to guessing Haver codes.
 - Actual data pulls require the internal `imf_datatools` SDK (IMF environment only). Catalog lookup and WEO group helpers work anywhere; `fetch_idata.py` / `fetch_haver.py` do not.
-- EcOS retrieval is retired — never use `get_ecos_*` paths. The supported fetch workflow is Python-only (no R/Stata).
+- EcOS is retired — no active EcOS discovery, mapping, metadata, or retrieval commands. The supported fetch workflow is Python-only (no R/Stata).
 - `projects/`, `docs/decks/svg/`, `.claude/settings.local.json`, the generated `.claude/skills/` and `.agents/skills/` mirrors, and `tests/{results,issue_tracking,user_error_report}` contents are gitignored local artifacts — they exist locally but must not be committed.
